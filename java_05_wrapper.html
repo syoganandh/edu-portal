@@ -132,6 +132,63 @@ td{padding:8px 12px;border-top:1px solid #f0ebfc;color:#3a3a3a;}tr:hover td{back
 
 <div class="callout"><span style="font-size:15px;flex-shrink:0">💡</span><span><strong>Immutability:</strong> All wrapper objects are immutable. Operations on them don't modify the original — they create a new object. This is the same behavior as <code>String</code>.</span></div>
 
+
+<style>
+.ns{margin-top:28px;}
+.ns h2{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:14px;padding-bottom:6px;border-bottom:2px solid #ede8f5;}
+.ib{background:#fff;border:1px solid #ede8f5;border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.ib h3{font-size:13px;font-weight:700;color:#6b48c8;margin-bottom:6px;}
+.ib p,.ib li{font-size:12.5px;color:#3a3a3a;line-height:1.7;}
+.ib ul{padding-left:18px;margin-top:6px;} .ib li{margin-bottom:3px;}
+.ct{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.ct th{background:#f3effe;color:#6b48c8;font-weight:700;padding:8px 12px;text-align:left;}
+.ct td{padding:7px 12px;border-top:1px solid #f0ebfc;color:#3a3a3a;vertical-align:top;}
+.ct tr:hover td{background:#faf8ff;}
+.cb{background:#1e1e2e;border-radius:8px;padding:14px 16px;font-family:monospace;font-size:11.5px;color:#cdd6f4;line-height:1.65;overflow-x:auto;margin-top:8px;white-space:pre;}
+.kw{color:#cba6f7;}.cm{color:#6c7086;font-style:italic;}.st{color:#a6e3a1;}.nm{color:#fab387;}
+.tb{background:#fef9ec;border-left:3px solid #f5a623;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#7c5c00;margin-top:10px;line-height:1.6;}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+</style>
+<div class="ns">
+<h2>All Conversion Methods</h2>
+<div class="ib"><table class="ct">
+<tr><th>Conversion</th><th>Method</th><th>Example</th></tr>
+<tr><td>Primitive to Object</td><td>Constructor / valueOf() / AutoBoxing</td><td><code>Integer in = new Integer(10);</code></td></tr>
+<tr><td>Object to Primitive</td><td>xxxValue() / Auto-Unboxing</td><td><code>int i = in.intValue();</code></td></tr>
+<tr><td>String to Primitive</td><td>parseXxx(String)</td><td><code>int i = Integer.parseInt("10");</code></td></tr>
+<tr><td>Primitive to String</td><td>String.valueOf()</td><td><code>String s = String.valueOf(10);</code></td></tr>
+<tr><td>String to Object</td><td>new Wrapper(String)</td><td><code>Integer in = new Integer("10");</code></td></tr>
+<tr><td>Object to String</td><td>toString()</td><td><code>String s = in.toString();</code></td></tr>
+</table></div>
+<h2>Useful Utility Methods</h2>
+<div class="tc">
+<div class="ib"><h3>Integer Methods</h3>
+<div class="cb">Integer.MAX_VALUE       <span class="cm">// 2147483647</span>
+Integer.MIN_VALUE       <span class="cm">// -2147483648</span>
+Integer.toBinaryString(<span class="nm">10</span>)<span class="cm">// "1010"</span>
+Integer.toHexString(<span class="nm">255</span>) <span class="cm">// "ff"</span>
+Integer.parseInt(<span class="st">"42"</span>)   <span class="cm">// 42</span></div></div>
+<div class="ib"><h3>Character Methods</h3>
+<div class="cb">Character.isLetter(<span class="st">'A'</span>)   <span class="cm">// true</span>
+Character.isDigit(<span class="st">'5'</span>)    <span class="cm">// true</span>
+Character.toUpperCase(<span class="st">'a'</span>)<span class="cm">// 'A'</span>
+Character.toLowerCase(<span class="st">'Z'</span>)<span class="cm">// 'z'</span></div></div>
+</div>
+<h2>Auto-Boxing and Unboxing Code</h2>
+<div class="ib">
+<div class="cb"><span class="cm">// Auto-Boxing (JDK 5.0+): primitive to wrapper</span>
+<span class="kw">int</span> i = <span class="nm">10</span>;
+Integer in = i;    <span class="cm">// compiler: Integer.valueOf(i)</span>
+
+<span class="cm">// Auto-Unboxing: wrapper to primitive</span>
+Integer in2 = <span class="kw">new</span> Integer(<span class="nm">20</span>);
+<span class="kw">int</span> j = in2;       <span class="cm">// compiler: in2.intValue()</span>
+
+<span class="cm">// Collections need wrappers</span>
+List&lt;Integer&gt; list = <span class="kw">new</span> ArrayList&lt;&gt;();
+list.add(<span class="nm">100</span>);     <span class="cm">// auto-boxed</span>
+<span class="kw">int</span> v = list.get(<span class="nm">0</span>); <span class="cm">// auto-unboxed</span></div></div>
+</div>
 </div>
 <script>
 function sw(tab,id){

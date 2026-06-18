@@ -162,6 +162,76 @@ s.<span class="fn">equalsIgnoreCase</span>(<span class="str">"hello java world"<
 
 <div class="callout"><span style="font-size:15px;flex-shrink:0">💡</span><span><strong>When to use what:</strong> Use <code>String</code> for fixed text. Use <code>StringBuilder</code> for string building in single-threaded code (loops). Use <code>StringBuffer</code> only when thread safety is required.</span></div>
 
+
+<style>
+.ns{margin-top:28px;}
+.ns h2{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:14px;padding-bottom:6px;border-bottom:2px solid #ede8f5;}
+.ib{background:#fff;border:1px solid #ede8f5;border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.ib h3{font-size:13px;font-weight:700;color:#6b48c8;margin-bottom:6px;}
+.ib p,.ib li{font-size:12.5px;color:#3a3a3a;line-height:1.7;}
+.ib ul{padding-left:18px;margin-top:6px;} .ib li{margin-bottom:3px;}
+.ct{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.ct th{background:#f3effe;color:#6b48c8;font-weight:700;padding:8px 12px;text-align:left;}
+.ct td{padding:7px 12px;border-top:1px solid #f0ebfc;color:#3a3a3a;vertical-align:top;}
+.ct tr:hover td{background:#faf8ff;}
+.cb{background:#1e1e2e;border-radius:8px;padding:14px 16px;font-family:monospace;font-size:11.5px;color:#cdd6f4;line-height:1.65;overflow-x:auto;margin-top:8px;white-space:pre;}
+.kw{color:#cba6f7;}.cm{color:#6c7086;font-style:italic;}.st{color:#a6e3a1;}.nm{color:#fab387;}
+.tb{background:#fef9ec;border-left:3px solid #f5a623;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#7c5c00;margin-top:10px;line-height:1.6;}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+</style>
+<div class="ns">
+<h2>StringBuffer vs StringBuilder (from material)</h2>
+<div class="ib"><table class="ct">
+<tr><th>Feature</th><th>StringBuffer</th><th>StringBuilder</th></tr>
+<tr><td>Introduced in</td><td>JDK 1.0</td><td>JDK 5.0</td></tr>
+<tr><td>Synchronised</td><td>YES (thread-safe)</td><td>NO</td></tr>
+<tr><td>Threads allowed</td><td>One at a time</td><td>Multiple simultaneously</td></tr>
+<tr><td>Execution</td><td>Sequential (slower)</td><td>Parallel (faster)</td></tr>
+<tr><td>Data Consistency</td><td>Guaranteed</td><td>Not guaranteed</td></tr>
+<tr><td>Use when</td><td>Multi-threaded environment</td><td>Single-threaded environment</td></tr>
+</table></div>
+<h2>Essential String Methods</h2>
+<div class="ib">
+<div class="cb">String s = <span class="st">"Hello World"</span>;
+s.length()                    <span class="cm">// 11</span>
+s.charAt(<span class="nm">0</span>)                  <span class="cm">// 'H'</span>
+s.indexOf(<span class="st">"World"</span>)          <span class="cm">// 6</span>
+s.substring(<span class="nm">6</span>)               <span class="cm">// "World"</span>
+s.substring(<span class="nm">0</span>, <span class="nm">5</span>)           <span class="cm">// "Hello"</span>
+s.toUpperCase()               <span class="cm">// "HELLO WORLD"</span>
+s.toLowerCase()               <span class="cm">// "hello world"</span>
+s.trim()                      <span class="cm">// removes leading/trailing spaces</span>
+s.replace(<span class="st">"World"</span>, <span class="st">"Java"</span>)  <span class="cm">// "Hello Java"</span>
+s.contains(<span class="st">"Hello"</span>)         <span class="cm">// true</span>
+s.startsWith(<span class="st">"He"</span>)          <span class="cm">// true</span>
+s.split(<span class="st">" "</span>)                 <span class="cm">// ["Hello", "World"]</span>
+s.equals(<span class="st">"Hello World"</span>)      <span class="cm">// true (case-sensitive)</span>
+s.equalsIgnoreCase(<span class="st">"hello world"</span>) <span class="cm">// true</span></div></div>
+<h2>StringTokenizer</h2>
+<div class="ib">
+<div class="cb">StringTokenizer st = <span class="kw">new</span> StringTokenizer(<span class="st">"Durga Software Solutions"</span>);
+System.out.println(st.countTokens()); <span class="cm">// 3</span>
+<span class="kw">while</span>(st.hasMoreTokens()) {
+    System.out.println(st.nextToken());
+}
+<span class="cm">// Output: Durga  Software  Solutions</span>
+
+<span class="cm">// Custom delimiter</span>
+StringTokenizer st2 = <span class="kw">new</span> StringTokenizer(<span class="st">"a,b,c"</span>, <span class="st">","</span>);
+<span class="cm">// tokens: a  b  c</span></div></div>
+<h2>String Pool Concept</h2>
+<div class="ib">
+<div class="cb"><span class="cm">// Literals go into String Pool — shared object</span>
+String s1 = <span class="st">"Hello"</span>;
+String s2 = <span class="st">"Hello"</span>;
+System.out.println(s1 == s2);       <span class="cm">// true (same pool object)</span>
+
+<span class="cm">// new String() creates a NEW object outside pool</span>
+String s3 = <span class="kw">new</span> String(<span class="st">"Hello"</span>);
+System.out.println(s1 == s3);       <span class="cm">// false (different objects)</span>
+System.out.println(s1.equals(s3));  <span class="cm">// true (same content)</span></div>
+<div class="tb">Always use .equals() to compare String content, not == which compares references.</div></div>
+</div>
 </div>
 <script>
 function sw(tab,id){

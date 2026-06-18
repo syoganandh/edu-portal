@@ -190,6 +190,73 @@ ois.<span class="fn">close</span>();</pre>
 
 <div class="callout"><span style="font-size:15px;flex-shrink:0">💡</span><span><strong>Always close streams!</strong> Use <code>try-with-resources</code> (Java 7+) for automatic closing. Unclosed streams cause resource leaks and data corruption. Buffered streams improve performance by reducing disk access.</span></div>
 
+
+<style>
+.ns{margin-top:28px;}
+.ns h2{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:14px;padding-bottom:6px;border-bottom:2px solid #ede8f5;}
+.ib{background:#fff;border:1px solid #ede8f5;border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.ib h3{font-size:13px;font-weight:700;color:#6b48c8;margin-bottom:6px;}
+.ib p,.ib li{font-size:12.5px;color:#3a3a3a;line-height:1.7;}
+.ib ul{padding-left:18px;margin-top:6px;} .ib li{margin-bottom:3px;}
+.ct{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.ct th{background:#f3effe;color:#6b48c8;font-weight:700;padding:8px 12px;text-align:left;}
+.ct td{padding:7px 12px;border-top:1px solid #f0ebfc;color:#3a3a3a;vertical-align:top;}
+.ct tr:hover td{background:#faf8ff;}
+.cb{background:#1e1e2e;border-radius:8px;padding:14px 16px;font-family:monospace;font-size:11.5px;color:#cdd6f4;line-height:1.65;overflow-x:auto;margin-top:8px;white-space:pre;}
+.kw{color:#cba6f7;}.cm{color:#6c7086;font-style:italic;}.st{color:#a6e3a1;}.nm{color:#fab387;}
+.tb{background:#fef9ec;border-left:3px solid #f5a623;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#7c5c00;margin-top:10px;line-height:1.6;}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+</style>
+<div class="ns">
+<h2>Byte vs Character Streams</h2>
+<div class="ib"><table class="ct">
+<tr><th>Feature</th><th>Byte-Oriented</th><th>Character-Oriented</th></tr>
+<tr><td>Data unit</td><td>1 byte (8 bits)</td><td>2 bytes / 1 char (Unicode)</td></tr>
+<tr><td>Base classes</td><td>InputStream, OutputStream</td><td>Reader, Writer</td></tr>
+<tr><td>Name suffix</td><td>ends with "Stream"</td><td>ends with "Reader" or "Writer"</td></tr>
+<tr><td>Best for</td><td>Binary files, images, audio</td><td>Text files</td></tr>
+</table></div>
+<h2>Reading a Text File — BufferedReader</h2>
+<div class="ib">
+<div class="cb"><span class="kw">import</span> java.io.*;
+<span class="kw">class</span> ReadFile {
+    <span class="kw">public static void</span> main(String[] a) <span class="kw">throws</span> IOException {
+        FileReader fr = <span class="kw">new</span> FileReader(<span class="st">"data.txt"</span>);
+        BufferedReader br = <span class="kw">new</span> BufferedReader(fr);
+        String line;
+        <span class="kw">while</span>((line = br.readLine()) != <span class="kw">null</span>) {
+            System.out.println(line);
+        }
+        br.close();
+    }
+}</div></div>
+<h2>Writing a Text File — FileWriter</h2>
+<div class="ib">
+<div class="cb"><span class="kw">import</span> java.io.*;
+<span class="kw">class</span> WriteFile {
+    <span class="kw">public static void</span> main(String[] a) <span class="kw">throws</span> IOException {
+        FileWriter fw = <span class="kw">new</span> FileWriter(<span class="st">"output.txt"</span>);
+        fw.write(<span class="st">"Hello from Java IO!"</span>);
+        fw.close(); <span class="cm">// always close to flush</span>
+
+        <span class="cm">// Append mode</span>
+        FileWriter fw2 = <span class="kw">new</span> FileWriter(<span class="st">"output.txt"</span>, <span class="kw">true</span>);
+        fw2.write(<span class="st">"\nAppended line"</span>);
+        fw2.close();
+    }
+}</div></div>
+<h2>Reading Console Input — Scanner</h2>
+<div class="ib">
+<div class="cb"><span class="kw">import</span> java.util.Scanner;
+Scanner sc = <span class="kw">new</span> Scanner(System.in);
+System.out.print(<span class="st">"Enter name: "</span>);
+String name = sc.nextLine();
+System.out.print(<span class="st">"Enter age: "</span>);
+<span class="kw">int</span> age = sc.nextInt();
+System.out.println(name + <span class="st">" is "</span> + age);
+sc.close();</div>
+<div class="tb">Always close streams in a finally block or use try-with-resources: try(FileReader fr = new FileReader("f.txt")) { ... } — auto-closes on exit.</div></div>
+</div>
 </div>
 <script>
 function sw(tab,id){

@@ -157,6 +157,62 @@ java.util.ArrayList&lt;<span class="cls">String</span>&gt; list = <span class="k
   <div class="def-item"><div class="def-term">java.awt / javax.swing</div><div class="def-val">GUI components — JFrame, JButton, JLabel, JTextField</div></div>
 </div>
 
+
+<style>
+.ns{margin-top:28px;}
+.ns h2{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:14px;padding-bottom:6px;border-bottom:2px solid #ede8f5;}
+.ib{background:#fff;border:1px solid #ede8f5;border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.ib h3{font-size:13px;font-weight:700;color:#6b48c8;margin-bottom:6px;}
+.ib p,.ib li{font-size:12.5px;color:#3a3a3a;line-height:1.7;}
+.ib ul{padding-left:18px;margin-top:6px;} .ib li{margin-bottom:3px;}
+.ct{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.ct th{background:#f3effe;color:#6b48c8;font-weight:700;padding:8px 12px;text-align:left;}
+.ct td{padding:7px 12px;border-top:1px solid #f0ebfc;color:#3a3a3a;vertical-align:top;}
+.ct tr:hover td{background:#faf8ff;}
+.cb{background:#1e1e2e;border-radius:8px;padding:14px 16px;font-family:monospace;font-size:11.5px;color:#cdd6f4;line-height:1.65;overflow-x:auto;margin-top:8px;white-space:pre;}
+.kw{color:#cba6f7;}.cm{color:#6c7086;font-style:italic;}.st{color:#a6e3a1;}.nm{color:#fab387;}
+.tb{background:#fef9ec;border-left:3px solid #f5a623;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#7c5c00;margin-top:10px;line-height:1.6;}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+</style>
+<div class="ns">
+<h2>Predefined Packages Reference</h2>
+<div class="ib"><table class="ct">
+<tr><th>Package</th><th>Purpose</th><th>Key Classes</th></tr>
+<tr><td><code>java.lang</code></td><td>Default — auto-imported always</td><td>String, Object, System, Thread, Integer, Exception</td></tr>
+<tr><td><code>java.io</code></td><td>Input / Output operations</td><td>FileReader, FileWriter, BufferedReader, InputStream</td></tr>
+<tr><td><code>java.util</code></td><td>Data structures and utilities</td><td>ArrayList, HashMap, Scanner, Date, Collections</td></tr>
+<tr><td><code>java.net</code></td><td>Networking</td><td>Socket, ServerSocket, URL, InetAddress</td></tr>
+<tr><td><code>java.sql</code></td><td>Database (JDBC)</td><td>Connection, Statement, ResultSet, DriverManager</td></tr>
+<tr><td><code>javax.swing</code></td><td>Modern GUI</td><td>JFrame, JButton, JTextField, JPanel</td></tr>
+</table></div>
+<h2>Creating a User-Defined Package</h2>
+<div class="ib">
+<div class="cb"><span class="cm">// Step 1: declare package at top of file</span>
+<span class="kw">package</span> com.anits.java;
+<span class="kw">public class</span> Calculator {
+    <span class="kw">public int</span> add(<span class="kw">int</span> a, <span class="kw">int</span> b) { <span class="kw">return</span> a + b; }
+}
+<span class="cm">// Step 2: compile with -d flag</span>
+<span class="cm">// javac -d . Calculator.java</span>
+
+<span class="cm">// Step 3: import and use</span>
+<span class="kw">import</span> com.anits.java.Calculator;
+<span class="kw">class</span> Test {
+    <span class="kw">public static void</span> main(String[] args) {
+        Calculator c = <span class="kw">new</span> Calculator();
+        System.out.println(c.add(<span class="nm">5</span>, <span class="nm">3</span>)); <span class="cm">// 8</span>
+    }
+}</div></div>
+<h2>Import Statement Variations</h2>
+<div class="ib"><table class="ct">
+<tr><th>Type</th><th>Syntax</th><th>What it imports</th></tr>
+<tr><td>Specific class</td><td><code>import java.util.ArrayList;</code></td><td>Only ArrayList</td></tr>
+<tr><td>Entire package</td><td><code>import java.util.*;</code></td><td>All classes in java.util (not sub-packages)</td></tr>
+<tr><td>Static import</td><td><code>import static java.lang.Math.*;</code></td><td>Static members: sqrt, PI, abs</td></tr>
+<tr><td>Auto-import</td><td>(none needed)</td><td>java.lang always imported automatically</td></tr>
+</table>
+<div class="tb">import java.util.* imports classes only — NOT sub-packages. Sub-packages need separate import statements.</div></div>
+</div>
 </div>
 <script>
 function sw(tab,id){

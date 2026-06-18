@@ -186,6 +186,70 @@ td{padding:8px 12px;border-top:1px solid #f0ebfc;color:#3a3a3a;}tr:hover td{back
   </div>
 </div>
 
+
+<style>
+.ns{margin-top:28px;}
+.ns h2{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:14px;padding-bottom:6px;border-bottom:2px solid #ede8f5;}
+.ib{background:#fff;border:1px solid #ede8f5;border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.ib h3{font-size:13px;font-weight:700;color:#6b48c8;margin-bottom:6px;}
+.ib p,.ib li{font-size:12.5px;color:#3a3a3a;line-height:1.7;}
+.ib ul{padding-left:18px;margin-top:6px;} .ib li{margin-bottom:3px;}
+.ct{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.ct th{background:#f3effe;color:#6b48c8;font-weight:700;padding:8px 12px;text-align:left;}
+.ct td{padding:7px 12px;border-top:1px solid #f0ebfc;color:#3a3a3a;vertical-align:top;}
+.ct tr:hover td{background:#faf8ff;}
+.cb{background:#1e1e2e;border-radius:8px;padding:14px 16px;font-family:monospace;font-size:11.5px;color:#cdd6f4;line-height:1.65;overflow-x:auto;margin-top:8px;white-space:pre;}
+.kw{color:#cba6f7;}.cm{color:#6c7086;font-style:italic;}.st{color:#a6e3a1;}.nm{color:#fab387;}
+.tb{background:#fef9ec;border-left:3px solid #f5a623;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#7c5c00;margin-top:10px;line-height:1.6;}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+</style>
+<div class="ns">
+<h2>Error vs Exception (from material)</h2>
+<div class="ib"><table class="ct">
+<tr><th>Error</th><th>Exception</th></tr>
+<tr><td>Problem that CANNOT be solved programmatically</td><td>Problem that CAN be solved programmatically</td></tr>
+<tr><td>JVM-level: OutOfMemoryError, StackOverflowError</td><td>App-level: ArithmeticException, NullPointerException</td></tr>
+<tr><td>Not recommended to handle with try-catch</td><td>Should be handled using try-catch-finally</td></tr>
+</table></div>
+<h2>3 Types of Compile-Time Errors</h2>
+<div class="ib"><table class="ct">
+<tr><th>Type</th><th>Description</th><th>Example</th></tr>
+<tr><td>Lexical Error</td><td>Misspelled keyword</td><td><code>nit i=10;</code> instead of <code>int i=10;</code></td></tr>
+<tr><td>Syntax Error</td><td>Grammatical mistake</td><td><code>i int 10;</code> instead of <code>int i=10;</code></td></tr>
+<tr><td>Semantic Error</td><td>Incompatible types with operator</td><td><code>char c = i + b;</code> where b is boolean</td></tr>
+</table></div>
+<h2>Exception Handling Keywords</h2>
+<div class="ib"><table class="ct">
+<tr><th>Keyword</th><th>Purpose</th></tr>
+<tr><td><code>try</code></td><td>Wraps code that may throw an exception</td></tr>
+<tr><td><code>catch</code></td><td>Handles a specific exception type</td></tr>
+<tr><td><code>finally</code></td><td>Always executes — used for cleanup (close files, DB connections)</td></tr>
+<tr><td><code>throw</code></td><td>Manually throws an exception object</td></tr>
+<tr><td><code>throws</code></td><td>Declares that a method may throw checked exceptions</td></tr>
+</table>
+<div class="cb"><span class="kw">try</span> {
+    <span class="kw">int</span> r = <span class="nm">10</span> / <span class="nm">0</span>;
+} <span class="kw">catch</span> (ArithmeticException e) {
+    System.out.println(<span class="st">"Caught: "</span> + e.getMessage());
+} <span class="kw">finally</span> {
+    System.out.println(<span class="st">"Always runs"</span>);
+}</div></div>
+<h2>Custom (User-Defined) Exception</h2>
+<div class="ib">
+<div class="cb"><span class="kw">class</span> InvalidAgeException <span class="kw">extends</span> Exception {
+    InvalidAgeException(String msg) { <span class="kw">super</span>(msg); }
+}
+<span class="kw">class</span> Test {
+    <span class="kw">static void</span> validate(<span class="kw">int</span> age) <span class="kw">throws</span> InvalidAgeException {
+        <span class="kw">if</span> (age &lt; <span class="nm">18</span>) <span class="kw">throw new</span> InvalidAgeException(<span class="st">"Age must be 18+"</span>);
+        System.out.println(<span class="st">"Valid age"</span>);
+    }
+    <span class="kw">public static void</span> main(String[] a) {
+        <span class="kw">try</span> { validate(<span class="nm">15</span>); }
+        <span class="kw">catch</span> (InvalidAgeException e) { System.out.println(e.getMessage()); }
+    }
+}</div></div>
+</div>
 </div>
 <script>
 function sw(tab,id){

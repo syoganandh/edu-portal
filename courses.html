@@ -242,7 +242,12 @@
           { q: "Who is the original creator of Java?", options: ["Bjarne Stroustrup","Guido van Rossum","James Gosling","Dennis Ritchie"], answer: 2 },
           { q: "Java was originally developed at which company?", options: ["Microsoft","Apple","IBM","Sun Microsystems"], answer: 3 },
           { q: "What was Java's original project name?", options: ["Oak","Pine","Maple","Cedar"], answer: 0 },
-          { q: "Which company later acquired Sun Microsystems?", options: ["Google","Oracle","IBM","Microsoft"], answer: 1 }
+          { q: "Which company later acquired Sun Microsystems?", options: ["Google","Oracle","IBM","Microsoft"], answer: 1 },
+          { q: "Java is referred to as a 'dynamic' language because memory for primitives is allocated at:", options: ["Compile time","Link time","Runtime","Load time"], answer: 2 },
+          { q: "What does WORA stand for in Java?", options: ["Write Once Run Anywhere","Write Once Read Anywhere","Write Online Run Anywhere","Write Once Repeat Anywhere"], answer: 0 },
+          { q: "Which Java edition is used for enterprise-level server-side applications?", options: ["J2SE","J2ME","J2EE","JavaFX"], answer: 2 },
+          { q: "What version of Java introduced auto-boxing and var-args?", options: ["JDK 1.1","JDK 1.2","JDK 5.0","JDK 7"], answer: 2 },
+          { q: "Which Java version introduced Lambda Expressions and the Date-Time API?", options: ["Java 6","Java 7","Java 8","Java 9"], answer: 2 }
         ]
       },
       // 2. First Java Application
@@ -253,7 +258,12 @@
           { q: "Which command is used to run a compiled Java program?", options: ["javac","run","java","execute"], answer: 2 },
           { q: "What is the file extension of a compiled Java class?", options: [".java",".exe",".class",".jar"], answer: 2 },
           { q: "Which method is the entry point of every Java application?", options: ["start()","run()","init()","main()"], answer: 3 },
-          { q: "Which statement prints output to the console in Java?", options: ["console.log()","print()","System.out.println()","echo()"], answer: 2 }
+          { q: "Which statement prints output to the console in Java?", options: ["console.log()","print()","System.out.println()","echo()"], answer: 2 },
+          { q: "How many public classes can be declared in a single .java file?", options: ["Unlimited","Two","One","Zero"], answer: 2 },
+          { q: "If a Java file contains a public class 'Student', what must the filename be?", options: ["Main.java","Program.java","Student.java","Any name"], answer: 2 },
+          { q: "Which of the following is a valid main() signature?", options: ["public void main(String[] args)","static public void main(String[] args)","public static int main(String[] args)","void main()"], answer: 1 },
+          { q: "What does the -d flag do in 'javac -d . MyClass.java'?", options: ["Deletes the source file","Sets the output directory for .class files","Enables debug mode","Disables warnings"], answer: 1 },
+          { q: "Which type of loading does Java use when importing packages?", options: ["Static Loading","Dynamic Loading","Lazy Loading","Eager Loading"], answer: 1 }
         ]
       },
       // 3. Language Fundamentals
@@ -264,7 +274,12 @@
           { q: "What is the size of a `byte` data type in Java?", options: ["4 bits","8 bits","16 bits","32 bits"], answer: 1 },
           { q: "Which keyword declares a constant in Java?", options: ["const","static","final","fixed"], answer: 2 },
           { q: "What is the default value of an `int` variable in Java?", options: ["1","null","-1","0"], answer: 3 },
-          { q: "Which of these is NOT a primitive data type in Java?", options: ["int","float","String","boolean"], answer: 2 }
+          { q: "Which of these is NOT a primitive data type in Java?", options: ["int","float","String","boolean"], answer: 2 },
+          { q: "Which identifier is invalid in Java?", options: ["emp_Name","$salary","emp-addr","_id"], answer: 2 },
+          { q: "What is the size of a `char` data type in Java?", options: ["1 byte","2 bytes","4 bytes","8 bytes"], answer: 1 },
+          { q: "Which conversion is done automatically without data loss?", options: ["Narrowing","Explicit casting","Widening","Truncation"], answer: 2 },
+          { q: "What is the default value of a boolean instance variable?", options: ["true","null","0","false"], answer: 3 },
+          { q: "Local variables in Java must be:", options: ["Declared static","Initialised before use","Given default values","Declared at class level"], answer: 1 }
         ]
       },
       // 4. OOPs
@@ -275,7 +290,12 @@
           { q: "What keyword is used to create an object in Java?", options: ["create","object","new","make"], answer: 2 },
           { q: "A class that cannot be instantiated is called:", options: ["Final class","Static class","Abstract class","Private class"], answer: 2 },
           { q: "Which concept allows one class to acquire properties of another?", options: ["Encapsulation","Abstraction","Polymorphism","Inheritance"], answer: 3 },
-          { q: "What does a constructor do in Java?", options: ["Destroys an object","Initializes an object","Copies an object","Compares objects"], answer: 1 }
+          { q: "What does a constructor do in Java?", options: ["Destroys an object","Initializes an object","Copies an object","Compares objects"], answer: 1 },
+          { q: "Which keyword refers to the current class object?", options: ["self","super","this","current"], answer: 2 },
+          { q: "Which keyword is used to call the parent class constructor?", options: ["this()","parent()","base()","super()"], answer: 3 },
+          { q: "Method overloading is resolved at:", options: ["Runtime","Link time","Compile time","Load time"], answer: 2 },
+          { q: "Which type of inheritance is NOT supported in Java via classes?", options: ["Single","Multi-level","Hierarchical","Multiple"], answer: 3 },
+          { q: "OOP languages provide better code reuse through:", options: ["Pointers","Goto statements","Inheritance","Macros"], answer: 2 }
         ]
       },
       // 5. Wrapper Classes
@@ -286,7 +306,12 @@
           { q: "Which process converts a primitive to its wrapper object?", options: ["Casting","Unboxing","Autoboxing","Wrapping"], answer: 2 },
           { q: "Which process converts a wrapper object back to a primitive?", options: ["Autoboxing","Unboxing","Casting","Parsing"], answer: 1 },
           { q: "Which method converts a String to an integer?", options: ["Integer.convert()","Integer.toInt()","Integer.parseInt()","Integer.valueOf()"], answer: 2 },
-          { q: "What is the wrapper class for `char`?", options: ["Char","CHARACTER","Character","Chr"], answer: 2 }
+          { q: "What is the wrapper class for `char`?", options: ["Char","CHARACTER","Character","Chr"], answer: 2 },
+          { q: "Auto-boxing was introduced in which JDK version?", options: ["JDK 1.0","JDK 1.1","JDK 1.4","JDK 5.0"], answer: 3 },
+          { q: "Wrapper class objects in Java are:", options: ["Mutable","Immutable","Abstract","Final only"], answer: 1 },
+          { q: "Which method converts an integer to its binary string representation?", options: ["Integer.toBinary()","Integer.toBinaryString()","Integer.parseBinary()","Integer.binary()"], answer: 1 },
+          { q: "What does Integer.MAX_VALUE return?", options: ["65535","2147483647","999999999","Long.MAX_VALUE"], answer: 1 },
+          { q: "Which conversion uses the toString() method?", options: ["Primitive to Object","String to Primitive","Object to String","String to Object"], answer: 2 }
         ]
       },
       // 6. Packages
@@ -296,8 +321,13 @@
           { q: "Which keyword is used to define a package in Java?", options: ["import","include","package","namespace"], answer: 2 },
           { q: "Which keyword is used to import a package?", options: ["include","using","import","require"], answer: 2 },
           { q: "Which package is automatically imported in every Java program?", options: ["java.io","java.util","java.lang","java.net"], answer: 2 },
-          { q: "Which package contains the `Scanner` class?", options: ["java.lang","java.io","java.net","java.util"], answer: 3 },
-          { q: "A package is essentially a:", options: ["Class","Method","Directory/folder of classes","Variable"], answer: 2 }
+          { q: "Which package contains the Scanner class?", options: ["java.lang","java.io","java.net","java.util"], answer: 3 },
+          { q: "A package is essentially a:", options: ["Class","Method","Directory/folder of classes","Variable"], answer: 2 },
+          { q: "Which import syntax imports only static members of a class?", options: ["import java.lang.Math;","import static java.lang.Math.*;","include Math.*;","using Math.*;"], answer: 1 },
+          { q: "Which flag is used with javac to specify output directory for packages?", options: ["-o","-out","-d","-dir"], answer: 2 },
+          { q: "Which package contains networking classes like Socket and URL?", options: ["java.io","java.net","java.util","java.sql"], answer: 1 },
+          { q: "does 'import java.util.*' import sub-packages of java.util?", options: ["Yes always","Only if requested","No, never","Only in Java 9+"], answer: 2 },
+          { q: "Which package provides JDBC classes for database connectivity?", options: ["java.net","java.io","java.sql","java.db"], answer: 2 }
         ]
       },
       // 7. String Manipulations
@@ -308,7 +338,12 @@
           { q: "Which method converts a String to uppercase?", options: ["toUpper()","uppercase()","toUpperCase()","upper()"], answer: 2 },
           { q: "Which method checks if two Strings are equal (case-sensitive)?", options: ["equals()","==","compare()","equalsTo()"], answer: 0 },
           { q: "Which method extracts a part of a String?", options: ["slice()","mid()","substring()","extract()"], answer: 2 },
-          { q: "Strings in Java are:", options: ["Mutable","Primitive","Immutable","Dynamic"], answer: 2 }
+          { q: "Strings in Java are:", options: ["Mutable","Primitive","Immutable","Dynamic"], answer: 2 },
+          { q: "Which class was introduced in JDK 5.0 as a faster alternative to StringBuffer?", options: ["StringUtil","StringParser","StringBuilder","StringHandler"], answer: 2 },
+          { q: "StringBuffer is thread-safe because its methods are:", options: ["static","final","synchronized","private"], answer: 2 },
+          { q: "Which class is used for splitting a string into tokens?", options: ["StringSplitter","StringParser","StringTokenizer","StringReader"], answer: 2 },
+          { q: "What does 'String s1 = \"Hello\"; String s2 = \"Hello\"; s1 == s2' evaluate to?", options: ["false always","true (same pool object)","Compilation error","Depends on JVM"], answer: 1 },
+          { q: "Which method removes leading and trailing whitespace from a String?", options: ["clean()","strip()","trim()","clear()"], answer: 2 }
         ]
       },
       // 8. Exception Handling
@@ -319,7 +354,12 @@
           { q: "Which keyword is used to throw an exception manually?", options: ["throws","catch","throw","raise"], answer: 2 },
           { q: "What is the parent class of all exceptions in Java?", options: ["Error","RuntimeException","Throwable","Exception"], answer: 2 },
           { q: "A checked exception must be:", options: ["Ignored","Caught or declared with throws","Only thrown","Only caught"], answer: 1 },
-          { q: "Which exception is thrown for division by zero?", options: ["NullPointerException","ArithmeticException","IOException","ClassCastException"], answer: 1 }
+          { q: "Which exception is thrown for division by zero?", options: ["NullPointerException","ArithmeticException","IOException","ClassCastException"], answer: 1 },
+          { q: "Which keyword is used to declare that a method may throw an exception?", options: ["throw","throws","catch","handles"], answer: 1 },
+          { q: "What type of error is 'nit i=10;' (misspelled keyword)?", options: ["Syntax Error","Semantic Error","Lexical Error","Runtime Error"], answer: 2 },
+          { q: "To create a user-defined exception, your class must extend:", options: ["Error","Throwable","RuntimeException","Exception"], answer: 3 },
+          { q: "Which termination is caused by an unhandled exception?", options: ["Smooth termination","Normal termination","Abnormal termination","Graceful shutdown"], answer: 2 },
+          { q: "Which exception is thrown when accessing an array out of bounds?", options: ["IndexException","ArrayException","ArrayIndexOutOfBoundsException","OutOfRangeException"], answer: 2 }
         ]
       },
       // 9. Multi Threading
@@ -330,7 +370,12 @@
           { q: "Which method starts a thread's execution?", options: ["run()","init()","start()","execute()"], answer: 2 },
           { q: "Which method puts a thread to sleep?", options: ["Thread.pause()","Thread.wait()","Thread.sleep()","Thread.stop()"], answer: 2 },
           { q: "What is synchronization used for in multithreading?", options: ["To speed up threads","To prevent race conditions","To stop threads","To create threads"], answer: 1 },
-          { q: "Which thread state means it is waiting for CPU time?", options: ["New","Running","Runnable","Dead"], answer: 2 }
+          { q: "Which thread state means it is waiting for CPU time?", options: ["New","Running","Runnable","Dead"], answer: 2 },
+          { q: "Context switching between threads is called:", options: ["Heavy weight context switching","Light weight context switching","Thread hopping","Process switching"], answer: 1 },
+          { q: "A process is described as:", options: ["A set of instructions","A hardware component","A flow of execution to perform a task","A memory block"], answer: 2 },
+          { q: "Which is true about multi-threading vs single-threading?", options: ["Single-thread is faster","Multi-thread increases execution time","Multi-thread reduces execution time","They perform identically"], answer: 2 },
+          { q: "Which keyword ensures only one thread accesses a method at a time?", options: ["volatile","static","synchronized","transient"], answer: 2 },
+          { q: "Why is implementing Runnable preferred over extending Thread?", options: ["Runnable is faster","Java supports only single inheritance","Thread is deprecated","Runnable has more methods"], answer: 1 }
         ]
       },
       // 10. IO Streams
@@ -341,7 +386,12 @@
           { q: "Which class wraps FileReader for efficient reading?", options: ["Scanner","BufferedReader","DataReader","StreamReader"], answer: 1 },
           { q: "Which class is used to write text to a file?", options: ["FileReader","BufferedReader","FileWriter","Scanner"], answer: 2 },
           { q: "Which stream reads raw bytes?", options: ["InputStream","Reader","Writer","OutputStream"], answer: 0 },
-          { q: "Which class is used for reading user input from the console?", options: ["System.in","InputReader","Scanner","BufferedInput"], answer: 2 }
+          { q: "Which class is used for reading user input from the console?", options: ["System.in","InputReader","Scanner","BufferedInput"], answer: 2 },
+          { q: "What is the data unit size of a byte-oriented stream?", options: ["1 bit","2 bytes","1 byte","4 bytes"], answer: 2 },
+          { q: "What is the data unit size of a character-oriented stream?", options: ["1 byte","2 bytes","4 bytes","8 bytes"], answer: 1 },
+          { q: "All byte-oriented stream class names end with:", options: ["Reader","Writer","Stream","Buffer"], answer: 2 },
+          { q: "Which FileWriter constructor argument enables append mode?", options: ["FileWriter(file, false)","FileWriter(file, true)","FileWriter(file, 'a')","FileWriter(file, APPEND)"], answer: 1 },
+          { q: "Which package contains all Java IO stream classes?", options: ["java.lang","java.net","java.util","java.io"], answer: 3 }
         ]
       },
       // 11. Collections Framework
@@ -352,7 +402,12 @@
           { q: "Which class implements a resizable array?", options: ["LinkedList","HashMap","ArrayList","TreeSet"], answer: 2 },
           { q: "Which collection does NOT allow duplicate elements?", options: ["ArrayList","LinkedList","HashSet","Vector"], answer: 2 },
           { q: "Which collection stores key-value pairs?", options: ["List","Set","Queue","Map"], answer: 3 },
-          { q: "Which List implementation is best for frequent insertions/deletions?", options: ["ArrayList","Vector","LinkedList","Stack"], answer: 2 }
+          { q: "Which List implementation is best for frequent insertions/deletions?", options: ["ArrayList","Vector","LinkedList","Stack"], answer: 2 },
+          { q: "What happens when you add an element beyond the size of an array?", options: ["It auto-expands","It wraps around","ArrayIndexOutOfBoundsException","NullPointerException"], answer: 2 },
+          { q: "Which collection maintains elements in sorted order automatically?", options: ["ArrayList","HashSet","LinkedList","TreeSet"], answer: 3 },
+          { q: "Which interface must a class implement to use with TreeSet for natural sorting?", options: ["Comparator","Serializable","Comparable","Sortable"], answer: 2 },
+          { q: "What does Collections.unmodifiableList() return?", options: ["A sorted list","A synchronized list","A read-only view of the list","A copy of the list"], answer: 2 },
+          { q: "By default, Collections allow which types of elements?", options: ["Homogeneous only","Primitive only","Heterogeneous (any type)","Only Strings"], answer: 2 }
         ]
       }
     ];

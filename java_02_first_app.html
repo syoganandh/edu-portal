@@ -126,6 +126,57 @@ pre{font-family:"Fira Code","Cascadia Code","Courier New",monospace;font-size:12
   </div>
 </div>
 
+
+<style>
+.ns{margin-top:28px;}
+.ns h2{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:14px;padding-bottom:6px;border-bottom:2px solid #ede8f5;}
+.ib{background:#fff;border:1px solid #ede8f5;border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.ib h3{font-size:13px;font-weight:700;color:#6b48c8;margin-bottom:6px;}
+.ib p,.ib li{font-size:12.5px;color:#3a3a3a;line-height:1.7;}
+.ib ul{padding-left:18px;margin-top:6px;} .ib li{margin-bottom:3px;}
+.ct{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.ct th{background:#f3effe;color:#6b48c8;font-weight:700;padding:8px 12px;text-align:left;}
+.ct td{padding:7px 12px;border-top:1px solid #f0ebfc;color:#3a3a3a;vertical-align:top;}
+.ct tr:hover td{background:#faf8ff;}
+.cb{background:#1e1e2e;border-radius:8px;padding:14px 16px;font-family:monospace;font-size:11.5px;color:#cdd6f4;line-height:1.65;overflow-x:auto;margin-top:8px;white-space:pre;}
+.kw{color:#cba6f7;}.cm{color:#6c7086;font-style:italic;}.st{color:#a6e3a1;}.nm{color:#fab387;}
+.tb{background:#fef9ec;border-left:3px solid #f5a623;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#7c5c00;margin-top:10px;line-height:1.6;}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+</style>
+<div class="ns">
+<h2>File Naming Rules</h2>
+<div class="ib"><ul>
+<li>If file contains a <strong>public class/interface/enum</strong>, the filename <em>must</em> match that public element's name.</li>
+<li>Only <strong>one public class</strong> is allowed per .java file.</li>
+<li>If no public element, any filename works — but using the main() class name is recommended.</li>
+</ul>
+<div class="cb"><span class="kw">public class</span> A { }          <span class="cm">// File must be named A.java</span>
+<span class="kw">class</span> FirstApp {
+    <span class="kw">public static void</span> main(String[] args) {
+        System.out.println(<span class="st">"First Java Application"</span>);
+    }
+}
+<span class="cm">// Two public classes = Compilation Error</span>
+<span class="kw">public class</span> A { }
+<span class="kw">public class</span> B { }  <span class="cm">// ERROR</span></div></div>
+<h2>Valid main() Signatures</h2>
+<div class="ib"><table class="ct">
+<tr><th>Signature</th><th>Valid?</th></tr>
+<tr><td><code>public static void main(String[] args)</code></td><td>YES — Standard</td></tr>
+<tr><td><code>public static void main(String args[])</code></td><td>YES — Valid</td></tr>
+<tr><td><code>static public void main(String[] args)</code></td><td>YES — Modifiers can swap</td></tr>
+<tr><td><code>public void main(String[] args)</code></td><td>NO — Missing static</td></tr>
+<tr><td><code>public static void main()</code></td><td>NO — Missing String[] args</td></tr>
+</table></div>
+<h2>Switching JDK Versions with Batch Files</h2>
+<div class="ib"><p>If multiple JDK versions are installed, the first one in PATH is used. Create .bat files to switch quickly:</p>
+<div class="cb"><span class="cm">:: java8.bat</span>
+set path=C:\Java\jdk1.8.0\bin;
+
+D:\> java8.bat   <span class="cm">-- Java 8 now active --</span>
+D:\> java9.bat   <span class="cm">-- Java 9 now active --</span></div>
+<div class="tb">In real-time projects always use an IDE (Eclipse, IntelliJ IDEA, NetBeans) instead of plain text editors.</div></div>
+</div>
 </div>
 <script>
 function sw(tab,id){

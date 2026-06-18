@@ -365,6 +365,65 @@ al.<span class="fn">add</span>(<span class="str">"A"</span>); al.<span class="fn
 
 <div class="callout"><span style="font-size:15px;flex-shrink:0">💡</span><span><strong>Collections vs Collection:</strong> <code>Collection</code> (singular) is the interface. <code>Collections</code> (plural) is a utility class with static methods like <code>sort()</code>, <code>reverse()</code>, <code>shuffle()</code>, <code>min()</code>, <code>max()</code>.</span></div>
 
+
+<style>
+.ns{margin-top:28px;}
+.ns h2{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:14px;padding-bottom:6px;border-bottom:2px solid #ede8f5;}
+.ib{background:#fff;border:1px solid #ede8f5;border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.ib h3{font-size:13px;font-weight:700;color:#6b48c8;margin-bottom:6px;}
+.ib p,.ib li{font-size:12.5px;color:#3a3a3a;line-height:1.7;}
+.ib ul{padding-left:18px;margin-top:6px;} .ib li{margin-bottom:3px;}
+.ct{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.ct th{background:#f3effe;color:#6b48c8;font-weight:700;padding:8px 12px;text-align:left;}
+.ct td{padding:7px 12px;border-top:1px solid #f0ebfc;color:#3a3a3a;vertical-align:top;}
+.ct tr:hover td{background:#faf8ff;}
+.cb{background:#1e1e2e;border-radius:8px;padding:14px 16px;font-family:monospace;font-size:11.5px;color:#cdd6f4;line-height:1.65;overflow-x:auto;margin-top:8px;white-space:pre;}
+.kw{color:#cba6f7;}.cm{color:#6c7086;font-style:italic;}.st{color:#a6e3a1;}.nm{color:#fab387;}
+.tb{background:#fef9ec;border-left:3px solid #f5a623;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#7c5c00;margin-top:10px;line-height:1.6;}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+</style>
+<div class="ns">
+<h2>Array vs Collection (from material)</h2>
+<div class="ib"><table class="ct">
+<tr><th>Feature</th><th>Array</th><th>Collection</th></tr>
+<tr><td>Size</td><td>Fixed at creation</td><td>Dynamically growable</td></tr>
+<tr><td>Element types</td><td>Homogeneous only</td><td>Heterogeneous allowed</td></tr>
+<tr><td>Searching/Sorting</td><td>No built-in methods</td><td>Built-in methods provided</td></tr>
+<tr><td>Type safety</td><td>YES (compile-time)</td><td>YES with Generics (JDK 5.0+)</td></tr>
+<tr><td>Performance</td><td>Better (known size)</td><td>Slightly less (dynamic)</td></tr>
+<tr><td>Flexibility</td><td>Low</td><td>High</td></tr>
+</table></div>
+<h2>Iterator Usage</h2>
+<div class="ib">
+<div class="cb"><span class="kw">import</span> java.util.*;
+ArrayList&lt;String&gt; list = <span class="kw">new</span> ArrayList&lt;&gt;();
+list.add(<span class="st">"Java"</span>); list.add(<span class="st">"Python"</span>); list.add(<span class="st">"C++"</span>);
+
+Iterator&lt;String&gt; it = list.iterator();
+<span class="kw">while</span>(it.hasNext()) {
+    System.out.println(it.next());
+}
+<span class="cm">// Java  Python  C++</span></div></div>
+<h2>Comparable vs Comparator</h2>
+<div class="ib"><table class="ct">
+<tr><th>Feature</th><th>Comparable</th><th>Comparator</th></tr>
+<tr><td>Package</td><td>java.lang</td><td>java.util</td></tr>
+<tr><td>Method</td><td>compareTo(Object o)</td><td>compare(Object o1, Object o2)</td></tr>
+<tr><td>Sorting logic</td><td>Inside the class itself</td><td>Separate external class</td></tr>
+<tr><td>Sort orders</td><td>Single natural order</td><td>Multiple custom orders possible</td></tr>
+<tr><td>Used with</td><td>TreeSet, TreeMap</td><td>Collections.sort() with custom logic</td></tr>
+</table></div>
+<h2>Collections Utility Class</h2>
+<div class="ib">
+<div class="cb">List&lt;Integer&gt; nums = <span class="kw">new</span> ArrayList&lt;&gt;(Arrays.asList(<span class="nm">3</span>,<span class="nm">1</span>,<span class="nm">4</span>,<span class="nm">1</span>,<span class="nm">5</span>));
+Collections.sort(nums);           <span class="cm">// [1, 1, 3, 4, 5]</span>
+Collections.reverse(nums);        <span class="cm">// [5, 4, 3, 1, 1]</span>
+Collections.shuffle(nums);        <span class="cm">// random order</span>
+Collections.max(nums);            <span class="cm">// 5</span>
+Collections.min(nums);            <span class="cm">// 1</span>
+Collections.frequency(nums, <span class="nm">1</span>);  <span class="cm">// 2</span>
+Collections.unmodifiableList(nums); <span class="cm">// read-only view</span></div></div>
+</div>
 </div>
 <script>
 function sw(tab,id){
