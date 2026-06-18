@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java Programming – Course Topics</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1A1816;
+      color: #F0EDE8;
+      min-height: 100vh;
+      padding: 48px 60px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 28px;
+      color: #E8834A;
+      text-decoration: none;
+      font-size: 0.93em;
+    }
+
+    .back-link:hover { color: #F5A472; }
+
+    h1 {
+      font-size: 2.2em;
+      font-weight: bold;
+      color: #F0EDE8;
+      margin-bottom: 6px;
+    }
+
+    .faculty {
+      color: #9E9A94;
+      font-size: 1em;
+      margin-bottom: 8px;
+    }
+
+    .faculty-title {
+      color: #E8C9A0;
+      font-size: 0.92em;
+      margin-bottom: 32px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 700px;
+      background-color: #24211E;
+    }
+
+    th, td {
+      border: 1px solid #3D3835;
+      padding: 11px 20px;
+      text-align: left;
+    }
+
+    th {
+      font-weight: bold;
+      background-color: #2E2A27;
+      color: #E8C9A0;
+      font-size: 0.95em;
+      letter-spacing: 0.04em;
+    }
+
+    tr:hover td { background-color: #2A2725; }
+
+    td {
+      color: #D6D2CC;
+      font-size: 0.95em;
+    }
+
+    a {
+      color: #E8834A;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    a:hover { color: #F5A472; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 200;
+      overflow-y: auto;
+    }
+
+    .modal {
+      background: #24211E;
+      width: 540px;
+      margin: 50px auto 60px;
+      padding: 30px 34px 28px;
+      border-radius: 10px;
+      border: 1px solid #3D3835;
+      position: relative;
+    }
+
+    .modal h2 {
+      font-size: 1.1em;
+      color: #E8C9A0;
+      margin-bottom: 18px;
+      padding-right: 28px;
+    }
+
+    .modal .question {
+      margin: 16px 0 8px;
+      font-weight: bold;
+      color: #F0EDE8;
+      font-size: 0.93em;
+    }
+
+    .modal label {
+      display: block;
+      margin: 4px 0;
+      cursor: pointer;
+      color: #C8C4BE;
+      font-size: 0.9em;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .modal label:hover { background: #2E2A27; }
+
+    .modal button.close-btn {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: none;
+      border: none;
+      color: #9E9A94;
+      font-size: 1.3em;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal button.close-btn:hover { color: #F0EDE8; }
+
+    .modal button.submit-btn {
+      margin-top: 20px;
+      padding: 9px 24px;
+      background-color: #E8834A;
+      color: #1A1816;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.92em;
+      font-weight: bold;
+    }
+
+    .modal button.submit-btn:hover { background-color: #F5A472; }
+
+    #quiz-result {
+      margin-top: 14px;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="back-link" href="index.html">← Back to Profile</a>
+
+  <h1>Java Programming</h1>
+  <p class="faculty">Faculty: Sampathirao Yoganandh</p>
+  <p class="faculty-title">Assistant Professor &nbsp;|&nbsp; ANITS Engineering College</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Topic</th>
+        <th>Quiz</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="java_01_history.html">1. Introduction &amp; Java History</a></td>
+        <td><a href="#" onclick="openQuiz(0);return false;">Quiz</a></td>
+      </tr>
+      <tr>
+        <td><a href="java_02_first_app.html">2. First Java Application</a></td>
+        <td><a href="#" onclick="openQuiz(1);return false;">Quiz</a></td>
+      </tr>
+      <tr>
+        <td><a href="java_03_lang_fundamentals.html">3. Language Fundamentals</a></td>
+        <td><a href="#" onclick="openQuiz(2);return false;">Quiz</a></td>
+      </tr>
+      <tr>
+        <td><a href="java_04_oops.html">4. Object Oriented Programming (OOPs)</a></td>
+        <td><a href="#" onclick="openQuiz(3);return false;">Quiz</a></td>
+      </tr>
+      <tr>
+        <td><a href="java_05_wrapper.html">5. Wrapper Classes</a></td>
+        <td><a href="#" onclick="openQuiz(4);return false;">Quiz</a></td>
+      </tr>
+      <tr>
+        <td><a href="java_06_packages.html">6. Java Packages</a></td>
+        <td><a href="#" onclick="openQuiz(5);return false;">Quiz</a></td>
+      </tr>
+      <tr>
+        <td><a href="java_07_strings.html">7. String Manipulations</a></td>
+        <td><a href="#" onclick="openQuiz(6);return false;">Quiz</a></td>
+      </tr>
+      <tr>
+        <td><a href="java_08_exceptions.html">8. Exception Handling</a></td>
+        <td><a href="#" onclick="openQuiz(7);return false;">Quiz</a></td>
+      </tr>
+      <tr>
+        <td><a href="java_09_multithreading.html">9. Multi Threading</a></td>
+        <td><a href="#" onclick="openQuiz(8);return false;">Quiz</a></td>
+      </tr>
+      <tr>
+        <td><a href="java_10_io_streams.html">10. IO Streams</a></td>
+        <td><a href="#" onclick="openQuiz(9);return false;">Quiz</a></td>
+      </tr>
+      <tr>
+        <td><a href="java_11_collections.html">11. Collections Framework</a></td>
+        <td><a href="#" onclick="openQuiz(10);return false;">Quiz</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Quiz Modal -->
+  <div class="modal-overlay" id="quizModal">
+    <div class="modal">
+      <button class="close-btn" onclick="closeQuiz()">&#x2715;</button>
+      <h2 id="quiz-title"></h2>
+      <form id="quizForm"></form>
+      <div id="quiz-result"></div>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      // 1. Introduction & Java History
+      {
+        title: "Quiz 1: Introduction & Java History",
+        questions: [
+          { q: "In which year was Java first publicly released?", options: ["1991","1995","1999","2003"], answer: 1 },
+          { q: "Who is the original creator of Java?", options: ["Bjarne Stroustrup","Guido van Rossum","James Gosling","Dennis Ritchie"], answer: 2 },
+          { q: "Java was originally developed at which company?", options: ["Microsoft","Apple","IBM","Sun Microsystems"], answer: 3 },
+          { q: "What was Java's original project name?", options: ["Oak","Pine","Maple","Cedar"], answer: 0 },
+          { q: "Which company later acquired Sun Microsystems?", options: ["Google","Oracle","IBM","Microsoft"], answer: 1 }
+        ]
+      },
+      // 2. First Java Application
+      {
+        title: "Quiz 2: First Java Application",
+        questions: [
+          { q: "Which command is used to compile a Java program?", options: ["java","javac","javarun","compile"], answer: 1 },
+          { q: "Which command is used to run a compiled Java program?", options: ["javac","run","java","execute"], answer: 2 },
+          { q: "What is the file extension of a compiled Java class?", options: [".java",".exe",".class",".jar"], answer: 2 },
+          { q: "Which method is the entry point of every Java application?", options: ["start()","run()","init()","main()"], answer: 3 },
+          { q: "Which statement prints output to the console in Java?", options: ["console.log()","print()","System.out.println()","echo()"], answer: 2 }
+        ]
+      },
+      // 3. Language Fundamentals
+      {
+        title: "Quiz 3: Language Fundamentals",
+        questions: [
+          { q: "Which of these is a valid Java identifier?", options: ["2name","_myVar","my-var","class"], answer: 1 },
+          { q: "What is the size of a `byte` data type in Java?", options: ["4 bits","8 bits","16 bits","32 bits"], answer: 1 },
+          { q: "Which keyword declares a constant in Java?", options: ["const","static","final","fixed"], answer: 2 },
+          { q: "What is the default value of an `int` variable in Java?", options: ["1","null","-1","0"], answer: 3 },
+          { q: "Which of these is NOT a primitive data type in Java?", options: ["int","float","String","boolean"], answer: 2 }
+        ]
+      },
+      // 4. OOPs
+      {
+        title: "Quiz 4: Object Oriented Programming (OOPs)",
+        questions: [
+          { q: "Which OOP concept hides internal implementation details?", options: ["Inheritance","Polymorphism","Encapsulation","Abstraction"], answer: 2 },
+          { q: "What keyword is used to create an object in Java?", options: ["create","object","new","make"], answer: 2 },
+          { q: "A class that cannot be instantiated is called:", options: ["Final class","Static class","Abstract class","Private class"], answer: 2 },
+          { q: "Which concept allows one class to acquire properties of another?", options: ["Encapsulation","Abstraction","Polymorphism","Inheritance"], answer: 3 },
+          { q: "What does a constructor do in Java?", options: ["Destroys an object","Initializes an object","Copies an object","Compares objects"], answer: 1 }
+        ]
+      },
+      // 5. Wrapper Classes
+      {
+        title: "Quiz 5: Wrapper Classes",
+        questions: [
+          { q: "What is the wrapper class for `int` in Java?", options: ["Int","INTEGER","Integer","Inte"], answer: 2 },
+          { q: "Which process converts a primitive to its wrapper object?", options: ["Casting","Unboxing","Autoboxing","Wrapping"], answer: 2 },
+          { q: "Which process converts a wrapper object back to a primitive?", options: ["Autoboxing","Unboxing","Casting","Parsing"], answer: 1 },
+          { q: "Which method converts a String to an integer?", options: ["Integer.convert()","Integer.toInt()","Integer.parseInt()","Integer.valueOf()"], answer: 2 },
+          { q: "What is the wrapper class for `char`?", options: ["Char","CHARACTER","Character","Chr"], answer: 2 }
+        ]
+      },
+      // 6. Packages
+      {
+        title: "Quiz 6: Java Packages",
+        questions: [
+          { q: "Which keyword is used to define a package in Java?", options: ["import","include","package","namespace"], answer: 2 },
+          { q: "Which keyword is used to import a package?", options: ["include","using","import","require"], answer: 2 },
+          { q: "Which package is automatically imported in every Java program?", options: ["java.io","java.util","java.lang","java.net"], answer: 2 },
+          { q: "Which package contains the `Scanner` class?", options: ["java.lang","java.io","java.net","java.util"], answer: 3 },
+          { q: "A package is essentially a:", options: ["Class","Method","Directory/folder of classes","Variable"], answer: 2 }
+        ]
+      },
+      // 7. String Manipulations
+      {
+        title: "Quiz 7: String Manipulations",
+        questions: [
+          { q: "Which method returns the length of a String?", options: ["size()","count()","length()","len()"], answer: 2 },
+          { q: "Which method converts a String to uppercase?", options: ["toUpper()","uppercase()","toUpperCase()","upper()"], answer: 2 },
+          { q: "Which method checks if two Strings are equal (case-sensitive)?", options: ["equals()","==","compare()","equalsTo()"], answer: 0 },
+          { q: "Which method extracts a part of a String?", options: ["slice()","mid()","substring()","extract()"], answer: 2 },
+          { q: "Strings in Java are:", options: ["Mutable","Primitive","Immutable","Dynamic"], answer: 2 }
+        ]
+      },
+      // 8. Exception Handling
+      {
+        title: "Quiz 8: Exception Handling",
+        questions: [
+          { q: "Which block always executes regardless of an exception?", options: ["try","catch","finally","throw"], answer: 2 },
+          { q: "Which keyword is used to throw an exception manually?", options: ["throws","catch","throw","raise"], answer: 2 },
+          { q: "What is the parent class of all exceptions in Java?", options: ["Error","RuntimeException","Throwable","Exception"], answer: 2 },
+          { q: "A checked exception must be:", options: ["Ignored","Caught or declared with throws","Only thrown","Only caught"], answer: 1 },
+          { q: "Which exception is thrown for division by zero?", options: ["NullPointerException","ArithmeticException","IOException","ClassCastException"], answer: 1 }
+        ]
+      },
+      // 9. Multi Threading
+      {
+        title: "Quiz 9: Multi Threading",
+        questions: [
+          { q: "Which interface must be implemented to create a thread in Java?", options: ["Thread","Runnable","Callable","Executable"], answer: 1 },
+          { q: "Which method starts a thread's execution?", options: ["run()","init()","start()","execute()"], answer: 2 },
+          { q: "Which method puts a thread to sleep?", options: ["Thread.pause()","Thread.wait()","Thread.sleep()","Thread.stop()"], answer: 2 },
+          { q: "What is synchronization used for in multithreading?", options: ["To speed up threads","To prevent race conditions","To stop threads","To create threads"], answer: 1 },
+          { q: "Which thread state means it is waiting for CPU time?", options: ["New","Running","Runnable","Dead"], answer: 2 }
+        ]
+      },
+      // 10. IO Streams
+      {
+        title: "Quiz 10: IO Streams",
+        questions: [
+          { q: "Which class is used to read text from a file in Java?", options: ["FileWriter","BufferedWriter","FileReader","PrintWriter"], answer: 2 },
+          { q: "Which class wraps FileReader for efficient reading?", options: ["Scanner","BufferedReader","DataReader","StreamReader"], answer: 1 },
+          { q: "Which class is used to write text to a file?", options: ["FileReader","BufferedReader","FileWriter","Scanner"], answer: 2 },
+          { q: "Which stream reads raw bytes?", options: ["InputStream","Reader","Writer","OutputStream"], answer: 0 },
+          { q: "Which class is used for reading user input from the console?", options: ["System.in","InputReader","Scanner","BufferedInput"], answer: 2 }
+        ]
+      },
+      // 11. Collections Framework
+      {
+        title: "Quiz 11: Collections Framework",
+        questions: [
+          { q: "Which interface is the root of the Collection hierarchy?", options: ["List","Set","Collection","Map"], answer: 2 },
+          { q: "Which class implements a resizable array?", options: ["LinkedList","HashMap","ArrayList","TreeSet"], answer: 2 },
+          { q: "Which collection does NOT allow duplicate elements?", options: ["ArrayList","LinkedList","HashSet","Vector"], answer: 2 },
+          { q: "Which collection stores key-value pairs?", options: ["List","Set","Queue","Map"], answer: 3 },
+          { q: "Which List implementation is best for frequent insertions/deletions?", options: ["ArrayList","Vector","LinkedList","Stack"], answer: 2 }
+        ]
+      }
+    ];
+
+    let currentQuizIndex = 0;
+
+    function openQuiz(index) {
+      currentQuizIndex = index;
+      const data = quizData[index];
+      document.getElementById('quiz-title').textContent = data.title;
+      document.getElementById('quiz-result').textContent = '';
+
+      let formHtml = '';
+      data.questions.forEach((q, qi) => {
+        formHtml += `<div class="question">${qi + 1}. ${q.q}</div>`;
+        q.options.forEach((opt, oi) => {
+          formHtml += `<label><input type="radio" name="q${qi}" value="${oi}"> ${opt}</label>`;
+        });
+      });
+      formHtml += `<button type="button" class="submit-btn" onclick="submitQuiz()">Submit</button>`;
+      document.getElementById('quizForm').innerHTML = formHtml;
+      document.getElementById('quizModal').style.display = 'block';
+    }
+
+    function closeQuiz() {
+      document.getElementById('quizModal').style.display = 'none';
+    }
+
+    function submitQuiz() {
+      const data = quizData[currentQuizIndex];
+      let score = 0;
+      let allAnswered = true;
+
+      for (let qi = 0; qi < data.questions.length; qi++) {
+        const sel = document.querySelector(`input[name="q${qi}"]:checked`);
+        if (!sel) { allAnswered = false; break; }
+        if (parseInt(sel.value) === data.questions[qi].answer) score++;
+      }
+
+      const result = document.getElementById('quiz-result');
+      if (!allAnswered) {
+        result.style.color = '#E85050';
+        result.textContent = 'Please answer all questions before submitting.';
+      } else {
+        const pct = Math.round((score / data.questions.length) * 100);
+        result.style.color = score >= 3 ? '#6ECA8F' : '#E8834A';
+        result.textContent = `Your score: ${score} / ${data.questions.length}  (${pct}%)`;
+      }
+    }
+
+    document.getElementById('quizModal').addEventListener('click', function(e) {
+      if (e.target === this) closeQuiz();
+    });
+  </script>
+</body>
+</html>
