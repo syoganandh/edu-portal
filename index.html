@@ -265,6 +265,9 @@
   const user  = JSON.parse(localStorage.getItem('edu_user') || '{}');
   const bar   = document.getElementById('authBar');
 
+  // Redirect to login if not logged in
+  if (!token) { window.location.href = 'login.html'; }
+
   if (token && user.name) {
     if (user.role === 'admin') {
       bar.innerHTML = `
