@@ -162,6 +162,59 @@
       margin-left: 6px;
       vertical-align: middle;
     }
+
+    .auth-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #3D3835;
+    }
+
+    .auth-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 0.82em;
+      font-weight: 600;
+      text-decoration: none;
+      transition: 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .auth-btn-login {
+      background: #E8834A;
+      color: #1A1816;
+    }
+    .auth-btn-login:hover { background: #F5A472; }
+
+    .auth-btn-dash {
+      background: rgba(78,203,160,.15);
+      border: 1px solid rgba(78,203,160,.3);
+      color: #4ECBA0;
+    }
+    .auth-btn-dash:hover { background: rgba(78,203,160,.25); }
+
+    .auth-btn-admin {
+      background: rgba(240,124,62,.12);
+      border: 1px solid rgba(240,124,62,.3);
+      color: #F07C3E;
+    }
+    .auth-btn-admin:hover { background: rgba(240,124,62,.22); }
+
+    .auth-btn-logout {
+      background: rgba(240,92,92,.1);
+      border: 1px solid rgba(240,92,92,.3);
+      color: #F05C5C;
+    }
+    .auth-btn-logout:hover { background: rgba(240,92,92,.2); }
+
+    .auth-user-name {
+      font-size: 0.78em;
+      color: #9E9A94;
+      align-self: center;
+    }
   </style>
 </head>
 <body>
@@ -200,7 +253,40 @@
       </a>
     </div>
 
+    <!-- Auth bar: shown/hidden by JS -->
+    <div class="auth-bar" id="authBar">
+      <a class="auth-btn auth-btn-login" href="login.html" id="btnLogin">🔐 Login</a>
+    </div>
+
   </div>
+
+<script>
+  const token = localStorage.getItem('edu_token');
+  const user  = JSON.parse(localStorage.getItem('edu_user') || '{}');
+  const bar   = document.getElementById('authBar');
+
+  if (token && user.name) {
+    if (user.role === 'admin') {
+      bar.innerHTML = `
+        <span class="auth-user-name">👤 ${user.name}</span>
+        <a class="auth-btn auth-btn-admin" href="admin.html">⚙️ Admin Panel</a>
+        <button class="auth-btn auth-btn-logout" onclick="logout()">Logout</button>
+      `;
+    } else {
+      bar.innerHTML = `
+        <span class="auth-user-name">👤 ${user.name}</span>
+        <a class="auth-btn auth-btn-dash" href="dashboard.html">📊 My Dashboard</a>
+        <button class="auth-btn auth-btn-logout" onclick="logout()">Logout</button>
+      `;
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('edu_token');
+    localStorage.removeItem('edu_user');
+    location.reload();
+  }
+</script>
 
 </body>
 </html>
