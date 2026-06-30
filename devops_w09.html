@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Configuration Management — Week 9–12</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0F1117;--surf:#181C27;--surf2:#1F2333;--bdr:#2A2F42;--acc:#F07C3E;--gold:#E8C06A;--txt:#E8EAF0;--muted:#6B7194;--grn:#4ECBA0;--blu:#5BA8F5;--red:#F05C5C;--prp:#A97DF5}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.7;font-size:15px}
+a{color:var(--acc);text-decoration:none}a:hover{color:var(--gold)}
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:12px 32px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100}
+.back-btn{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:.85em;padding:6px 12px;border:1px solid var(--bdr);border-radius:7px;transition:.2s}
+.back-btn:hover{color:var(--txt);border-color:var(--acc)}
+.brand{margin-left:auto;font-size:.78em;color:var(--muted)}
+.brand span{color:var(--gold);font-weight:700}
+.hero{background:linear-gradient(135deg,#181C27 60%,#1a1530);border-bottom:1px solid var(--bdr);padding:40px 32px 28px}
+.hero .week-badge{display:inline-block;background:rgba(240,124,62,.12);border:1px solid rgba(240,124,62,.3);color:var(--acc);font-size:.75em;font-weight:700;padding:3px 12px;border-radius:20px;letter-spacing:.06em;margin-bottom:12px}
+.hero h1{font-size:2em;font-weight:800;letter-spacing:-.02em;background:linear-gradient(120deg,#E8EAF0 40%,#E8C06A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.hero p{color:var(--muted);font-size:.9em}
+.co-pill{display:inline-block;padding:2px 10px;border-radius:5px;font-size:.75em;font-weight:700;margin-left:10px}
+.co4{background:rgba(232,192,106,.12);color:var(--gold)}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:0;max-width:1200px;margin:0 auto;min-height:calc(100vh - 180px)}
+.sidebar{padding:24px 16px;border-right:1px solid var(--bdr);position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto}
+.sidebar h3{font-size:.7em;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+.toc-list{list-style:none}
+.toc-list li a{display:block;padding:5px 8px;font-size:.82em;color:var(--muted);border-radius:6px;transition:.15s}
+.toc-list li a:hover{background:var(--surf2);color:var(--txt)}
+.toc-list li a.active{background:rgba(240,124,62,.1);color:var(--acc)}
+.toc-section{font-size:.68em;text-transform:uppercase;letter-spacing:.08em;color:var(--acc);margin:14px 0 4px 8px}
+.content{padding:32px 40px 60px;max-width:860px}
+h2{font-size:1.35em;font-weight:700;color:var(--txt);margin:36px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--bdr);display:flex;align-items:center;gap:10px}
+h2::before{content:attr(data-icon);font-size:1.1em}
+h3{font-size:1.05em;font-weight:700;color:var(--gold);margin:22px 0 10px}
+h4{font-size:.95em;font-weight:700;color:var(--acc);margin:16px 0 6px}
+p{margin-bottom:12px;color:#C8CAD8}
+ul,ol{margin:8px 0 12px 22px;color:#C8CAD8}
+li{margin-bottom:5px}
+.note-box{background:rgba(78,203,160,.07);border:1px solid rgba(78,203,160,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.warn-box{background:rgba(240,92,92,.07);border:1px solid rgba(240,92,92,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.info-box{background:rgba(91,168,245,.07);border:1px solid rgba(91,168,245,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.note-box strong,.warn-box strong,.info-box strong{font-size:.78em;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px}
+.note-box strong{color:var(--grn)}.warn-box strong{color:var(--red)}.info-box strong{color:var(--blu)}
+pre{background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:18px 20px;overflow-x:auto;margin:12px 0 20px;font-size:.85em;line-height:1.6}
+code{font-family:'Cascadia Code','Fira Code',Consolas,monospace;color:#C8CAD8}
+pre code{color:#C8CAD8}
+table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:.88em}
+th{background:var(--surf2);color:var(--gold);padding:10px 14px;text-align:left;border-bottom:2px solid var(--bdr)}
+td{padding:9px 14px;border-bottom:1px solid var(--bdr);color:#C8CAD8}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tool-divider{border:none;border-top:2px dashed var(--bdr);margin:40px 0 36px}
+.pdf-section{margin-top:48px;padding:24px;background:var(--surf);border:1px solid var(--bdr);border-radius:14px;display:flex;align-items:center;gap:20px}
+.pdf-icon{font-size:2.4em;flex-shrink:0}
+.pdf-info h3{color:var(--txt);font-size:1em;margin-bottom:4px}
+.pdf-info p{color:var(--muted);font-size:.82em;margin:0}
+.pdf-btn{margin-left:auto;padding:11px 24px;background:var(--acc);border:none;border-radius:9px;color:#111;font-weight:700;font-size:.88em;cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;text-decoration:none;transition:.15s;flex-shrink:0}
+.pdf-btn:hover{background:var(--gold)}
+.nav-bottom{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--bdr)}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;background:var(--surf);border:1px solid var(--bdr);border-radius:9px;color:var(--muted);font-size:.85em;transition:.2s}
+.nav-btn:hover{border-color:var(--acc);color:var(--txt)}
+.nav-btn.next{flex-direction:row-reverse;text-align:right}
+@media print{
+  .topbar,.sidebar,.pdf-section,.nav-bottom{display:none!important}
+  body{background:#fff;color:#000;font-size:12pt}
+  .hero{background:#f5f5f5;border:none;padding:20px}
+  .hero h1{-webkit-text-fill-color:#1a1a1a;font-size:1.5em}
+  .content{padding:10px;max-width:100%}
+  pre{background:#f5f5f5;border:1px solid #ddd;font-size:9pt}
+  h2{border-bottom:2px solid #ccc;color:#1a1a1a}
+  h3{color:#333}p,li,td{color:#222}
+  .layout{display:block}
+  @page{margin:1.5cm}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back-btn" href="devops_courses.html#topics">← Back to DevOps</a>
+  <div class="brand">© 2025 <span>sampathirao yoganandh</span></div>
+</div>
+<div class="hero">
+  <div class="week-badge">Week 9 – 12 · CO-4</div>
+  <h1>Configuration Management</h1>
+  <p>Chef, Puppet, Ansible, SaltStack — Infrastructure as Code &nbsp;<span class="co-pill co4">CO-4</span></p>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <h3>Contents</h3>
+    <ul class="toc-list">
+      <div class="toc-section">Chef (W9)</div>
+      <li><a href="#chef_intro">What is Chef?</a></li>
+      <li><a href="#chef_arch">Chef Architecture</a></li>
+      <li><a href="#chef_terms">Chef Terminology</a></li>
+      <li><a href="#chef_procedure">Chef Procedure</a></li>
+      <div class="toc-section">Puppet (W10)</div>
+      <li><a href="#puppet_intro">What is Puppet?</a></li>
+      <li><a href="#puppet_arch">Puppet Architecture</a></li>
+      <li><a href="#puppet_terms">Puppet Terminology</a></li>
+      <li><a href="#puppet_procedure">Puppet Procedure</a></li>
+      <div class="toc-section">Ansible (W11)</div>
+      <li><a href="#ansible_intro">What is Ansible?</a></li>
+      <li><a href="#ansible_arch">Ansible Architecture</a></li>
+      <li><a href="#ansible_concepts">Ansible Concepts</a></li>
+      <div class="toc-section">SaltStack (W12)</div>
+      <li><a href="#salt_intro">What is SaltStack?</a></li>
+      <li><a href="#salt_arch">Salt Architecture</a></li>
+      <li><a href="#salt_terms">Salt Terminology</a></li>
+      <li><a href="#comparison">Tool Comparison</a></li>
+    </ul>
+  </aside>
+  <main class="content">
+
+    <!-- ===== CHEF ===== -->
+    <h2 id="chef_intro" data-icon="🍳">Chef (Week 9)</h2>
+    <p>Chef is a <strong>Configuration Management</strong> and <strong>Infrastructure as Code (IaC)</strong> tool used to automate the installation and configuration of software on servers using code. Instead of manually installing software on each server, you write code called <strong>recipes</strong> and Chef installs automatically.</p>
+
+    <h3>Why Chef?</h3>
+    <table>
+      <thead><tr><th>Without Chef</th><th>With Chef</th></tr></thead>
+      <tbody>
+        <tr><td>Login to each server manually</td><td>Write one recipe — Chef installs on all servers</td></tr>
+        <tr><td>Time consuming &amp; error-prone</td><td>Automated, consistent, scalable</td></tr>
+        <tr><td>Hard to replicate environments</td><td>Idempotent — same result every run</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="chef_arch" data-icon="🏗️">Chef Architecture</h2>
+
+    <h3>Model 1: Chef Server Model (Enterprise)</h3>
+    <table>
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>Chef Server</td><td>Stores all configuration (cookbooks)</td></tr>
+        <tr><td>Chef Workstation</td><td>Where cookbooks are written and uploaded</td></tr>
+        <tr><td>Chef Client</td><td>Runs on each managed node</td></tr>
+        <tr><td>Node</td><td>Managed server (EC2 instance)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box">
+      <strong>Flow — Pull Model</strong>
+      Workstation → Upload cookbook → Chef Server &nbsp;|&nbsp; Node → Pull configuration → Apply
+    </div>
+
+    <h3>Model 2: Chef Solo / Local Mode</h3>
+    <p>Simpler version with no Chef Server. Recipes stored locally and run using <code>chef-client --local-mode</code>. Best for learning, small projects, or 2–5 servers.</p>
+
+    <h2 id="chef_terms" data-icon="📖">Chef Terminology</h2>
+    <table>
+      <thead><tr><th>Term</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cookbook</strong></td><td>Collection of recipes (e.g., nginx_cookbook, java_cookbook)</td></tr>
+        <tr><td><strong>Recipe</strong></td><td>Instructions written in Ruby DSL</td></tr>
+        <tr><td><strong>Resource</strong></td><td>Basic unit — package, service, file</td></tr>
+        <tr><td><strong>Node</strong></td><td>Any managed server (EC2 instance)</td></tr>
+        <tr><td><strong>Run List</strong></td><td>Ordered list of recipes to run on a node</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Sample Recipe (Ruby DSL)</h3>
+    <pre><code>package 'nginx' do
+  action :install
+end
+
+service 'nginx' do
+  action [:enable, :start]
+end</code></pre>
+
+    <h2 id="chef_procedure" data-icon="📝">Chef Step-by-Step Procedure</h2>
+
+    <h3>Step 1: Install Chef Workstation</h3>
+    <pre><code>wget https://packages.chef.io/files/stable/chef-workstation/...
+sudo dpkg -i chef-workstation_*.deb
+chef --version</code></pre>
+
+    <h3>Step 2: Create Cookbook</h3>
+    <pre><code>chef generate cookbook java_cookbook
+# Creates structure:
+# java_cookbook/
+#   recipes/default.rb
+#   metadata.rb</code></pre>
+
+    <h3>Step 3: Write Recipe</h3>
+    <pre><code># java_cookbook/recipes/default.rb
+package 'openjdk-17-jdk' do
+  action :install
+end</code></pre>
+
+    <h3>Step 4: Transfer Cookbook to Node</h3>
+    <pre><code>scp -r java_cookbook ubuntu@&lt;node-ip&gt;:/home/ubuntu/</code></pre>
+
+    <h3>Step 5: Fix Directory Structure on Node</h3>
+    <pre><code>mkdir ~/cookbooks
+mv java_cookbook cookbooks/
+# Chef local-mode expects: ~/cookbooks/java_cookbook/</code></pre>
+
+    <h3>Step 6: Run Chef in Local Mode</h3>
+    <pre><code>sudo chef-client --local-mode -o recipe[java_cookbook]
+# Nginx node:
+sudo chef-client --local-mode --runlist 'recipe[nginx_cookbook]'</code></pre>
+
+    <hr class="tool-divider">
+
+    <!-- ===== PUPPET ===== -->
+    <h2 id="puppet_intro" data-icon="🎭">Puppet (Week 10)</h2>
+    <p>Puppet is a <strong>Configuration Management</strong> and Infrastructure as Code (IaC) tool that manages servers automatically using code instead of manual configuration.</p>
+
+    <h2 id="puppet_arch" data-icon="🏗️">Puppet Architecture — Pull Model</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>Puppet Master</td><td>Central configuration server</td></tr>
+        <tr><td>Puppet Agent</td><td>Installed on each managed node</td></tr>
+        <tr><td>Node</td><td>Managed server (EC2 instance)</td></tr>
+        <tr><td>Manifest</td><td>Configuration file (.pp file — Puppet DSL)</td></tr>
+        <tr><td>Catalog</td><td>Compiled configuration sent from Master to Agent</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <strong>Puppet Workflow</strong>
+      Agent runs on node → Agent contacts Master → Master sends catalog → Agent applies configuration → Agent reports back (every 30 minutes by default)
+    </div>
+
+    <h2 id="puppet_terms" data-icon="📖">Puppet Terminology</h2>
+
+    <h3>Manifest (.pp file)</h3>
+    <pre><code>package { 'nginx':
+  ensure => installed,
+}
+
+service { 'nginx':
+  ensure => running,
+  enable => true,
+}</code></pre>
+
+    <h3>Node-specific Configuration</h3>
+    <pre><code>node 'ec2-nginx' {
+  package { 'nginx': ensure => installed }
+  service { 'nginx': ensure => running }
+}
+
+node default {
+  package { 'openjdk-17-jdk': ensure => installed }
+}</code></pre>
+
+    <div class="note-box">
+      <strong>Idempotency — Key Concept</strong>
+      If you run Puppet 100 times, it will not reinstall packages that are already installed. It only makes changes when the actual state differs from the desired state. This is called <strong>idempotent behavior</strong>.
+    </div>
+
+    <h2 id="puppet_procedure" data-icon="📝">Puppet Step-by-Step Procedure</h2>
+
+    <h3>Step 1–2: Install Puppet Master &amp; Agents</h3>
+    <pre><code># On Master (EC2-1):
+sudo apt install puppetserver -y
+sudo systemctl start puppetserver
+
+# On Nodes (EC2-2, EC2-3):
+sudo apt install puppet-agent -y</code></pre>
+
+    <h3>Step 3: Configure Agent to Point to Master</h3>
+    <pre><code># On each node — edit puppet.conf:
+[main]
+server = &lt;master-hostname&gt;</code></pre>
+
+    <h3>Step 4: Sign Certificates on Master</h3>
+    <pre><code># On Master — list pending requests:
+sudo puppetserver ca list
+
+# Sign all agents:
+sudo puppetserver ca sign --all</code></pre>
+
+    <h3>Step 5: Run Puppet Agent on Nodes</h3>
+    <pre><code>sudo puppet agent -t
+# Output: Notice: Applied catalogue in X seconds</code></pre>
+
+    <hr class="tool-divider">
+
+    <!-- ===== ANSIBLE ===== -->
+    <h2 id="ansible_intro" data-icon="🤖">Ansible (Week 11)</h2>
+    <p>Ansible (by Red Hat) is an <strong>agentless</strong> automation and configuration management tool used to install software, configure servers, deploy applications, and manage cloud infrastructure. It uses <strong>SSH</strong> — no agent installation needed on target nodes.</p>
+
+    <h3>Why Ansible?</h3>
+    <table>
+      <thead><tr><th>Without Ansible</th><th>With Ansible</th></tr></thead>
+      <tbody>
+        <tr><td>Login to 20 EC2 servers one by one</td><td>Run one playbook — configures all servers</td></tr>
+        <tr><td>Manual, error-prone</td><td>Automated, repeatable, idempotent</td></tr>
+        <tr><td>No agent needed</td><td>Uses SSH — agentless architecture</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="ansible_arch" data-icon="🏗️">Ansible Architecture — Push Model</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>Control Node</td><td>Where Ansible is installed</td></tr>
+        <tr><td>Managed Nodes</td><td>Target servers (EC2 instances)</td></tr>
+        <tr><td>Inventory</td><td>File listing target servers</td></tr>
+        <tr><td>Playbook</td><td>YAML configuration file with tasks</td></tr>
+        <tr><td>Module</td><td>Small task unit (apt, service, copy, file, etc.)</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="ansible_concepts" data-icon="📖">Ansible Concepts</h2>
+
+    <h3>Inventory File</h3>
+    <pre><code>[java_servers]
+192.168.1.10
+
+[nginx_servers]
+192.168.1.20</code></pre>
+
+    <h3>Playbook (YAML)</h3>
+    <pre><code>- name: Install Java on all java servers
+  hosts: java_servers
+  become: yes
+  tasks:
+    - name: Install OpenJDK 17
+      apt:
+        name: openjdk-17-jdk
+        state: present
+
+    - name: Start Java verification
+      command: java -version</code></pre>
+
+    <h3>Key Ansible Commands</h3>
+    <pre><code># Run a playbook:
+ansible-playbook setup.yml
+
+# Test connectivity:
+ansible all -m ping
+
+# Run ad-hoc command on all hosts:
+ansible all -m shell -a "java -version"</code></pre>
+
+    <div class="note-box">
+      <strong>Important Features</strong>
+      Agentless (SSH only) · Simple YAML syntax · Idempotent · Fast setup · No master server required
+    </div>
+
+    <hr class="tool-divider">
+
+    <!-- ===== SALTSTACK ===== -->
+    <h2 id="salt_intro" data-icon="🧂">SaltStack (Week 12)</h2>
+    <p>SaltStack is a <strong>fast</strong> configuration management and remote execution tool that manages large-scale infrastructure using a <strong>Master–Minion architecture</strong>. It supports both push and pull models and uses <strong>ZeroMQ</strong> for very fast communication.</p>
+
+    <h2 id="salt_arch" data-icon="🏗️">Salt Architecture</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>Salt Master</td><td>Central control server</td></tr>
+        <tr><td>Salt Minion</td><td>Installed on each managed node</td></tr>
+        <tr><td>State File (.sls)</td><td>YAML configuration file</td></tr>
+        <tr><td>Pillar</td><td>Secure variable data (passwords, keys)</td></tr>
+        <tr><td>Grains</td><td>System information (OS, IP, memory)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Push Model (Remote Execution)</h3>
+    <pre><code># Master pushes command to all minions instantly:
+salt '*' test.ping
+salt '*' cmd.run 'apt update'</code></pre>
+
+    <h3>Pull Model (State Application)</h3>
+    <pre><code># Minions apply states from master:
+salt '*' state.apply</code></pre>
+
+    <h2 id="salt_terms" data-icon="📖">Salt State File</h2>
+    <pre><code># install_java.sls
+install_java:
+  pkg.installed:
+    - name: openjdk-17-jdk
+
+start_java_check:
+  cmd.run:
+    - name: java -version</code></pre>
+
+    <h3>SaltStack Setup</h3>
+    <pre><code># Install Master (EC2-1):
+sudo apt install salt-master -y
+
+# Install Minion (EC2-2, EC2-3):
+sudo apt install salt-minion -y
+
+# Configure minion to point to master:
+# Edit /etc/salt/minion → master: &lt;master-ip&gt;
+
+# Accept minion keys on master:
+salt-key -L        # List pending
+salt-key -A        # Accept all
+
+# Test:
+salt '*' test.ping</code></pre>
+
+    <hr class="tool-divider">
+
+    <!-- Comparison Table -->
+    <h2 id="comparison" data-icon="⚖️">Tool Comparison</h2>
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>Chef</th><th>Puppet</th><th>Ansible</th><th>SaltStack</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Language</td><td>Ruby DSL</td><td>Puppet DSL</td><td>YAML</td><td>YAML</td></tr>
+        <tr><td>Model</td><td>Pull</td><td>Pull</td><td>Push</td><td>Push &amp; Pull</td></tr>
+        <tr><td>Agent required</td><td>Yes (Chef Client)</td><td>Yes (Puppet Agent)</td><td>No (SSH)</td><td>Yes (Salt Minion)</td></tr>
+        <tr><td>Config file</td><td>Recipe (.rb)</td><td>Manifest (.pp)</td><td>Playbook (.yml)</td><td>State File (.sls)</td></tr>
+        <tr><td>Speed</td><td>Moderate</td><td>Moderate</td><td>Moderate</td><td>Very Fast (ZeroMQ)</td></tr>
+        <tr><td>Learning curve</td><td>High (Ruby)</td><td>Medium</td><td>Low (YAML)</td><td>Medium</td></tr>
+        <tr><td>Best for</td><td>Complex IaC</td><td>Large enterprise</td><td>Simple automation</td><td>Large-scale / fast</td></tr>
+      </tbody>
+    </table>
+
+    <div class="pdf-section">
+      <div class="pdf-icon">📄</div>
+      <div class="pdf-info">
+        <h3>Configuration Management — Notes PDF</h3>
+        <p>Week 9–12 · Chef, Puppet, Ansible &amp; SaltStack</p>
+      </div>
+      <a class="pdf-btn" href="devops_notes_w09_config_management.pdf" download>⬇ Download PDF</a>
+    </div>
+
+    <div class="nav-bottom">
+      <a class="nav-btn" href="devops_w07.html">← Docker & Containers</a>
+      <a class="nav-btn next" href="devops_courses.html">Back to DevOps →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

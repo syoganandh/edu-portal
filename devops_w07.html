@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docker & Containers — Week 7 & 8</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0F1117;--surf:#181C27;--surf2:#1F2333;--bdr:#2A2F42;--acc:#F07C3E;--gold:#E8C06A;--txt:#E8EAF0;--muted:#6B7194;--grn:#4ECBA0;--blu:#5BA8F5;--red:#F05C5C;--prp:#A97DF5}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.7;font-size:15px}
+a{color:var(--acc);text-decoration:none}a:hover{color:var(--gold)}
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:12px 32px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100}
+.back-btn{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:.85em;padding:6px 12px;border:1px solid var(--bdr);border-radius:7px;transition:.2s}
+.back-btn:hover{color:var(--txt);border-color:var(--acc)}
+.brand{margin-left:auto;font-size:.78em;color:var(--muted)}
+.brand span{color:var(--gold);font-weight:700}
+.hero{background:linear-gradient(135deg,#181C27 60%,#1a1530);border-bottom:1px solid var(--bdr);padding:40px 32px 28px}
+.hero .week-badge{display:inline-block;background:rgba(240,124,62,.12);border:1px solid rgba(240,124,62,.3);color:var(--acc);font-size:.75em;font-weight:700;padding:3px 12px;border-radius:20px;letter-spacing:.06em;margin-bottom:12px}
+.hero h1{font-size:2em;font-weight:800;letter-spacing:-.02em;background:linear-gradient(120deg,#E8EAF0 40%,#E8C06A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.hero p{color:var(--muted);font-size:.9em}
+.co-pill{display:inline-block;padding:2px 10px;border-radius:5px;font-size:.75em;font-weight:700;margin-left:10px}
+.co3{background:rgba(169,125,245,.12);color:var(--prp)}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:0;max-width:1200px;margin:0 auto;min-height:calc(100vh - 180px)}
+.sidebar{padding:24px 16px;border-right:1px solid var(--bdr);position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto}
+.sidebar h3{font-size:.7em;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+.toc-list{list-style:none}
+.toc-list li a{display:block;padding:5px 8px;font-size:.82em;color:var(--muted);border-radius:6px;transition:.15s}
+.toc-list li a:hover{background:var(--surf2);color:var(--txt)}
+.toc-list li a.active{background:rgba(240,124,62,.1);color:var(--acc)}
+.content{padding:32px 40px 60px;max-width:860px}
+h2{font-size:1.35em;font-weight:700;color:var(--txt);margin:36px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--bdr);display:flex;align-items:center;gap:10px}
+h2::before{content:attr(data-icon);font-size:1.1em}
+h3{font-size:1.05em;font-weight:700;color:var(--gold);margin:22px 0 10px}
+h4{font-size:.95em;font-weight:700;color:var(--acc);margin:16px 0 6px}
+p{margin-bottom:12px;color:#C8CAD8}
+ul,ol{margin:8px 0 12px 22px;color:#C8CAD8}
+li{margin-bottom:5px}
+.note-box{background:rgba(78,203,160,.07);border:1px solid rgba(78,203,160,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.warn-box{background:rgba(240,92,92,.07);border:1px solid rgba(240,92,92,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.info-box{background:rgba(91,168,245,.07);border:1px solid rgba(91,168,245,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.note-box strong,.warn-box strong,.info-box strong{font-size:.78em;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px}
+.note-box strong{color:var(--grn)}.warn-box strong{color:var(--red)}.info-box strong{color:var(--blu)}
+pre{background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:18px 20px;overflow-x:auto;margin:12px 0 20px;font-size:.85em;line-height:1.6}
+code{font-family:'Cascadia Code','Fira Code',Consolas,monospace;color:#C8CAD8}
+pre code{color:#C8CAD8}
+table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:.88em}
+th{background:var(--surf2);color:var(--gold);padding:10px 14px;text-align:left;border-bottom:2px solid var(--bdr)}
+td{padding:9px 14px;border-bottom:1px solid var(--bdr);color:#C8CAD8}
+tr:hover td{background:rgba(255,255,255,.02)}
+.pdf-section{margin-top:48px;padding:24px;background:var(--surf);border:1px solid var(--bdr);border-radius:14px;display:flex;align-items:center;gap:20px}
+.pdf-icon{font-size:2.4em;flex-shrink:0}
+.pdf-info h3{color:var(--txt);font-size:1em;margin-bottom:4px}
+.pdf-info p{color:var(--muted);font-size:.82em;margin:0}
+.pdf-btn{margin-left:auto;padding:11px 24px;background:var(--acc);border:none;border-radius:9px;color:#111;font-weight:700;font-size:.88em;cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;text-decoration:none;transition:.15s;flex-shrink:0}
+.pdf-btn:hover{background:var(--gold)}
+.nav-bottom{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--bdr)}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;background:var(--surf);border:1px solid var(--bdr);border-radius:9px;color:var(--muted);font-size:.85em;transition:.2s}
+.nav-btn:hover{border-color:var(--acc);color:var(--txt)}
+.nav-btn.next{flex-direction:row-reverse;text-align:right}
+@media print{
+  .topbar,.sidebar,.pdf-section,.nav-bottom{display:none!important}
+  body{background:#fff;color:#000;font-size:12pt}
+  .hero{background:#f5f5f5;border:none;padding:20px}
+  .hero h1{-webkit-text-fill-color:#1a1a1a;font-size:1.5em}
+  .content{padding:10px;max-width:100%}
+  pre{background:#f5f5f5;border:1px solid #ddd;font-size:9pt}
+  h2{border-bottom:2px solid #ccc;color:#1a1a1a}
+  h3{color:#333}p,li,td{color:#222}
+  .layout{display:block}
+  @page{margin:1.5cm}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back-btn" href="devops_courses.html#topics">← Back to DevOps</a>
+  <div class="brand">© 2025 <span>sampathirao yoganandh</span></div>
+</div>
+<div class="hero">
+  <div class="week-badge">Week 7 & 8 · CO-3</div>
+  <h1>Docker & Containers</h1>
+  <p>Docker Deployment, Containerization, OS Image Management, Jenkins + Docker CI/CD &nbsp;<span class="co-pill co3">CO-3</span></p>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <h3>Contents</h3>
+    <ul class="toc-list">
+      <li><a href="#what_is_docker">What is Docker?</a></li>
+      <li><a href="#architecture">Architecture Flow</a></li>
+      <li><a href="#deploy_java">Deploy Java App with Docker</a></li>
+      <li><a href="#dockerfile">Dockerfile</a></li>
+      <li><a href="#procedure">Step-by-Step Procedure</a></li>
+      <li><a href="#os_containers">OS Container Management</a></li>
+      <li><a href="#docker_commands">Docker Commands</a></li>
+    </ul>
+  </aside>
+  <main class="content">
+
+    <h2 id="what_is_docker" data-icon="🐳">What is Docker?</h2>
+    <p>Docker is a <strong>containerization platform</strong> that allows applications to run in isolated environments called <strong>containers</strong>. Instead of installing Apache Tomcat directly on the server, Docker packages Tomcat and the application together inside a container image. This ensures consistency, portability, and easier deployment across different environments.</p>
+
+    <div class="note-box">
+      <strong>Why Docker?</strong>
+      Containers are lightweight, portable, and share the host system's kernel while maintaining separate environments. "It works on my machine" problems are eliminated — the container is identical everywhere.
+    </div>
+
+    <h2 id="architecture" data-icon="🏗️">Architecture Flow</h2>
+    <div class="info-box">
+      <strong>Docker CI/CD Pipeline</strong>
+      GitHub → Jenkins → Maven Build → Docker Image Build → Docker Container → Browser
+    </div>
+
+    <table>
+      <thead><tr><th>Tool</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>Java 17</td><td>Application runtime</td></tr>
+        <tr><td>Apache Maven</td><td>Build automation tool</td></tr>
+        <tr><td>Jenkins</td><td>CI/CD automation server</td></tr>
+        <tr><td>Docker</td><td>Containerization platform</td></tr>
+        <tr><td>GitHub</td><td>Source code repository</td></tr>
+        <tr><td>AWS EC2 Ubuntu</td><td>Cloud server environment</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="deploy_java" data-icon="🚀">Deploy Java Web Application with Docker</h2>
+    <p><strong>Aim:</strong> Deploy a Java Maven web application inside a Docker container instead of installing Apache Tomcat directly on the server.</p>
+
+    <h2 id="dockerfile" data-icon="📄">Dockerfile</h2>
+    <p>A <strong>Dockerfile</strong> is a text file containing instructions to build a Docker image. It defines the base image, copies application files, and sets the startup command.</p>
+    <pre><code>FROM tomcat:10.1-jdk17
+
+RUN rm -rf /usr/local/tomcat/webapps/*
+COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
+EXPOSE 8080
+CMD ["catalina.sh", "run"]</code></pre>
+
+    <h2 id="procedure" data-icon="📝">Step-by-Step Procedure</h2>
+
+    <h3>Step 1: Install Docker</h3>
+    <pre><code>sudo apt update
+sudo apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker</code></pre>
+
+    <h3>Step 2: Give Jenkins Permission to Use Docker</h3>
+    <pre><code>sudo usermod -aG docker jenkins
+sudo systemctl restart jenkins</code></pre>
+
+    <div class="warn-box">
+      <strong>Important</strong>
+      Jenkins must be in the Docker group to run Docker commands during pipeline builds. Restart Jenkins after adding it to the group.
+    </div>
+
+    <h3>Step 3: Add Dockerfile to Project Repository</h3>
+    <p>Create a file named <code>Dockerfile</code> in the root of your project and add the contents shown above.</p>
+
+    <h3>Step 4: Update Jenkinsfile for Docker Deployment</h3>
+    <p>Include pipeline stages to build WAR, build Docker image, remove old container, and run new container with port mapping.</p>
+    <div class="note-box">
+      <strong>Reference Repository</strong>
+      Fork this repo for a complete Jenkinsfile and Dockerfile:<br>
+      <code>https://github.com/syoganandh/spring-boot-maven-example-helloworld.git</code>
+    </div>
+
+    <h3>Step 5: Open AWS Security Group Port</h3>
+    <p>Allow inbound traffic on port <strong>8090</strong> in your AWS EC2 Security Group settings.</p>
+
+    <h3>Step 6: Run Jenkins Pipeline</h3>
+    <p>Click <strong>Build Now</strong> in Jenkins to build the Docker image and start the container.</p>
+
+    <h3>Step 7: Access Application</h3>
+    <pre><code># Open in browser:
+http://&lt;EC2-IP&gt;:8090/</code></pre>
+
+    <h2 id="os_containers" data-icon="🖥️">OS Container Management</h2>
+    <p><strong>Aim:</strong> Install Docker and create containers using different OS images — Ubuntu, Alpine, CentOS.</p>
+
+    <h3>Download OS Images</h3>
+    <pre><code>docker pull ubuntu
+docker pull alpine
+docker pull centos
+docker images</code></pre>
+
+    <h3>Run OS Containers</h3>
+    <pre><code># Run Ubuntu container
+docker run -it ubuntu /bin/bash
+
+# Run Alpine Linux container (lightweight, ~5MB)
+docker run -it alpine /bin/sh
+
+# Run CentOS container
+docker run -it centos /bin/bash</code></pre>
+
+    <h3>Manage Containers</h3>
+    <pre><code># View running containers
+docker ps
+
+# View all containers (including stopped)
+docker ps -a
+
+# Stop a container
+docker stop &lt;container-id&gt;
+
+# Remove a container
+docker rm &lt;container-id&gt;
+
+# Remove an image
+docker rmi &lt;image-name&gt;</code></pre>
+
+    <h2 id="docker_commands" data-icon="💻">Key Docker Commands</h2>
+    <table>
+      <thead><tr><th>Command</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>docker pull &lt;image&gt;</code></td><td>Download image from Docker Hub</td></tr>
+        <tr><td><code>docker images</code></td><td>List all local images</td></tr>
+        <tr><td><code>docker run -it &lt;image&gt;</code></td><td>Run container interactively</td></tr>
+        <tr><td><code>docker run -d -p 8090:8080 &lt;image&gt;</code></td><td>Run in background with port mapping</td></tr>
+        <tr><td><code>docker ps</code></td><td>List running containers</td></tr>
+        <tr><td><code>docker ps -a</code></td><td>List all containers</td></tr>
+        <tr><td><code>docker stop &lt;id&gt;</code></td><td>Stop a running container</td></tr>
+        <tr><td><code>docker rm &lt;id&gt;</code></td><td>Remove a container</td></tr>
+        <tr><td><code>docker build -t &lt;name&gt; .</code></td><td>Build image from Dockerfile</td></tr>
+        <tr><td><code>docker exec -it &lt;id&gt; bash</code></td><td>Enter a running container</td></tr>
+      </tbody>
+    </table>
+
+    <div class="pdf-section">
+      <div class="pdf-icon">📄</div>
+      <div class="pdf-info">
+        <h3>Docker &amp; Containers — Notes PDF</h3>
+        <p>Week 7 &amp; 8 · Containerization, Dockerfile, OS Image Management</p>
+      </div>
+      <a class="pdf-btn" href="devops_notes_w07_docker_containers.pdf" download>⬇ Download PDF</a>
+    </div>
+
+    <div class="nav-bottom">
+      <a class="nav-btn" href="devops_w05.html">← Git & Version Control</a>
+      <a class="nav-btn next" href="devops_w09.html">Config Management →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevOps – Course Topics</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #111318;
+      --surface:  #1C1F28;
+      --surface2: #252934;
+      --border:   #2E3340;
+      --accent:   #F07C3E;
+      --accent2:  #F5A472;
+      --gold:     #E8C06A;
+      --text:     #E8EAF0;
+      --muted:    #7A8099;
+      --green:    #4ECBA0;
+      --blue:     #5BA8F5;
+      --purple:   #A97DF5;
+      --red:      #F05C5C;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 40px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88em;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      transition: all .2s;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--accent); }
+    .nav-sep { color: var(--border); font-size: 1.3em; }
+    .nav-course { color: var(--muted); font-size: 0.88em; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 48px 40px 0;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(240,124,62,.12);
+      border: 1px solid rgba(240,124,62,.3);
+      color: var(--accent2);
+      font-size: 0.78em;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      letter-spacing: .06em;
+    }
+    .hero h1 {
+      font-size: 2.6em;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      background: linear-gradient(120deg, #F0EDE8 30%, var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 20px;
+      margin-bottom: 28px;
+    }
+    .hero-meta span {
+      font-size: 0.88em;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .hero-meta span strong { color: #C8CADE; }
+
+    /* ── STAT CHIPS ── */
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+    .stat-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      min-width: 130px;
+      text-align: center;
+      transition: border-color .2s;
+    }
+    .stat-chip:hover { border-color: var(--accent); }
+    .stat-chip .num { font-size: 1.6em; font-weight: 800; color: var(--accent); line-height: 1; }
+    .stat-chip .lbl { font-size: 0.75em; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .07em; }
+
+    /* ── TABS ── */
+    .tabs-wrap {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 56px;
+      z-index: 90;
+    }
+    .tabs {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      gap: 4px;
+    }
+    .tab-btn {
+      padding: 14px 20px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.9em;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-icon { font-size: 1em; }
+
+    /* ── PANELS ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .panel-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 40px 80px;
+    }
+
+    /* ── TOPIC GRID ── */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-bottom: 28px;
+      max-width: 420px;
+      transition: border-color .2s;
+    }
+    .search-bar:focus-within { border-color: var(--accent); }
+    .search-bar svg { flex-shrink: 0; opacity: .4; }
+    .search-bar input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 0.92em;
+      width: 100%;
+    }
+    .search-bar input::placeholder { color: var(--muted); }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .topic-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: border-color .2s, transform .15s, box-shadow .2s;
+      cursor: default;
+    }
+    .topic-card:hover {
+      border-color: rgba(240,124,62,.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.3);
+    }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .topic-num {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: rgba(240,124,62,.12);
+      border: 1px solid rgba(240,124,62,.25);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.88em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .topic-name {
+      font-weight: 700;
+      font-size: 1em;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-quiz {
+      flex: 1;
+      padding: 9px 0;
+      background: rgba(240,124,62,.15);
+      border: 1px solid rgba(240,124,62,.3);
+      border-radius: 8px;
+      color: var(--accent);
+      font-size: 0.84em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .btn-quiz:hover { background: rgba(240,124,62,.25); border-color: var(--accent); }
+    .btn-notes {
+      flex: 1;
+      padding: 9px 0;
+      background: rgba(91,168,245,.12);
+      border: 1px solid rgba(91,168,245,.3);
+      border-radius: 8px;
+      color: #5BA8F5;
+      font-size: 0.84em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      text-decoration: none;
+    }
+    .btn-notes:hover { background: rgba(91,168,245,.22); border-color: #5BA8F5; }
+
+    /* ── QUIZ MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      backdrop-filter: blur(4px);
+      z-index: 300;
+      overflow-y: auto;
+      padding: 40px 16px;
+    }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      overflow: hidden;
+      animation: slideUp .25s ease;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .modal-header-icon {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      background: rgba(240,124,62,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3em;
+      flex-shrink: 0;
+    }
+    .modal-header-text h2 {
+      font-size: 1.05em;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .modal-header-text p {
+      font-size: 0.8em;
+      color: var(--muted);
+    }
+    .close-btn {
+      margin-left: auto;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 1em;
+      flex-shrink: 0;
+      transition: all .15s;
+    }
+    .close-btn:hover { color: var(--text); border-color: var(--accent); }
+
+    /* Progress bar */
+    .quiz-progress { padding: 16px 28px 0; }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .progress-bar-track { height: 4px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--gold)); border-radius: 4px; transition: width .4s ease; }
+
+    /* Question navigator */
+    .q-nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px 28px 0; }
+    .q-dot {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.72em;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s;
+    }
+    .q-dot:hover { border-color: var(--accent); color: var(--accent); }
+    .q-dot.answered { background: rgba(240,124,62,.15); border-color: rgba(240,124,62,.4); color: var(--accent); }
+    .q-dot.current  { background: var(--accent); border-color: var(--accent); color: #111; }
+    .q-dot.correct  { background: rgba(78,203,160,.15); border-color: var(--green); color: var(--green); }
+    .q-dot.wrong    { background: rgba(240,92,92,.15);  border-color: var(--red);   color: var(--red); }
+
+    /* Question body */
+    .quiz-body { padding: 20px 28px 28px; }
+    .q-block { display: none; }
+    .q-block.active { display: block; }
+    .q-text { font-size: 0.95em; font-weight: 600; color: var(--text); margin-bottom: 16px; line-height: 1.55; }
+    .options-list { display: flex; flex-direction: column; gap: 8px; }
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .15s;
+      font-size: 0.89em;
+      color: #C8CADE;
+    }
+    .option-label:hover { border-color: rgba(240,124,62,.4); background: rgba(240,124,62,.06); color: var(--text); }
+    .option-label input[type="radio"] { display: none; }
+    .option-bullet {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72em;
+      font-weight: 700;
+      flex-shrink: 0;
+      color: var(--muted);
+      transition: all .15s;
+    }
+    .option-label:hover .option-bullet { border-color: var(--accent); color: var(--accent); }
+    .option-label.selected { border-color: rgba(240,124,62,.5); background: rgba(240,124,62,.1); color: var(--text); }
+    .option-label.selected .option-bullet { background: var(--accent); border-color: var(--accent); color: #111; }
+    .option-label.correct-ans { border-color: var(--green); background: rgba(78,203,160,.1); color: var(--text); }
+    .option-label.correct-ans .option-bullet { background: var(--green); border-color: var(--green); color: #111; }
+    .option-label.wrong-ans { border-color: var(--red); background: rgba(240,92,92,.1); }
+    .option-label.wrong-ans .option-bullet { background: var(--red); border-color: var(--red); color: #fff; }
+
+    /* Quiz footer */
+    .quiz-footer { padding: 0 28px 24px; display: flex; gap: 10px; align-items: center; }
+    .btn-prev, .btn-next {
+      padding: 10px 20px;
+      border-radius: 9px;
+      font-size: 0.88em;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: all .15s;
+    }
+    .btn-prev { background: var(--surface2); color: var(--muted); }
+    .btn-prev:hover:not(:disabled) { color: var(--text); border-color: var(--accent); }
+    .btn-prev:disabled { opacity: .35; cursor: default; }
+    .btn-next { background: var(--accent); color: #111; border-color: var(--accent); font-weight: 700; }
+    .btn-next:hover { background: var(--accent2); }
+    .btn-submit {
+      padding: 10px 22px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      color: #111;
+      border: none;
+      font-size: 0.88em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-submit:hover { opacity: .88; }
+
+    /* Result screen */
+    .quiz-result-screen { display: none; padding: 28px; text-align: center; }
+    .result-ring {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      border: 5px solid var(--border);
+      position: relative;
+    }
+    .result-ring .score-num { font-size: 1.8em; line-height: 1; }
+    .result-ring .score-of  { font-size: 0.72em; color: var(--muted); }
+    .result-msg  { font-size: 1.1em; font-weight: 700; margin-bottom: 6px; }
+    .result-pct  { font-size: 0.88em; color: var(--muted); margin-bottom: 24px; }
+    .result-breakdown { display: flex; justify-content: center; gap: 20px; margin-bottom: 24px; }
+    .rb-item { text-align: center; }
+    .rb-item .rb-val { font-size: 1.3em; font-weight: 800; }
+    .rb-item .rb-lbl { font-size: 0.72em; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .result-btns { display: flex; gap: 10px; justify-content: center; }
+    .btn-review, .btn-retake {
+      padding: 10px 22px;
+      border-radius: 9px;
+      font-size: 0.88em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-review { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+    .btn-review:hover { border-color: var(--accent); }
+    .btn-retake { background: var(--accent); border: 1px solid var(--accent); color: #111; font-weight: 700; }
+    .btn-retake:hover { background: var(--accent2); }
+    .qtype-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 12px; text-align: center;
+      cursor: pointer; transition: all .18s; color: var(--text); width: 100%;
+    }
+    .qtype-btn:hover { border-color: var(--accent); background: rgba(240,124,62,.09); }
+    .qtype-btn .qt-icon { font-size: 1.7em; margin-bottom: 6px; }
+    .qtype-btn .qt-label { font-weight: 700; font-size: .88em; color: var(--text); }
+    .qtype-btn .qt-sub { font-size: .72em; color: var(--muted); margin-top: 3px; }
+    .code-q { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 16px; font-family: 'Cascadia Code','Fira Code',Consolas,monospace;
+      font-size: .82em; color: #C8CAD8; white-space: pre-wrap; margin: 8px 0 12px; line-height:1.6; }
+
+    /* ── SYLLABUS ── */
+    .section-title {
+      font-size: 1.25em;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .section-sub { font-size: 0.83em; color: var(--muted); margin-bottom: 24px; }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .info-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+    .info-chip .lbl { color: var(--muted); font-size: 0.73em; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 5px; }
+    .info-chip .val { color: var(--gold); font-weight: 700; font-size: 0.9em; }
+
+    .co-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px; }
+    .co-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .co-id {
+      font-size: 0.75em;
+      font-weight: 700;
+      letter-spacing: .06em;
+      margin-bottom: 6px;
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 5px;
+    }
+    .co1 { background: rgba(78,203,160,.12);  color: var(--green); }
+    .co2 { background: rgba(91,168,245,.12);  color: var(--blue); }
+    .co3 { background: rgba(169,125,245,.12); color: var(--purple); }
+    .co4 { background: rgba(232,192,106,.12); color: var(--gold); }
+    .co-text { font-size: 0.83em; color: #A8AABC; line-height: 1.55; }
+
+    .syl-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 40px;
+    }
+    .syl-table th {
+      background: var(--surface2);
+      color: var(--gold);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.8em;
+      letter-spacing: .06em;
+      border-bottom: 1px solid var(--border);
+    }
+    .syl-table td {
+      padding: 12px 16px;
+      font-size: 0.85em;
+      color: #C0C4D8;
+      border-bottom: 1px solid rgba(46,51,64,.7);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .syl-table tr:last-child td { border-bottom: none; }
+    .syl-table tr:hover td { background: rgba(255,255,255,.025); }
+    .co-tag { display: inline-block; padding: 2px 9px; border-radius: 5px; font-size: 0.74em; font-weight: 700; }
+    .week-label { color: var(--accent); font-weight: 700; white-space: nowrap; }
+
+    /* ── LAB TABLE ── */
+    .lab-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .lab-table th {
+      background: var(--surface2);
+      color: var(--gold);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.8em;
+      letter-spacing: .06em;
+      border-bottom: 1px solid var(--border);
+    }
+    .lab-table td {
+      padding: 12px 16px;
+      font-size: 0.84em;
+      color: #C0C4D8;
+      border-bottom: 1px solid rgba(46,51,64,.7);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .lab-table tr:last-child td { border-bottom: none; }
+    .lab-table tr:hover td { background: rgba(255,255,255,.025); }
+    .exp-num  { color: var(--accent); font-weight: 800; font-size: 0.82em; }
+    .exp-title { color: var(--text); font-weight: 600; margin-bottom: 3px; }
+    .footnote {
+      font-size: 0.8em;
+      color: var(--muted);
+      margin-top: 10px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .hero { padding: 28px 20px 0; }
+      .panel-inner { padding: 28px 20px 60px; }
+      .tabs { padding: 0 20px; }
+      .top-nav { padding: 14px 20px; }
+      .hero h1 { font-size: 1.9em; }
+      .topic-grid { grid-template-columns: 1fr; }
+      .co-grid { grid-template-columns: 1fr; }
+      .modal { border-radius: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <a class="back-btn" href="index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back
+    </a>
+    <span class="nav-sep">/</span>
+    <span class="nav-course">DevOps</span>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">🛠️ R23 Regulation &nbsp;·&nbsp; 23CM9205</div>
+    <h1>DevOps</h1>
+    <div class="hero-meta">
+      <span>👤 <strong>Sampathirao Yoganandh</strong></span>
+      <span>🏛️ <strong>ANITS Engineering College</strong></span>
+      <span>📚 <strong>CSE (AI &amp; ML) · Assistant Professor</strong></span>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('syllabus', this)">
+        <span class="tab-icon">📋</span> Syllabus
+      </button>
+      <button class="tab-btn" onclick="switchTab('marks', this)">
+        <span class="tab-icon">📊</span> Marks &amp; Evaluation
+      </button>
+      <button class="tab-btn" onclick="switchTab('topics', this)">
+        <span class="tab-icon">📖</span> Topics &amp; Quizzes
+      </button>
+      <button class="tab-btn" onclick="switchTab('lab', this)">
+        <span class="tab-icon">🔬</span> Lab Manual
+      </button>
+    </div>
+  </div>
+
+  <!-- PANEL: TOPICS -->
+  <div id="panel-topics" class="panel">
+    <div class="panel-inner">
+
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="topicSearch" placeholder="Search topics…" oninput="filterTopics(this.value)">
+      </div>
+
+      <div class="topic-grid" id="topicGrid">
+
+        <!-- Week 1 & 2 -->
+        <div class="topic-card" data-topic="devops fundamentals calms culture automation lean measurement sharing dora metrics lifecycle infinity loop">
+          <div class="card-top">
+            <div class="topic-num" style="font-size:.72em">W1-2</div>
+            <div class="topic-name">DevOps Fundamentals<br><span style="font-size:.78em;color:var(--muted);font-weight:400">Emergence, Core Principles, CALMS Framework, DevOps Culture, Lifecycle, DORA Metrics</span></div>
+          </div>
+          <div class="card-actions">
+            <a class="btn-notes" href="devops_w01.html">📖 Notes</a>
+            <button class="btn-quiz" onclick="openQuiz(0)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Take Quiz</button>
+          </div>
+        </div>
+
+        <!-- Week 3 & 4 -->
+        <div class="topic-card" data-topic="jenkins continuous integration CI CD pipeline freestyle declarative scripted job build automation">
+          <div class="card-top">
+            <div class="topic-num" style="font-size:.72em">W3-4</div>
+            <div class="topic-name">Jenkins &amp; CI/CD<br><span style="font-size:.78em;color:var(--muted);font-weight:400">Jenkins Installation, Freestyle Jobs, Declarative & Scripted Pipelines, CI vs CD vs CD</span></div>
+          </div>
+          <div class="card-actions">
+            <a class="btn-notes" href="devops_w03.html">📖 Notes</a>
+            <button class="btn-quiz" onclick="openQuiz(1)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Take Quiz</button>
+          </div>
+        </div>
+
+        <!-- Week 5 & 6 -->
+        <div class="topic-card" data-topic="git version control branch merge commit push pull remote repository CVS Mercurial">
+          <div class="card-top">
+            <div class="topic-num" style="font-size:.72em">W5-6</div>
+            <div class="topic-name">Git &amp; Version Control<br><span style="font-size:.78em;color:var(--muted);font-weight:400">Git Commands, Branching, Merging, Remote Repos, CVS, Mercurial</span></div>
+          </div>
+          <div class="card-actions">
+            <a class="btn-notes" href="devops_w05.html">📖 Notes</a>
+            <button class="btn-quiz" onclick="openQuiz(2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Take Quiz</button>
+          </div>
+        </div>
+
+        <!-- Week 7 & 8 -->
+        <div class="topic-card" data-topic="docker container image dockerfile hub deploy build run web java application">
+          <div class="card-top">
+            <div class="topic-num" style="font-size:.72em">W7-8</div>
+            <div class="topic-name">Docker &amp; Containers<br><span style="font-size:.78em;color:var(--muted);font-weight:400">Containers vs VMs, Dockerfile, Images, Running Containers, Docker Hub, Deploying Web/Java Apps</span></div>
+          </div>
+          <div class="card-actions">
+            <a class="btn-notes" href="devops_w07.html">📖 Notes</a>
+            <button class="btn-quiz" onclick="openQuiz(3)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Take Quiz</button>
+          </div>
+        </div>
+
+        <!-- Week 9–12 -->
+        <div class="topic-card" data-topic="chef puppet ansible saltstack configuration management recipe cookbook manifest playbook infrastructure as code">
+          <div class="card-top">
+            <div class="topic-num" style="font-size:.72em">W9-12</div>
+            <div class="topic-name">Configuration Management<br><span style="font-size:.78em;color:var(--muted);font-weight:400">Chef (Recipes/Cookbooks), Puppet (Manifests), Ansible (Playbooks), SaltStack (Master-Minion)</span></div>
+          </div>
+          <div class="card-actions">
+            <a class="btn-notes" href="devops_w09.html">📖 Notes</a>
+            <button class="btn-quiz" onclick="openQuiz(4)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Take Quiz</button>
+          </div>
+        </div>
+
+      </div><!-- /topic-grid -->
+    </div>
+  </div>
+
+  <!-- PANEL: SYLLABUS -->
+  <div id="panel-syllabus" class="panel active">
+    <div class="panel-inner">
+
+      <div class="section-title">📋 Course Syllabus</div>
+      <p class="section-sub">23CM9205 · DevOps · R23 Regulation · CSE (AI &amp; ML)</p>
+
+      <div class="info-grid">
+        <div class="info-chip"><div class="lbl">Course Code</div><div class="val">23CM9205</div></div>
+        <div class="info-chip"><div class="lbl">Category</div><div class="val">Professional Elective</div></div>
+        <div class="info-chip"><div class="lbl">L · T · P</div><div class="val">1 · 0 · 3</div></div>
+        <div class="info-chip"><div class="lbl">Credits</div><div class="val">2.5</div></div>
+        <div class="info-chip"><div class="lbl">Total Hours</div><div class="val">75 hrs</div></div>
+        <div class="info-chip"><div class="lbl">Marks</div><div class="val">100 (60 + 40)</div></div>
+      </div>
+
+      <div style="margin-bottom: 10px; font-size:0.85em; color:var(--muted);">
+        <strong style="color:#C8CADE;">Prerequisites:</strong> Operating System, Virtualization, Cloud Computing, Java and Web Programming, Software Engineering.
+      </div>
+
+      <div style="margin-bottom: 20px; font-size:0.85em; color:var(--muted);">
+        <strong style="color:#C8CADE;">Sessional Marks:</strong> 60 &nbsp;·&nbsp; <strong style="color:#C8CADE;">End Exam:</strong> 40 &nbsp;·&nbsp; <strong style="color:#C8CADE;">Internal Tests:</strong> 2 (T1 after CO1 &amp; CO2, T2 after CO3 &amp; CO4)
+      </div>
+
+      <div style="margin-bottom: 14px; color: var(--text); font-weight: 600; font-size: 0.9em;">Course Outcomes</div>
+      <div class="co-grid">
+        <div class="co-card"><div class="co-id co1">CO-1</div><div class="co-text">Explain DevOps principles and apply related technologies for coding, building, testing, configuring, and monitoring software applications.</div></div>
+        <div class="co-card"><div class="co-id co2">CO-2</div><div class="co-text">Implement Continuous Integration/Continuous Deployment (CI/CD) pipelines using Jenkins to automate testing and deployment of Java/Web applications.</div></div>
+        <div class="co-card"><div class="co-id co3">CO-3</div><div class="co-text">Manage version control systems (Git/Mercurial) and containerized environments (Docker) for efficient software development and deployment.</div></div>
+        <div class="co-card"><div class="co-id co4">CO-4</div><div class="co-text">Automate infrastructure provisioning and configuration management using tools like Ansible/Puppet/Chef for scalable and reproducible deployments.</div></div>
+      </div>
+
+      <div style="margin-bottom: 14px; color: var(--text); font-weight: 600; font-size: 0.9em;">Week-wise Schedule</div>
+      <table class="syl-table">
+        <thead>
+          <tr>
+            <th style="width:120px">Week</th>
+            <th>Topics</th>
+            <th>Experiment / Activity</th>
+            <th style="width:60px">CO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="week-label">Week 1 &amp; 2</span></td>
+            <td>Introduction to DevOps: Emergence of DevOps, Core Principles, Essence of DevOps Culture, Key Elements of DevOps, CALMS Framework, 8-phase Lifecycle, DORA Metrics</td>
+            <td>Understand the Concept of DevOps with related technologies used to Code, Build, Test, Configure &amp; Monitor Software Applications</td>
+            <td><span class="co-tag co1">CO1</span></td>
+          </tr>
+          <tr>
+            <td><span class="week-label">Week 3 &amp; 4</span></td>
+            <td>Introduction to Jenkins: Concept of Jenkins, working process, CI/CD pipeline, Freestyle Projects, Declarative vs Scripted Pipelines, Jenkins Architecture (Master-Agent)</td>
+            <td>Install and Configure Jenkins to test, and deploy Java or Web Applications using NetBeans or Eclipse</td>
+            <td><span class="co-tag co2">CO2</span></td>
+          </tr>
+          <tr>
+            <td><span class="week-label">Week 5 &amp; 6</span></td>
+            <td>Introduction to GIT and its commands (init, clone, add, commit, push, pull, branch, merge, stash, log), CVS, Mercurial – Version Control concepts</td>
+            <td>Perform Version Control on websites/Software using different Version Control tools like GIT/Mercurial</td>
+            <td><span class="co-tag co3">CO3</span></td>
+          </tr>
+          <tr>
+            <td><span class="week-label">Week 7</span></td>
+            <td>Introduction to Docker and containers: Containers vs Virtual Machines, Dockerfile, Docker Images, Docker Hub, creating and managing containers</td>
+            <td>Install and Configure Docker for creating Containers of different Operating System Images</td>
+            <td><span class="co-tag co3">CO3</span></td>
+          </tr>
+          <tr>
+            <td><span class="week-label">Week 8</span></td>
+            <td>Docker in practice: Building, deploying, and managing Web/Java applications on Docker; Docker Compose for multi-container applications</td>
+            <td>Build, deploy and manage web or Java application on Docker</td>
+            <td><span class="co-tag co3">CO3</span></td>
+          </tr>
+          <tr>
+            <td><span class="week-label">Week 9</span></td>
+            <td>What is Chef: applications, creation of Chef resources, Recipes and Cookbooks, Chef Solo, Chef Client-Server architecture</td>
+            <td>Install and configure Software Configuration Management using Chef</td>
+            <td><span class="co-tag co4">CO4</span></td>
+          </tr>
+          <tr>
+            <td><span class="week-label">Week 10</span></td>
+            <td>What is Puppet: applications, Puppet DSL, Manifests, Modules, Master-Agent architecture, limitations of Puppet</td>
+            <td>Install and configure Software Configuration Management using Puppet</td>
+            <td><span class="co-tag co4">CO4</span></td>
+          </tr>
+          <tr>
+            <td><span class="week-label">Week 11</span></td>
+            <td>Concept of Ansible: agentless architecture, YAML-based Playbooks, Inventory, Roles, limitations and applications of Ansible</td>
+            <td>Install and configure Software Configuration Management using Ansible</td>
+            <td><span class="co-tag co4">CO4</span></td>
+          </tr>
+          <tr>
+            <td><span class="week-label">Week 12</span></td>
+            <td>Concept of SaltStack: Master-Minion architecture, States, Pillars, Grains, working process, limitations and applications</td>
+            <td>Install and configure Software Configuration Management using SaltStack</td>
+            <td><span class="co-tag co4">CO4</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-bottom: 14px; color: var(--text); font-weight: 600; font-size: 0.9em;">Software Requirements</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-size:.84em;color:#A8AABC;line-height:1.9;margin-bottom:28px;">
+        <strong style="color:#C8CADE;">OS:</strong> Ubuntu Linux (AWS EC2 Instance) / Windows 10/11 &nbsp;·&nbsp;
+        <strong style="color:#C8CADE;">Jenkins</strong> 2.x (CI/CD Automation Server) &nbsp;·&nbsp;
+        <strong style="color:#C8CADE;">Docker Engine</strong> 24.x &nbsp;·&nbsp;
+        <strong style="color:#C8CADE;">Git</strong> 2.x &nbsp;·&nbsp;
+        <strong style="color:#C8CADE;">Apache Maven</strong> 3.x &nbsp;·&nbsp;
+        <strong style="color:#C8CADE;">Apache Tomcat</strong> 10.x &nbsp;·&nbsp;
+        <strong style="color:#C8CADE;">JDK</strong> 8+ &nbsp;·&nbsp;
+        <strong style="color:#C8CADE;">IDE:</strong> NetBeans / Eclipse &nbsp;·&nbsp;
+        <strong style="color:#C8CADE;">Config Mgmt:</strong> Chef, Puppet, Ansible, SaltStack &nbsp;·&nbsp;
+        <strong style="color:#C8CADE;">OpenSSH</strong>
+      </div>
+
+      <div style="margin-bottom: 14px; color: var(--text); font-weight: 600; font-size: 0.9em;">Text Books</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-size:.83em;color:#A8AABC;line-height:2;margin-bottom:12px;">
+        <div>📘 <em>Pro Git</em> — Scott Chacon &amp; Ben Straub, Apress, 2nd Edition 2014</div>
+        <div>📘 <em>Docker: Up and Running</em> — Karl Matthias &amp; Sean P. Kane, O'Reilly Publication</div>
+        <div>📘 <em>DevOps: A Software Architect's Perspective</em> — Len Bass, Ingo Weber, Liming Zhu, Addison Wesley–Pearson</div>
+        <div>📘 <em>Jenkins: The Definitive Guide</em> — John Ferguson Smart, O'Reilly Publication</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-size:.83em;color:#A8AABC;line-height:2;">
+        <div style="font-size:.78em;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">Reference Books</div>
+        <div>📗 <em>DevOps for Dummies</em> — Sanjeev Sharma &amp; Bernie Coyne, Wiley</div>
+        <div>📗 <em>DevOps for Developers</em> — Michael Hüttermann, Apress</div>
+        <div>📗 <em>Practical DevOps</em> — Joakim Verona, Packt Publication</div>
+      </div>
+
+      <div style="margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;display:flex;align-items:center;gap:18px;">
+        <div style="font-size:2.2em;flex-shrink:0">📄</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);margin-bottom:4px">Download Syllabus PDF</div>
+          <div style="font-size:.82em;color:var(--muted)">Save this syllabus as a PDF for offline reference</div>
+        </div>
+        <a href="DevOps-R23 syllabus.pdf" target="_blank" style="margin-left:auto;padding:10px 22px;background:var(--accent);border:none;border-radius:9px;color:#111;font-weight:700;font-size:.88em;cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0;text-decoration:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          View / Download PDF
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PANEL: LAB -->
+  <div id="panel-lab" class="panel">
+    <div class="panel-inner">
+
+      <div class="section-title">🔬 Lab Manual</div>
+      <p class="section-sub">DevOps Lab · 23CM9205 · Academic Year 2026–27 · CSE (AI &amp; ML)</p>
+
+      <div style="margin-bottom:20px; font-size:0.85em; color:var(--muted); line-height:1.7;">
+        <strong style="color:#C8CADE;">Lab Objectives:</strong> Understand DevOps principles and implement CI/CD pipelines, version control, containerization, and configuration management tools.<br>
+        <strong style="color:#C8CADE;">Software Required:</strong> Ubuntu Linux (AWS EC2), Jenkins 2.x, Docker 24.x, Git 2.x, Maven 3.x, Tomcat 10.x, Chef, Puppet, Ansible, SaltStack, JDK 8+.
+      </div>
+
+      <div style="margin-bottom:14px; color:var(--text); font-weight:600; font-size:0.9em;">List of Experiments</div>
+      <table class="lab-table">
+        <thead>
+          <tr>
+            <th style="width:72px">#</th>
+            <th style="width:90px">Week</th>
+            <th>Experiment Title &amp; Description</th>
+            <th style="width:58px">CO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="exp-num">Exp 1</span></td>
+            <td>1</td>
+            <td><div class="exp-title">Introduction to DevOps: Tools, Life Cycle, and CALMS Framework</div>Understand DevOps philosophy, origin, CALMS framework (Culture, Automation, Lean, Measurement, Sharing), 8-phase infinity loop lifecycle, DORA metrics, and comparison of Traditional vs Agile vs DevOps models.</td>
+            <td><span class="co-tag co1">CO1</span></td>
+          </tr>
+          <tr>
+            <td><span class="exp-num">Exp 2</span></td>
+            <td>3</td>
+            <td><div class="exp-title">Continuous Integration with Jenkins: Freestyle and Pipeline Jobs</div>Install and configure Jenkins on AWS EC2 Ubuntu instance. Create a Freestyle project and a Declarative Pipeline project. Study Jenkins Master-Agent architecture and compare Declarative vs Scripted pipelines.</td>
+            <td><span class="co-tag co2">CO2</span></td>
+          </tr>
+          <tr>
+            <td><span class="exp-num">Exp 3</span></td>
+            <td>5</td>
+            <td><div class="exp-title">CI/CD Pipeline: Jenkins Integration with Maven and Apache Tomcat</div>Build a complete CI/CD pipeline integrating Jenkins with Apache Maven for build automation and Apache Tomcat for Java web application deployment. Configure build triggers and post-build actions.</td>
+            <td><span class="co-tag co2">CO2</span></td>
+          </tr>
+          <tr>
+            <td><span class="exp-num">Exp 4</span></td>
+            <td>7</td>
+            <td><div class="exp-title">Version Control with Git: Branching, Merging, and Remote Repositories</div>Perform version control using Git — initialize repos, create branches, make commits, merge branches, push to and pull from remote repositories (GitHub/GitLab). Practice resolving merge conflicts.</td>
+            <td><span class="co-tag co3">CO3</span></td>
+          </tr>
+          <tr>
+            <td><span class="exp-num">Exp 5</span></td>
+            <td>8</td>
+            <td><div class="exp-title">Application Deployment with Docker: Containers and Jenkins Integration</div>Build and deploy a Java/Web application using Docker containers. Integrate Docker with Jenkins for automated image build and container deployment. Use Dockerfile to containerize the application.</td>
+            <td><span class="co-tag co3">CO3</span></td>
+          </tr>
+          <tr>
+            <td><span class="exp-num">Exp 6</span></td>
+            <td>9</td>
+            <td><div class="exp-title">Docker Container Management: Images, OS Containers, and Commands</div>Practice Docker container management: pull OS images (Ubuntu, CentOS), create and run containers, execute commands inside containers, manage container lifecycle (start/stop/remove), and use Docker Hub registry.</td>
+            <td><span class="co-tag co3">CO3</span></td>
+          </tr>
+          <tr>
+            <td><span class="exp-num">Exp 7</span></td>
+            <td>10</td>
+            <td><div class="exp-title">Configuration Management with Chef Solo: Recipes and Cookbooks</div>Install and configure Chef Solo on Ubuntu. Write Chef Recipes using Ruby DSL to automate software installation and configuration. Organize recipes into Cookbooks and apply them to managed nodes.</td>
+            <td><span class="co-tag co4">CO4</span></td>
+          </tr>
+          <tr>
+            <td><span class="exp-num">Exp 8</span></td>
+            <td>10</td>
+            <td><div class="exp-title">Puppet Master-Agent Configuration Management with Manifests</div>Set up Puppet Master-Agent architecture. Write Puppet Manifests using Puppet DSL to declare desired system state. Apply manifests to agent nodes and verify idempotent configuration enforcement.</td>
+            <td><span class="co-tag co4">CO4</span></td>
+          </tr>
+          <tr>
+            <td><span class="exp-num">Exp 9</span></td>
+            <td>11</td>
+            <td><div class="exp-title">Configuration Management using Ansible: Agentless Playbook Automation</div>Install Ansible on control node. Write YAML-based Playbooks to automate configuration tasks on remote hosts via SSH (agentless). Define inventory files and use Ansible modules for package installation and service management.</td>
+            <td><span class="co-tag co4">CO4</span></td>
+          </tr>
+          <tr>
+            <td><span class="exp-num">Exp 10</span></td>
+            <td>12</td>
+            <td><div class="exp-title">Configuration Management using SaltStack: Master-Minion Architecture</div>Configure SaltStack Master-Minion setup. Write Salt States in YAML to manage infrastructure configuration. Use Salt Grains and Pillars for node targeting and data management. Execute remote commands using Salt execution modules.</td>
+            <td><span class="co-tag co4">CO4</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footnote">
+        ℹ️ Observation book must include: Aim · Tools/Software Required · Theory · Procedure/Commands · Screenshots/Output · Result · Viva-Voce Q&amp;A · Errors Observed.
+      </div>
+
+      <div style="margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;display:flex;align-items:center;gap:18px;">
+        <div style="font-size:2.2em;flex-shrink:0">📄</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);margin-bottom:4px">Download Lab Manual PDF</div>
+          <div style="font-size:.82em;color:var(--muted)">Save this lab manual as a PDF for offline reference</div>
+        </div>
+        <a href="DevOps-Lab-Manual-v9.docx" target="_blank" style="margin-left:auto;padding:10px 22px;background:var(--accent);border:none;border-radius:9px;color:#111;font-weight:700;font-size:.88em;cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0;text-decoration:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          View / Download
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PANEL: MARKS -->
+  <div id="panel-marks" class="panel">
+    <div class="panel-inner">
+
+      <div class="section-title">📊 Marks &amp; Evaluation</div>
+      <p class="section-sub">DevOps · 23CM9205 · R23 Regulation</p>
+
+      <!-- Total bar -->
+      <div style="display:flex;border-radius:10px;overflow:hidden;height:40px;margin:24px 0 10px;">
+        <div style="background:#e8834a;flex:60;display:flex;align-items:center;justify-content:center;color:#1a1816;font-weight:700;font-size:.9em;">Internal (Sessional) — 60 Marks</div>
+        <div style="background:#4ab8e8;flex:40;display:flex;align-items:center;justify-content:center;color:#1a1816;font-weight:700;font-size:.9em;">External (End Exam) — 40 Marks</div>
+      </div>
+      <p style="text-align:center;font-size:.75em;color:var(--muted);margin-bottom:28px;">Grand Total = 100 Marks</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+
+        <!-- INTERNAL -->
+        <div style="background:#1e1b18;border:1px solid #3d3835;border-radius:12px;padding:18px;">
+          <div style="font-size:.72em;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#e8834a;margin-bottom:16px;">Internal / Sessional — 60 M</div>
+
+          <!-- Mid Average -->
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+              <span style="font-size:.84em;color:#e8c9a0;font-weight:600;">Mid Average</span>
+              <span style="font-size:.9em;font-weight:700;color:#f0ede8;background:#3d3835;border-radius:6px;padding:1px 9px;">15</span>
+            </div>
+            <div style="background:#1a1816;border-radius:4px;height:6px;"><div style="width:25%;height:6px;border-radius:4px;background:#e8834a;"></div></div>
+            <div style="margin-top:6px;padding-left:10px;border-left:2px solid #3d3835;display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;font-size:.75em;color:#9e9a94;"><span>Mid-1 Exam</span><span style="color:#c8c4be;font-weight:600;">15 M</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:.75em;color:#9e9a94;"><span>Mid-2 Exam</span><span style="color:#c8c4be;font-weight:600;">15 M</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:.75em;color:#e8834a;font-style:italic;"><span>Average of both is counted</span><span>= 15</span></div>
+            </div>
+          </div>
+
+          <!-- Daily Evaluation -->
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+              <span style="font-size:.84em;color:#e8c9a0;font-weight:600;">Daily Evaluation <span style="font-size:.78em;color:#aaa;font-weight:400;">(Weekly Assessment)</span></span>
+              <span style="font-size:.9em;font-weight:700;color:#f0ede8;background:#3d3835;border-radius:6px;padding:1px 9px;">20</span>
+            </div>
+            <div style="background:#1a1816;border-radius:4px;height:6px;"><div style="width:33%;height:6px;border-radius:4px;background:#e8c94a;"></div></div>
+            <div style="margin-top:6px;padding-left:10px;border-left:2px solid #3d3835;display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;font-size:.75em;color:#9e9a94;"><span>📝 Record (Lab Notebook)</span><span style="color:#c8c4be;font-weight:600;">10 M</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:.75em;color:#9e9a94;"><span>📊 Regular Performance</span><span style="color:#c8c4be;font-weight:600;">10 M</span></div>
+            </div>
+            <button onclick="document.getElementById('weeklyAssessModal').style.display='flex';this.blur();"
+              style="margin-top:8px;width:100%;background:transparent;border:1px solid #4a6cf7;border-radius:8px;padding:6px 0;color:#4a6cf7;font-size:.75em;cursor:pointer;letter-spacing:.04em;transition:background .2s;"
+              onmouseover="this.style.background='#1a1e3a'" onmouseout="this.style.background='transparent'">
+              📋 How is this scored? View Breakdown
+            </button>
+          </div>
+
+          <!-- Attendance -->
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+              <span style="font-size:.84em;color:#e8c9a0;font-weight:600;">Attendance <span style="font-size:.78em;color:#aaa;font-weight:400;">(this subject only)</span></span>
+              <span style="font-size:.9em;font-weight:700;color:#f0ede8;background:#3d3835;border-radius:6px;padding:1px 9px;">5</span>
+            </div>
+            <div style="background:#1a1816;border-radius:4px;height:6px;margin-bottom:10px;"><div style="width:8%;height:6px;border-radius:4px;background:#4ae89a;"></div></div>
+            <!-- Attendance slab table -->
+            <div style="border-radius:10px;overflow:hidden;border:1px solid #2e2b27;font-size:.75em;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;background:#2a2724;padding:6px 10px;font-weight:700;color:#c8c4be;letter-spacing:.05em;">
+                <span>Your Attendance %</span><span style="text-align:right;">Marks You Get</span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;padding:7px 10px;background:#1e1b18;align-items:center;">
+                <span style="color:#4ae89a;font-weight:600;">Above 90%</span>
+                <span style="text-align:right;"><span style="background:#1a3a28;color:#4ae89a;font-weight:700;border-radius:6px;padding:2px 10px;">5 / 5</span></span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;padding:7px 10px;background:#1a1816;align-items:center;">
+                <span style="color:#a8e87a;font-weight:600;">80% – 90%</span>
+                <span style="text-align:right;"><span style="background:#1e3010;color:#a8e87a;font-weight:700;border-radius:6px;padding:2px 10px;">4 / 5</span></span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;padding:7px 10px;background:#1e1b18;align-items:center;">
+                <span style="color:#e8c94a;font-weight:600;">75% – 80%</span>
+                <span style="text-align:right;"><span style="background:#3a3010;color:#e8c94a;font-weight:700;border-radius:6px;padding:2px 10px;">3 / 5</span></span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;padding:7px 10px;background:#1a1816;align-items:center;">
+                <span style="color:#e8944a;font-weight:600;">66% – 75%</span>
+                <span style="text-align:right;"><span style="background:#3a1e08;color:#e8944a;font-weight:700;border-radius:6px;padding:2px 10px;">2 / 5</span></span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;padding:7px 10px;background:#1e1b18;align-items:center;">
+                <span style="color:#e85a5a;font-weight:600;">Below 66%</span>
+                <span style="text-align:right;"><span style="background:#3a1010;color:#e85a5a;font-weight:700;border-radius:6px;padding:2px 10px;">0 / 5</span></span>
+              </div>
+            </div>
+            <div style="margin-top:7px;font-size:.72em;color:#9e9a94;padding-left:4px;">⚠️ Only <strong style="color:#e8c9a0;">this subject's lab attendance</strong> is counted — not your overall attendance.</div>
+          </div>
+
+          <!-- Internal Lab Exam -->
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+              <span style="font-size:.84em;color:#e8c9a0;font-weight:600;">Internal Lab Exam</span>
+              <span style="font-size:.9em;font-weight:700;color:#f0ede8;background:#3d3835;border-radius:6px;padding:1px 9px;">20</span>
+            </div>
+            <div style="background:#1a1816;border-radius:4px;height:6px;"><div style="width:33%;height:6px;border-radius:4px;background:#e8834a;"></div></div>
+            <div style="margin-top:6px;padding-left:10px;border-left:2px solid #3d3835;display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;font-size:.75em;color:#9e9a94;"><span>📄 Description</span><span style="color:#c8c4be;font-weight:600;">10 M</span></div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:.75em;color:#9e9a94;"><span>💻 Execution</span><span style="color:#c8c4be;font-weight:600;">5 M</span></div>
+                <div style="padding-left:14px;border-left:2px dotted #3d3835;margin-top:3px;display:flex;flex-direction:column;gap:2px;">
+                  <div style="font-size:.69em;color:#6b7194;">• Tool installation &amp; configuration (Jenkins, Docker, etc.)</div>
+                  <div style="font-size:.69em;color:#6b7194;">• Pipeline / script runs without errors</div>
+                  <div style="font-size:.69em;color:#6b7194;">• Container / server deployment steps</div>
+                  <div style="font-size:.69em;color:#6b7194;">• Git push, Ansible playbook, Chef recipe execution</div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:.75em;color:#9e9a94;"><span>🗣️ Viva</span><span style="color:#c8c4be;font-weight:600;">5 M</span></div>
+            </div>
+          </div>
+
+          <div style="border-top:1px solid #3d3835;margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-size:.85em;font-weight:700;color:#f0ede8;">
+            <span>Total Internal</span><span style="color:#e8834a;">60 / 60</span>
+          </div>
+        </div>
+
+        <!-- EXTERNAL + TIPS -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+
+          <div style="background:#1e1b18;border:1px solid #3d3835;border-radius:12px;padding:18px;">
+            <div style="font-size:.72em;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#4ab8e8;margin-bottom:16px;">External / End Exam — 40 M</div>
+
+            <div style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-size:.84em;color:#e8c9a0;font-weight:600;">📝 Writeup</span>
+                <span style="font-size:.9em;font-weight:700;color:#f0ede8;background:#3d3835;border-radius:6px;padding:1px 9px;">20</span>
+              </div>
+              <div style="background:#1a1816;border-radius:4px;height:6px;"><div style="width:50%;height:6px;border-radius:4px;background:#4ab8e8;"></div></div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-size:.84em;color:#e8c9a0;font-weight:600;">💻 Execution</span>
+                <span style="font-size:.9em;font-weight:700;color:#f0ede8;background:#3d3835;border-radius:6px;padding:1px 9px;">10</span>
+              </div>
+              <div style="background:#1a1816;border-radius:4px;height:6px;margin-bottom:6px;"><div style="width:25%;height:6px;border-radius:4px;background:#4ab8e8;"></div></div>
+              <div style="padding-left:12px;border-left:2px dotted #3d3835;display:flex;flex-direction:column;gap:2px;">
+                <div style="font-size:.69em;color:#6b7194;">• DevOps tool configuration (Jenkins / Docker / Ansible / Chef / Puppet / SaltStack)</div>
+                <div style="font-size:.69em;color:#6b7194;">• CI/CD pipeline setup &amp; successful run</div>
+                <div style="font-size:.69em;color:#6b7194;">• Container creation, image build &amp; deployment</div>
+                <div style="font-size:.69em;color:#6b7194;">• Infrastructure automation via playbooks / recipes / states</div>
+                <div style="font-size:.69em;color:#6b7194;">• Git operations &amp; remote repository management</div>
+              </div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-size:.84em;color:#e8c9a0;font-weight:600;">🗣️ Viva</span>
+                <span style="font-size:.9em;font-weight:700;color:#f0ede8;background:#3d3835;border-radius:6px;padding:1px 9px;">10</span>
+              </div>
+              <div style="background:#1a1816;border-radius:4px;height:6px;"><div style="width:25%;height:6px;border-radius:4px;background:#4ab8e8;"></div></div>
+            </div>
+
+            <div style="border-top:1px solid #3d3835;margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-size:.85em;font-weight:700;color:#f0ede8;">
+              <span>Total External</span><span style="color:#4ab8e8;">40 / 40</span>
+            </div>
+          </div>
+
+          <!-- Tips -->
+          <div style="background:#1e1b18;border:1px solid #3d3835;border-radius:12px;padding:16px;font-size:.8em;color:#9e9a94;line-height:1.75;">
+            <div style="color:#e8c9a0;font-weight:700;margin-bottom:8px;">💡 Tips to Score Well</div>
+            <div>✅ Submit writeups <strong style="color:#c8c4be;">before</strong> each lab session</div>
+            <div>✅ Run commands/scripts without errors — execution marks are easy</div>
+            <div>✅ Prepare viva answers for every experiment</div>
+            <div>✅ Keep your lab record neat and up-to-date</div>
+            <div>✅ Don't miss this subject's lab sessions — attendance here (not total) gives you 5 marks</div>
+          </div>
+
+          <!-- Mid note -->
+          <div style="background:#1e1b18;border:1px solid #3d3835;border-radius:12px;padding:16px;font-size:.8em;color:#9e9a94;line-height:1.75;">
+            <div style="color:#e8c9a0;font-weight:700;margin-bottom:8px;">📌 About Mid Exams</div>
+            Both Mid-1 and Mid-2 are out of <strong style="color:#c8c4be;">15 marks each</strong>. Your final mid score is calculated as:<br><br>
+            <span style="display:block;background:#1a1816;border-radius:8px;padding:10px 14px;margin:6px 0;font-size:.82em;line-height:1.9;">
+              🏆 <strong style="color:#4ae89a;">Better mid score</strong> — <strong style="color:#4ae89a;">¾ (75%)</strong> of those marks are counted<br>
+              📉 <strong style="color:#e8834a;">Lower mid score</strong> — <strong style="color:#e8834a;">⅓ (33%)</strong> of those marks are counted
+            </span>
+            So always aim to do well in <strong style="color:#c8c4be;">both</strong> mids — but even if one goes badly, a strong performance in the other limits the damage.
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── WEEKLY ASSESSMENT MODAL ── -->
+      <div id="weeklyAssessModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)this.style.display='none';">
+        <div style="background:#18150f;border:1px solid #3d3835;border-radius:16px;width:100%;max-width:820px;max-height:90vh;overflow-y:auto;padding:28px 28px 24px;">
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+            <div>
+              <div style="font-size:1em;font-weight:700;color:#f0ede8;">📋 Weekly Assessment Breakdown</div>
+              <div style="font-size:.76em;color:#9e9a94;margin-top:3px;">Every lab session is assessed out of 20 marks</div>
+            </div>
+            <button onclick="document.getElementById('weeklyAssessModal').style.display='none';" style="background:#2a2724;border:1px solid #3d3835;border-radius:8px;color:#c8c4be;font-size:1em;padding:4px 12px;cursor:pointer;">✕ Close</button>
+          </div>
+
+          <div style="display:flex;border-radius:10px;overflow:hidden;height:38px;margin-bottom:6px;">
+            <div style="background:#4a6cf7;flex:10;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.85em;">Regular Performance — 10 Marks</div>
+            <div style="background:#0f6e56;flex:10;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.85em;">Record Book — 10 Marks</div>
+          </div>
+          <p style="text-align:center;font-size:.73em;color:#9e9a94;margin-bottom:20px;">Weekly Assessment Total = 20 Marks</p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+            <!-- Regular Performance -->
+            <div style="background:#1e1b18;border:1px solid #3d3835;border-radius:12px;padding:16px;">
+              <div style="font-size:.7em;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#4a6cf7;margin-bottom:14px;">Regular Performance — 10 M</div>
+
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <span style="font-size:.82em;color:#e8c9a0;font-weight:600;">Theoretical Knowledge</span>
+                  <span style="font-size:.82em;font-weight:700;color:#fff;background:#3d3835;border-radius:6px;padding:1px 8px;">3 M</span>
+                </div>
+                <div style="background:#1a1816;border-radius:4px;height:4px;margin-bottom:6px;"><div style="width:30%;height:4px;border-radius:4px;background:#4a6cf7;"></div></div>
+                <div style="padding-left:8px;border-left:2px solid #3d3835;display:flex;flex-direction:column;gap:2px;">
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">3</span><span>Clear understanding of DevOps concepts, accurate explanation</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">2</span><span>Understands topic but with minor gaps</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">1</span><span>Partial understanding, noticeable errors</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">0</span><span>No attempt or irrelevant response</span></div>
+                </div>
+              </div>
+
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <span style="font-size:.82em;color:#e8c9a0;font-weight:600;">Practical / Command Knowledge</span>
+                  <span style="font-size:.82em;font-weight:700;color:#fff;background:#3d3835;border-radius:6px;padding:1px 8px;">3 M</span>
+                </div>
+                <div style="background:#1a1816;border-radius:4px;height:4px;margin-bottom:6px;"><div style="width:30%;height:4px;border-radius:4px;background:#d85a30;"></div></div>
+                <div style="padding-left:8px;border-left:2px solid #3d3835;display:flex;flex-direction:column;gap:2px;">
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">3</span><span>Commands correct, pipeline/config well-structured</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">2</span><span>Minor errors, overall approach correct</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">1</span><span>Incomplete or requires significant guidance</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">0</span><span>No attempt or copied without understanding</span></div>
+                </div>
+              </div>
+
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <span style="font-size:.82em;color:#e8c9a0;font-weight:600;">Results / Output</span>
+                  <span style="font-size:.82em;font-weight:700;color:#fff;background:#3d3835;border-radius:6px;padding:1px 8px;">2 M</span>
+                </div>
+                <div style="background:#1a1816;border-radius:4px;height:4px;margin-bottom:6px;"><div style="width:20%;height:4px;border-radius:4px;background:#ba7517;"></div></div>
+                <div style="padding-left:8px;border-left:2px solid #3d3835;display:flex;flex-direction:column;gap:2px;">
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">2</span><span>Executes successfully; output/screenshot fully correct and verified</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">1</span><span>Runs but output partially correct</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">0</span><span>Does not execute or no output</span></div>
+                </div>
+              </div>
+
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <span style="font-size:.82em;color:#e8c9a0;font-weight:600;">Viva-Voce</span>
+                  <span style="font-size:.82em;font-weight:700;color:#fff;background:#3d3835;border-radius:6px;padding:1px 8px;">2 M</span>
+                </div>
+                <div style="background:#1a1816;border-radius:4px;height:4px;margin-bottom:6px;"><div style="width:20%;height:4px;border-radius:4px;background:#1d9e75;"></div></div>
+                <div style="padding-left:8px;border-left:2px solid #3d3835;display:flex;flex-direction:column;gap:2px;">
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">2</span><span>Confident answers, full understanding</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">1</span><span>Hesitant or partially correct answers</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:12px;">0</span><span>Unable to answer</span></div>
+                </div>
+              </div>
+
+              <div style="border-top:1px solid #3d3835;padding-top:8px;display:flex;justify-content:space-between;font-size:.83em;font-weight:700;color:#f0ede8;">
+                <span>Regular Performance total</span><span style="color:#4a6cf7;">10 / 10</span>
+              </div>
+            </div>
+
+            <!-- Record Book + Tips -->
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="background:#1e1b18;border:1px solid #3d3835;border-radius:12px;padding:16px;">
+                <div style="font-size:.7em;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#0f6e56;margin-bottom:12px;">Record Book — 10 M</div>
+                <div style="padding-left:8px;border-left:2px solid #3d3835;display:flex;flex-direction:column;gap:4px;">
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:26px;">10</span><span>Submitted on time; neat &amp; complete — aim, tools, procedure, output, result</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:26px;">8–9</span><span>Mostly complete, minor improvements needed</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:26px;">6–7</span><span>Incomplete or contains mistakes in some sections</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:26px;">4–5</span><span>Major missing sections or unclear presentation</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:26px;">1–3</span><span>Bare minimum written</span></div>
+                  <div style="display:flex;gap:6px;font-size:.73em;color:#9e9a94;"><span style="color:#c8c4be;font-weight:600;min-width:26px;">0</span><span>Not submitted</span></div>
+                </div>
+                <div style="border-top:1px solid #3d3835;margin-top:10px;padding-top:8px;display:flex;justify-content:space-between;font-size:.83em;font-weight:700;color:#f0ede8;">
+                  <span>Record total</span><span style="color:#0f6e56;">10 / 10</span>
+                </div>
+              </div>
+
+              <div style="background:#1e1b18;border:1px solid #3d3835;border-radius:12px;padding:14px;font-size:.78em;color:#9e9a94;line-height:1.8;">
+                <div style="color:#e8c9a0;font-weight:700;margin-bottom:8px;">💡 Tips to Score Full Marks</div>
+                <div>✅ Read the experiment theory <strong style="color:#c8c4be;">before</strong> the lab session</div>
+                <div>✅ Know the commands and their options thoroughly</div>
+                <div>✅ Execute without errors and verify the output/screenshots</div>
+                <div>✅ Know what every command in your script does — viva is easy then</div>
+                <div>✅ Write record with aim, tools, procedure, output &amp; result — submit on time</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+      <!-- Mid Model Paper -->
+      <div style="margin-top:36px;padding:0 28px 32px;">
+        <div style="font-size:.75em;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">📄 Mid Model Paper</div>
+        <div style="background:#1a1714;border:1px solid #3d3835;border-radius:12px;padding:18px;display:flex;align-items:center;gap:14px;">
+          <div style="font-size:2em;flex-shrink:0;">📝</div>
+          <div style="flex:1;">
+            <div style="font-size:.9em;font-weight:700;color:#c8c4be;margin-bottom:3px;">Mid Model Paper</div>
+            <div style="font-size:.75em;color:#6b6765;">DevOps · Mid Examination</div>
+          </div>
+          <a href="DevOps_Mid_Model_Paper.pdf" download style="padding:8px 16px;background:rgba(240,124,62,.12);border:1px solid rgba(240,124,62,.3);border-radius:8px;color:var(--accent);font-size:.78em;font-weight:700;text-decoration:none;white-space:nowrap;transition:.15s;" onmouseover="this.style.background='rgba(240,124,62,.22)'" onmouseout="this.style.background='rgba(240,124,62,.12)'">⬇ Download</a>
+        </div>
+      </div>
+  </div>
+
+  <!-- QUIZ MODAL -->
+  <div class="modal-overlay" id="quizOverlay" onclick="if(event.target===this)closeQuiz()">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-header-icon" id="quizIcon">🛠️</div>
+        <div class="modal-header-text">
+          <h2 id="quizTitle">Quiz</h2>
+          <p id="quizSubtitle">10 questions · DevOps</p>
+        </div>
+        <button type="button" class="close-btn" onclick="closeQuiz()">✕</button>
+      </div>
+
+      <!-- Type Selector -->
+      <div id="quizTypeScreen" style="padding:18px 24px 24px;display:none;">
+        <p style="color:var(--muted);font-size:.85em;margin-bottom:16px;">Choose the type of practice you want:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <button type="button" onclick="startQuizType('mcq')" class="qtype-btn">
+            <div class="qt-icon">🎯</div>
+            <div class="qt-label">MCQ Quiz</div>
+            <div class="qt-sub">10 questions · L1/L2</div>
+          </button>
+          <button type="button" onclick="startQuizType('cmd')" class="qtype-btn">
+            <div class="qt-icon">💻</div>
+            <div class="qt-label">Command Output</div>
+            <div class="qt-sub">10 questions · L2</div>
+          </button>
+          <button type="button" onclick="startQuizType('usecase')" class="qtype-btn">
+            <div class="qt-icon">💼</div>
+            <div class="qt-label">Use-Case</div>
+            <div class="qt-sub">10 questions · L4</div>
+          </button>
+          <button type="button" onclick="startQuizType('debug')" class="qtype-btn">
+            <div class="qt-icon">🐛</div>
+            <div class="qt-label">Debug / Find Error</div>
+            <div class="qt-sub">10 questions · L3</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Back to type selector -->
+      <div id="backToTypes" style="display:none;padding:6px 24px 0;">
+        <button type="button" onclick="showTypeScreen()" style="background:none;border:none;color:var(--muted);font-size:.8em;cursor:pointer;display:flex;align-items:center;gap:5px;padding:4px 0;transition:.15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+          ← Back to practice types
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div class="quiz-progress">
+        <div class="progress-meta">
+          <span id="qProgress">Question 1 of 10</span>
+          <span id="qAnswered">0 answered</span>
+        </div>
+        <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+
+      <!-- Navigator -->
+      <div class="q-nav" id="qNav"></div>
+
+      <!-- Body -->
+      <div class="quiz-body" id="quizBody"></div>
+
+      <!-- Result -->
+      <div class="quiz-result-screen" id="resultScreen">
+        <div class="result-ring" id="resultRing">
+          <div class="score-num" id="scoreNum">0</div>
+          <div class="score-of" id="scoreOf">/ 10</div>
+        </div>
+        <div class="result-msg" id="resultMsg"></div>
+        <div class="result-pct" id="resultPct"></div>
+        <div class="result-breakdown">
+          <div class="rb-item"><div class="rb-val" style="color:var(--green)" id="rbCorrect">0</div><div class="rb-lbl">Correct</div></div>
+          <div class="rb-item"><div class="rb-val" style="color:var(--red)"   id="rbWrong">0</div><div class="rb-lbl">Wrong</div></div>
+          <div class="rb-item"><div class="rb-val" style="color:var(--muted)" id="rbSkip">0</div><div class="rb-lbl">Skipped</div></div>
+        </div>
+        <div class="result-btns">
+          <button type="button" class="btn-review" onclick="reviewMode()">Review Answers</button>
+          <button type="button" class="btn-retake" onclick="retakeQuiz()">Retake Quiz</button>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="quiz-footer" id="quizFooter">
+        <button type="button" class="btn-prev" id="btnPrev" onclick="goQ(-1)" disabled>← Prev</button>
+        <button type="button" class="btn-next" id="btnNext" onclick="goQ(1)">Next →</button>
+        <button type="button" class="btn-submit" id="btnSubmit" style="display:none" onclick="submitQuiz()">Submit Quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ── TAB SWITCHING ──
+  function switchTab(name, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  // On load, check URL hash and switch to that tab
+  document.addEventListener('DOMContentLoaded', function() {
+    const hash = window.location.hash.replace('#', '');
+    const valid = ['syllabus', 'marks', 'topics', 'lab'];
+    if (hash && valid.includes(hash)) {
+      const btn = document.querySelector('.tab-btn[onclick*="' + hash + '"]');
+      switchTab(hash, btn);
+    }
+  });
+
+  // ── TOPIC SEARCH ──
+  function filterTopics(q) {
+    const lq = q.toLowerCase();
+    document.querySelectorAll('#topicGrid .topic-card').forEach(c => {
+      c.style.display = c.dataset.topic.includes(lq) ? '' : 'none';
+    });
+  }
+
+  // ── QUIZ DATA ──
+  const quizzes = [
+    // 0: DevOps Fundamentals
+    {
+      title: 'DevOps Fundamentals',
+      icon: '🛠️',
+      qs: [
+        { q: 'What does CALMS stand for in DevOps?', opts: ['Culture, Automation, Lean, Measurement, Sharing', 'Code, Agile, Linux, Management, Security', 'Continuous, Automation, Learning, Monitoring, Services', 'Configuration, Automation, Load, Metrics, Scripting'], ans: 0 },
+        { q: 'Who coined the term "DevOps"?', opts: ['Linus Torvalds', 'Patrick Debois', 'Martin Fowler', 'Kent Beck'], ans: 1 },
+        { q: 'Which of the following is NOT a phase in the DevOps infinity loop?', opts: ['Plan', 'Monitor', 'Purchase', 'Deploy'], ans: 2 },
+        { q: 'What does DORA stand for?', opts: ['DevOps Operations Research & Analysis', 'DevOps Research and Assessment', 'Distributed Operations Review Application', 'Dynamic Operations Reliability Audit'], ans: 1 },
+        { q: "What is the elite performers' deployment frequency per DORA metrics?", opts: ['Once per month', 'Once per week', 'Once per day', 'Multiple times per day'], ans: 3 },
+        { q: 'What does "Shift Left" mean in DevOps?', opts: ['Moving operations teams to the left side of the office', 'Performing testing and security checks earlier in the development lifecycle', 'Using left-to-right coding conventions', 'Shifting deployment to off-peak hours'], ans: 1 },
+        { q: 'What does IaC stand for?', opts: ['Integrated Application Code', 'Infrastructure as Code', 'Internal Automation Configuration', 'Internet and Cloud'], ans: 1 },
+        { q: 'What is the primary goal of DevOps?', opts: ['Reduce developer salaries', 'Eliminate the operations team', 'Speed + Stability — reliable, frequent delivery of business value', 'Replace Agile methodology'], ans: 2 },
+        { q: 'Which DORA metric measures time from code commit to production?', opts: ['Deployment Frequency', 'Lead Time for Changes', 'Change Failure Rate', 'Mean Time to Restore'], ans: 1 },
+        { q: 'What is "Integration Hell"?', opts: ['A CI/CD tool for complex pipelines', 'The painful process of merging code after long isolation periods', 'A monitoring dashboard for production issues', 'A Docker networking configuration'], ans: 1 }
+      ]
+    },
+    // 1: Jenkins & CI/CD
+    {
+      title: 'Jenkins & CI/CD',
+      icon: '⚙️',
+      qs: [
+        { q: 'Jenkins was originally called?', opts: ['Maven', 'Gradle', 'Hudson', 'Ant'], ans: 2 },
+        { q: 'Jenkins runs on which default port?', opts: ['80', '443', '8080', '3000'], ans: 2 },
+        { q: 'A Jenkinsfile is written in which language?', opts: ['Python', 'Ruby', 'Groovy', 'Bash'], ans: 2 },
+        { q: 'What is the difference between Continuous Delivery and Continuous Deployment?', opts: ['They are the same thing', 'Delivery requires manual approval for production; Deployment is fully automatic', 'Deployment requires manual approval; Delivery is automatic', 'Delivery is faster than Deployment'], ans: 1 },
+        { q: 'Which pipeline syntax is recommended for most CI/CD pipelines in Jenkins?', opts: ['Scripted Pipeline', 'Freestyle Pipeline', 'Declarative Pipeline', 'Matrix Pipeline'], ans: 2 },
+        { q: "What is the Jenkins Master's primary role?", opts: ['Executes all build jobs directly', 'Manages the web UI, schedules builds, and dispatches work to agents', 'Stores source code', 'Runs Docker containers'], ans: 1 },
+        { q: "Martin Fowler's Continuous Integration article was published in which year?", opts: ['1999', '2004', '2006', '2011'], ans: 2 },
+        { q: 'Which block in a Declarative Jenkins Pipeline defines environment variables?', opts: ['tools {}', 'options {}', 'environment {}', 'parameters {}'], ans: 2 },
+        { q: "Jenkins has how many plugins in its ecosystem?", opts: ['Over 100', 'Over 500', 'Over 1,800', 'Over 5,000'], ans: 2 },
+        { q: 'What is Maven used for in a CI/CD pipeline?', opts: ['Monitoring application performance', 'Managing Docker containers', 'Build automation and dependency management', 'Version control'], ans: 2 }
+      ]
+    },
+    // 2: Git & Version Control
+    {
+      title: 'Git & Version Control',
+      icon: '🌿',
+      qs: [
+        { q: 'What command initializes a new Git repository?', opts: ['git start', 'git init', 'git create', 'git new'], ans: 1 },
+        { q: 'What does git clone do?', opts: ['Creates a new branch', 'Copies a remote repository to the local machine', 'Merges two branches', 'Deletes a repository'], ans: 1 },
+        { q: 'What is the Git staging area also called?', opts: ['Repository', 'Working directory', 'Index', 'Remote'], ans: 2 },
+        { q: 'Which command creates and switches to a new branch in one step?', opts: ['git branch new-branch', 'git switch new-branch', 'git checkout -b new-branch', 'git create -b new-branch'], ans: 2 },
+        { q: 'What is a pull request?', opts: ['A command to pull code from remote', 'A request to merge code changes from one branch to another, with review', 'A way to delete a branch', 'A method to clone a repository'], ans: 1 },
+        { q: 'What does git stash do?', opts: ['Permanently deletes uncommitted changes', 'Saves uncommitted changes temporarily so you can switch branches', 'Commits all staged files', 'Pushes local changes to remote'], ans: 1 },
+        { q: 'What is the key difference between git merge and git rebase?', opts: ['They produce identical history', 'Merge creates a merge commit; Rebase rewrites history by moving commits', 'Rebase is slower than merge', 'Merge is for remote repos; Rebase is for local'], ans: 1 },
+        { q: 'What does CVS stand for in version control?', opts: ['Current Version System', 'Concurrent Versions System', 'Centralized Version Storage', 'Code Version Server'], ans: 1 },
+        { q: 'Which Git command shows the commit history?', opts: ['git status', 'git diff', 'git log', 'git show'], ans: 2 },
+        { q: 'What is a .gitignore file used for?', opts: ['Listing commits to ignore', 'Specifying files/directories Git should not track', 'Storing Git credentials', 'Configuring Git server settings'], ans: 1 }
+      ]
+    },
+    // 3: Docker & Containers
+    {
+      title: 'Docker & Containers',
+      icon: '🐳',
+      qs: [
+        { q: 'What is Docker?', opts: ['A virtual machine manager', 'A containerization platform for consistent application deployment', 'A CI/CD automation server', 'A configuration management tool'], ans: 1 },
+        { q: 'What is the difference between a Docker image and a container?', opts: ['They are the same thing', 'Image is a read-only template; Container is a running instance of an image', 'Container is a read-only template; Image is a running instance', 'Containers can be shared on Docker Hub; Images cannot'], ans: 1 },
+        { q: 'Which file defines how to build a Docker image?', opts: ['docker-compose.yml', 'Containerfile', 'Dockerfile', 'Jenkinsfile'], ans: 2 },
+        { q: 'Which command runs a new Docker container?', opts: ['docker start', 'docker run', 'docker exec', 'docker create'], ans: 1 },
+        { q: 'What does "docker ps" show?', opts: ['The list of Docker images', 'The list of running containers', 'The Docker network configuration', 'The Dockerfile syntax'], ans: 1 },
+        { q: 'Which command pulls an image from Docker Hub?', opts: ['docker get', 'docker fetch', 'docker pull', 'docker download'], ans: 2 },
+        { q: 'What is Docker Hub?', opts: ['A Docker installation tool', 'A public registry for sharing Docker images', 'A Docker container management GUI', 'A Docker networking component'], ans: 1 },
+        { q: 'What does docker-compose do?', opts: ['Creates Dockerfiles automatically', 'Builds and runs multi-container Docker applications defined in YAML', 'Monitors Docker container performance', 'Pushes images to Docker Hub'], ans: 1 },
+        { q: 'What is the ENTRYPOINT instruction in a Dockerfile?', opts: ['The base image to use', 'The working directory inside the container', 'The default command that runs when the container starts', 'An environment variable definition'], ans: 2 },
+        { q: 'Which command gracefully stops a running container?', opts: ['docker kill', 'docker stop', 'docker exit', 'docker remove'], ans: 1 }
+      ]
+    },
+    // 4: Configuration Management
+    {
+      title: 'Configuration Management',
+      icon: '🔧',
+      qs: [
+        { q: 'What does Ansible use to define automation tasks?', opts: ['Recipes', 'Manifests', 'Playbooks', 'Templates'], ans: 2 },
+        { q: 'What is the key advantage of Ansible over Chef and Puppet?', opts: ['It is written in Java', 'It is agentless — no agent needs to be installed on managed nodes', 'It uses a master-agent architecture', 'It only works on Windows'], ans: 1 },
+        { q: 'What are Chef automation scripts called?', opts: ['Playbooks', 'Manifests', 'Recipes', 'Runbooks'], ans: 2 },
+        { q: 'What language are Chef recipes written in?', opts: ['Python', 'Ruby DSL', 'YAML', 'JSON'], ans: 1 },
+        { q: 'What is a Puppet manifest?', opts: ['A list of Docker images', 'A YAML file defining Ansible tasks', 'A file written in Puppet DSL that describes the desired state of infrastructure', 'A Chef cookbook definition'], ans: 2 },
+        { q: 'What architecture does SaltStack use?', opts: ['Agentless', 'Master-Minion', 'Client-Server', 'Peer-to-peer'], ans: 1 },
+        { q: 'What does Infrastructure as Code (IaC) primarily enable?', opts: ['Faster network connections', 'Version control, reproducibility, and automation of infrastructure', 'Better UI for cloud dashboards', 'Automatic code compilation'], ans: 1 },
+        { q: 'Which tool uses YAML-based playbooks and SSH for agentless automation?', opts: ['Chef', 'Puppet', 'SaltStack', 'Ansible'], ans: 3 },
+        { q: 'What is a Chef cookbook?', opts: ['A collection of Chef recipes and related files for a specific application or service', 'A YAML file defining Docker containers', 'A Jenkins pipeline script', 'A Puppet manifest collection'], ans: 0 },
+        { q: 'Which configuration management tool uses a declarative, model-driven approach with a Master-Agent architecture?', opts: ['Ansible', 'Chef', 'Puppet', 'SaltStack'], ans: 2 }
+      ]
+    }
+  ];
+
+  // ── QUIZ STATE ──
+  // ── PRACTICE DATA ──
+
+  // Command Output: what is the result / next step for this command/scenario?
+  const cmdOutputData = [
+    // Topic 0: DevOps Fundamentals
+    [
+      { q: 'git push origin main triggers a Jenkins webhook. What happens next automatically?', opts: ['Nothing — webhooks only notify', 'Jenkins starts a new build automatically', 'Jenkins sends an email only', 'GitHub deploys the code'], ans: 1 },
+      { q: 'CPU monitoring alert fires at 95% (threshold: 80%). Auto-scaling policy is active. What happens?', opts: ['Server crashes', 'Alert is logged but nothing changes', 'A new server instance is automatically launched', 'Jenkins is notified to stop the build'], ans: 2 },
+      { q: 'Terraform scripts provision 10 identical servers using code files. Which DevOps concept is this?', opts: ['Continuous Deployment', 'Infrastructure as Code (IaC)', 'Blue-Green Deployment', 'Canary Release'], ans: 1 },
+      { q: 'A developer pushes broken code. Jenkins build fails. What should the pipeline do next?', opts: ['Deploy to production anyway', 'Stop pipeline, notify developer, block merge', 'Retry the build 3 times', 'Skip to the deploy stage'], ans: 1 },
+      { q: 'Amazon deploys features thousands of times per day. Which DORA metric does this describe?', opts: ['Lead Time for Changes', 'Change Failure Rate', 'Deployment Frequency', 'Mean Time to Restore'], ans: 2 },
+      { q: 'A deployment fails in production. Team restores service in 12 minutes. Which DORA metric measures this?', opts: ['Deployment Frequency', 'Lead Time for Changes', 'Change Failure Rate', 'Mean Time to Restore (MTTR)'], ans: 3 },
+      { q: 'After CI passes, code is packaged and sent to the Test environment automatically. No manual step needed for production. This is called?', opts: ['Continuous Deployment', 'Continuous Delivery', 'Continuous Integration', 'Continuous Monitoring'], ans: 1 },
+      { q: 'A new developer runs one script and gets a full dev environment in 5 minutes. Which practice made this possible?', opts: ['Continuous Monitoring', 'Infrastructure as Code', 'Continuous Deployment', 'Git branching'], ans: 1 },
+      { q: 'Grafana shows a memory leak alert. The DevOps team receives a notification. Which DevOps phase is this?', opts: ['Plan', 'Build', 'Deploy', 'Monitor'], ans: 3 },
+      { q: 'Code committed → built → tested → deployed to production without any manual gate. This describes which practice?', opts: ['Continuous Delivery', 'Continuous Deployment', 'Continuous Integration', 'Blue-Green Deployment'], ans: 1 }
+    ],
+    // Topic 1: Jenkins & CI/CD
+    [
+      { q: 'Jenkins pipeline: Checkout → Build → Test → Deploy. The Test stage fails. What runs next?', opts: ['Deploy stage runs anyway', 'Pipeline stops; Deploy stage is skipped', 'Pipeline retries Test 3 times', 'Only the failed test is re-run'], ans: 1 },
+      { q: 'sudo systemctl status jenkins shows "active (running)". What is the result of opening localhost:8080?', opts: ['404 Not Found', 'Connection refused', 'Jenkins dashboard loads', 'Tomcat homepage appears'], ans: 2 },
+      { q: 'Jenkinsfile stage has: when { branch "main" }. Developer pushes to feature/login. What happens to that stage?', opts: ['Stage runs normally', 'Stage is skipped', 'Build fails with error', 'Stage runs twice'], ans: 1 },
+      { q: 'mvn clean install fails with BUILD FAILURE inside Jenkins. What is the next stage in the pipeline?', opts: ['Test stage runs', 'Deploy stage runs with old artifact', 'Pipeline aborts; no further stages run', 'Jenkins retries the Maven build'], ans: 2 },
+      { q: 'Jenkins Agent-1 is busy. Agent-2 is free. A new build is triggered. What happens?', opts: ['Build waits for Agent-1', 'Build runs on Agent-2', 'Build fails — no agent available', 'Build runs on Master'], ans: 1 },
+      { q: 'mvn clean package produces target/app.war. Jenkins copies it to Tomcat webapps/. User opens the browser. What is the result?', opts: ['404 — WAR not found', 'App is deployed and accessible', 'Tomcat crashes', 'Jenkins shows deployment failed'], ans: 1 },
+      { q: 'BUILD SUCCESS shown in Jenkins console. mvn test ran 45 tests, 0 failures. What does this confirm?', opts: ['Code is deployed to production', 'All unit tests passed; CI is green', 'Code review is approved', 'Docker image was built'], ans: 1 },
+      { q: 'Jenkins pipeline has environment { DB_PASS = "secret123" }. What security concern does this create?', opts: ['None — environment variables are safe', 'Secret is exposed in source code and logs', 'Jenkins encrypts it automatically', 'Only admins can see it'], ans: 1 },
+      { q: 'Jenkins build fails: "Port 8080 already in use". What is the most likely cause?', opts: ['Jenkins is not installed', 'Tomcat is also running on port 8080', 'Maven dependency is missing', 'Git clone failed'], ans: 1 },
+      { q: 'Declarative pipeline vs Scripted pipeline: which is recommended for most modern CI/CD pipelines?', opts: ['Scripted Pipeline — more powerful', 'Declarative Pipeline — simpler, readable syntax', 'Freestyle — easiest to configure', 'Matrix Pipeline — runs all jobs in parallel'], ans: 1 }
+    ],
+    // Topic 2: Git & Version Control
+    [
+      { q: 'git status shows "nothing to commit, working tree clean". What does this mean?', opts: ['Repository is empty', 'No changes since the last commit', 'All files are untracked', 'Remote is ahead of local'], ans: 1 },
+      { q: 'git log --oneline shows 5 lines. What does each line represent?', opts: ['One branch', 'One file changed', 'One commit with hash and message', 'One developer'], ans: 2 },
+      { q: 'git stash is run, then git checkout feature, then git stash pop. What is the result?', opts: ['Stash is permanently deleted', 'Saved changes are restored on the feature branch', 'Feature branch is deleted', 'Git throws a conflict error'], ans: 1 },
+      { q: 'git push fails: "rejected — remote contains work you do not have". What is the correct next step?', opts: ['Force push: git push --force', 'git pull first, resolve any conflicts, then push', 'Delete the remote branch and push again', 'Create a new branch and push there'], ans: 1 },
+      { q: 'git clone https://github.com/user/repo.git is run. What is created on the local machine?', opts: ['Only the latest file snapshot', 'Full copy of the repo with complete history', 'An empty folder with .git only', 'A link to the remote repository'], ans: 1 },
+      { q: 'git reset --hard HEAD~1 is executed. What is the result?', opts: ['Last commit is undone; changes moved to staging', 'Last commit is undone; changes are permanently lost', 'Working directory is cleared but commit remains', 'Git resets the remote repository'], ans: 1 },
+      { q: '.gitignore contains *.log. Developer runs git add app.log. What happens?', opts: ['File is added normally', 'File is ignored — not added to staging', 'Git throws an error', '.gitignore is deleted'], ans: 1 },
+      { q: 'git fetch origin is run. How does it differ from git pull?', opts: ['They are identical', 'Fetch downloads changes but does NOT merge; pull downloads and merges', 'Fetch is faster but less safe', 'Pull only downloads; fetch merges'], ans: 1 },
+      { q: 'Developer creates feature/login, makes 3 commits, then merges to main. What appears in git log?', opts: ['Only the 3 feature commits', 'A merge commit plus the 3 feature commits', 'Only the merge commit', 'No record of the feature commits'], ans: 1 },
+      { q: 'git diff HEAD~1 HEAD is run. What does the output show?', opts: ['All uncommitted changes', 'Changes between the last commit and the one before it', 'Difference between local and remote', 'List of all branches'], ans: 1 }
+    ],
+    // Topic 3: Docker & Containers
+    [
+      { q: 'docker build -t myapp:v1 . runs successfully. What is created?', opts: ['A running container', 'A Docker image named myapp:v1', 'A Dockerfile template', 'A Docker volume'], ans: 1 },
+      { q: 'docker ps shows no output. docker ps -a shows one container with status "Exited". What does this mean?', opts: ['Container was never started', 'Container ran and has stopped', 'Container is paused', 'Container is running in detached mode'], ans: 1 },
+      { q: 'docker run -p 8090:8080 myapp:v1. User opens http://localhost:8080. What happens?', opts: ['App loads successfully', 'Connection refused — correct URL is localhost:8090', 'App loads at port 8080 and 8090', 'Docker throws a port conflict error'], ans: 1 },
+      { q: 'docker exec -it abc123 bash is run. What does this do?', opts: ['Stops container abc123', 'Builds a new image from container abc123', 'Opens interactive bash shell inside container abc123', 'Copies files from container to host'], ans: 2 },
+      { q: 'Dockerfile: COPY target/*.war /usr/local/tomcat/webapps/ROOT.war. mvn package was not run first. docker build is executed. What happens?', opts: ['Build succeeds with empty WAR', 'Build fails — no WAR file found to copy', 'Docker downloads WAR from Maven', 'Build succeeds but container crashes later'], ans: 1 },
+      { q: 'docker stop $(docker ps -q) is executed. What is the effect?', opts: ['All images are deleted', 'All running containers are stopped', 'All containers including stopped ones are removed', 'Docker daemon restarts'], ans: 1 },
+      { q: 'Container runs fine but all data is lost when container restarts. What is missing?', opts: ['Dockerfile EXPOSE instruction', 'Docker network configuration', 'Persistent volume mount (-v flag)', 'ENV variables'], ans: 2 },
+      { q: 'docker pull ubuntu:22.04 is run. docker images is checked. What appears?', opts: ['Nothing — pull only caches', 'ubuntu image with tag 22.04 in image list', 'A running ubuntu container', 'ubuntu:latest regardless of tag'], ans: 1 },
+      { q: 'Jenkins pipeline runs docker build but fails "permission denied /var/run/docker.sock". What is the fix?', opts: ['Restart Docker service', 'Add jenkins user to docker group: sudo usermod -aG docker jenkins', 'Run Jenkins as root', 'Install Docker inside Jenkins container'], ans: 1 },
+      { q: 'docker run -e DB_HOST=localhost. App inside the container connects to localhost. What problem occurs?', opts: ['No problem — works correctly', 'localhost inside the container refers to the container itself, not the host machine', 'Docker blocks localhost connections', 'Port 5432 is not exposed'], ans: 1 }
+    ],
+    // Topic 4: Configuration Management
+    [
+      { q: 'Chef recipe: package "nginx" do action :install end. Run on same server twice. What happens the second time?', opts: ['Nginx is reinstalled fresh', 'Chef throws an error — already installed', 'Chef checks state; nginx already installed, no action taken (idempotent)', 'Recipe is skipped entirely'], ans: 2 },
+      { q: 'ansible-playbook setup.yml runs on 20 servers. 1 server is already fully configured. What happens to that server?', opts: ['Ansible skips it entirely', 'Ansible reinstalls everything', 'Ansible checks state; no changes made (idempotent)', 'Ansible marks it as failed'], ans: 2 },
+      { q: 'salt "*" test.ping returns "True" from 5 minions. What does this confirm?', opts: ['All 5 minions installed software successfully', 'All 5 minions are connected and responsive to the master', 'Salt states have been applied', 'Master can SSH into all minions'], ans: 1 },
+      { q: 'puppet agent -t runs. Console shows "Notice: Applied catalogue in 12 seconds". What happened?', opts: ['Puppet Master was reconfigured', 'Puppet applied configuration from Master to this node successfully', 'Certificate was renewed', 'Puppet agent was installed'], ans: 1 },
+      { q: 'Ansible playbook fails on server 3 of 20. What happens to servers 4 through 20 by default?', opts: ['All remaining servers are skipped', 'Ansible continues; failed host is skipped', 'Entire playbook stops immediately', 'Ansible retries server 3 before continuing'], ans: 1 },
+      { q: 'Chef Solo: chef-client --local-mode -o recipe[java_cookbook]. Error: "WARN: Did not find cookbook". What is the issue?', opts: ['Chef is not installed', 'Cookbook is not inside a cookbooks/ directory', 'Java is not installed on the node', 'Recipe name is misspelled'], ans: 1 },
+      { q: 'salt "web*" state.apply webserver is executed on Master. Which minions receive this command?', opts: ['All minions', 'Only minions named exactly "web"', 'All minions whose ID starts with "web"', 'Minions in the "web" group only'], ans: 2 },
+      { q: 'Puppet manifest: ensure => installed. Java is already present on the node. Puppet runs. What is the result?', opts: ['Puppet reinstalls Java', 'Puppet uninstalls then reinstalls Java', 'No change — Puppet reports 0 resources changed', 'Puppet throws a duplicate resource error'], ans: 2 },
+      { q: 'Ansible playbook has become: yes. What does this do?', opts: ['Makes the playbook run faster', 'Runs all tasks with sudo/root privileges', 'Enables parallel execution across hosts', 'Creates a backup before making changes'], ans: 1 },
+      { q: 'SaltStack uses ZeroMQ messaging. What advantage does this give over SSH-based tools?', opts: ['Better security than SSH', 'Very fast real-time communication at large scale', 'No master server needed', 'Supports more operating systems'], ans: 1 }
+    ]
+  ];
+
+  // Use-Case: scenario-based decision questions
+  const usecaseData = [
+    // Topic 0: DevOps Fundamentals
+    [
+      { q: 'Your company releases software once every 3 months. Production failures are frequent. Which DevOps practice should you adopt first?', opts: ['Hire more developers', 'Implement a CI/CD pipeline', 'Switch to Waterfall methodology', 'Add more manual testing steps'], ans: 1 },
+      { q: 'Dev environment works fine, but production crashes with "dependency not found". Which practice prevents this?', opts: ['Better documentation', 'More code reviews', 'Containerization with Docker', 'Hiring a DevOps engineer'], ans: 2 },
+      { q: 'After deployment, users report slow performance. Your team finds out 2 days later via a complaint. Which DevOps practice is missing?', opts: ['Continuous Integration', 'Continuous Monitoring', 'Infrastructure as Code', 'Blue-Green Deployment'], ans: 1 },
+      { q: 'A new team member takes 3 days to set up their local environment. Which practice reduces this to minutes?', opts: ['Better onboarding documents', 'Infrastructure as Code / environment automation', 'Pair programming', 'Using cloud IDE only'], ans: 1 },
+      { q: 'Developers and operations blame each other when production breaks. Which DevOps cultural value is missing?', opts: ['Automation', 'Continuous Integration', 'Shared Responsibility / Blameless Culture', 'Shift-Left Testing'], ans: 2 },
+      { q: 'A feature branch wasn\'t merged for 3 weeks. Now merging causes massive conflicts. Which practice prevents this?', opts: ['More experienced developers', 'Continuous Integration — frequent code merges', 'Using SVN instead of Git', 'Feature flags'], ans: 1 },
+      { q: 'Your team takes 4 hours to restore after a failed deployment. Which DORA metric is performing poorly?', opts: ['Deployment Frequency', 'Lead Time for Changes', 'Change Failure Rate', 'Mean Time to Restore (MTTR)'], ans: 3 },
+      { q: 'You want to deploy identical configurations to 50 servers without manual SSH. Which approach is best?', opts: ['Write a shell script and SSH manually', 'Use Ansible/Chef to automate configuration', 'Hire 5 operations staff', 'Use copy-paste from server to server'], ans: 1 },
+      { q: 'Your competitor releases features weekly; your team releases monthly. Which DORA metric are you underperforming?', opts: ['Mean Time to Restore', 'Change Failure Rate', 'Deployment Frequency', 'Lead Time for Changes'], ans: 2 },
+      { q: 'After each release, 30% of deployments cause issues requiring rollback. Which DORA metric is poor?', opts: ['Deployment Frequency', 'Change Failure Rate', 'Mean Time to Restore', 'Lead Time for Changes'], ans: 1 }
+    ],
+    // Topic 1: Jenkins & CI/CD
+    [
+      { q: 'Team pushes code Friday evening. A broken build stays undetected until Monday morning. Which Jenkins feature helps immediately?', opts: ['Manual code review', 'Email/Slack notification on build failure', 'Daily build schedule only', 'More unit tests'], ans: 1 },
+      { q: 'Jenkins build takes 40 mins: checkout(5) + test(30) + package(5). How do you reduce this?', opts: ['Use a faster server', 'Run tests in parallel stages', 'Remove the test stage', 'Use Freestyle instead of Pipeline'], ans: 1 },
+      { q: 'A database password must be used in Jenkinsfile without being visible in source code. What should you use?', opts: ['Hard-code it with a comment', 'Store it in a .env file', 'Jenkins Credentials store with credential binding', 'Encrypt it in Base64 in Jenkinsfile'], ans: 2 },
+      { q: 'Multiple feature branches need separate CI pipelines triggered automatically. Which Jenkins feature helps?', opts: ['One Freestyle job with branch parameter', 'Multibranch Pipeline', 'Scheduled builds', 'Manual build triggers'], ans: 1 },
+      { q: 'Manager must approve before code goes to production. Build should pause and wait. Which Jenkins feature handles this?', opts: ['Email the manager manually', 'input step / Manual Approval gate in pipeline', 'Deploy and then notify', 'Add a 24-hour wait step'], ans: 1 },
+      { q: 'Jenkins disk is full. Builds are failing. What long-term setting prevents this?', opts: ['Buy more disk immediately', 'Configure build retention policy (keep only last N builds)', 'Delete all workspaces manually', 'Stop CI and build locally'], ans: 1 },
+      { q: 'Dev, Test, and Prod need the same WAR deployed. How should Jenkins pipeline stages be structured?', opts: ['Build separately for each environment', 'Build once, deploy to Dev → Test → Prod in sequence', 'Deploy only to Prod; skip Dev/Test', 'Use 3 separate Jenkins instances'], ans: 1 },
+      { q: 'Code works in dev but breaks when Maven version differs on Jenkins server. What is the best fix?', opts: ['Always use the latest Maven', 'Configure specific Maven version in Jenkins Global Tool Configuration', 'Install Maven manually on each build', 'Remove Maven dependency'], ans: 1 },
+      { q: 'Jenkins pipeline succeeds but app is broken in production after deploy. Which stage is missing?', opts: ['Another Test stage', 'Smoke test / Health check after deployment', 'Code review stage', 'Another Build stage'], ans: 1 },
+      { q: 'A Jenkins job should only run on weekends to reduce server load. Which feature supports this?', opts: ['Webhook trigger', 'Build on Push trigger', 'Cron-based Schedule trigger', 'Manual trigger only'], ans: 2 }
+    ],
+    // Topic 2: Git & Version Control
+    [
+      { q: 'Two developers modify the same file. Developer A pushes first. Developer B tries to push. What should B do?', opts: ['Force push to override A\'s changes', 'git pull, resolve any conflicts, then push', 'Create a new repository', 'Ask A to delete their commit'], ans: 1 },
+      { q: 'A critical bug is in production. Fix must go live immediately without including new dev features. Which Git strategy?', opts: ['Merge all of develop branch to main', 'Create a hotfix branch from main, fix, merge back', 'Commit directly to main', 'Cherry-pick from develop'], ans: 1 },
+      { q: 'You accidentally committed a sensitive API key but haven\'t pushed yet. How do you undo?', opts: ['Delete the entire repository', 'git reset HEAD~1, remove key from file, recommit', 'Push and then delete the key from GitHub UI', 'Nothing can be done'], ans: 1 },
+      { q: 'Feature branch has 8 messy WIP commits. Before merging to main, you want one clean commit. How?', opts: ['Delete all commits and rewrite', 'git rebase -i HEAD~8 (interactive squash)', 'Merge as-is; history doesn\'t matter', 'Cherry-pick the last commit only'], ans: 1 },
+      { q: 'Production issue appeared sometime in the last 50 commits. You need to find which commit caused it. Best approach?', opts: ['Read all 50 commit messages', 'git bisect to binary search commits', 'git log and guess', 'Revert all 50 commits'], ans: 1 },
+      { q: '.env file with secrets was pushed to GitHub. What must you do immediately?', opts: ['Make the repo private', 'Delete the file and push again', 'Remove from history with BFG/filter-branch AND rotate all secrets', 'Add .env to .gitignore'], ans: 2 },
+      { q: 'You are mid-feature when an urgent task comes. You don\'t want to commit incomplete code. What do you use?', opts: ['Create a new branch', 'git stash to save work temporarily', 'Delete working changes temporarily', 'Commit with message "WIP" and reset later'], ans: 1 },
+      { q: 'Team uses feature branches. Code review is mandatory before merge. Which workflow best supports this?', opts: ['Everyone pushes directly to main', 'GitHub Flow with Pull Requests', 'Committing directly to release branch', 'Using SVN centralized model'], ans: 1 },
+      { q: 'CI pipeline clones a large 4GB repo. It is very slow. What optimization helps most for CI?', opts: ['Use a faster internet connection', 'git clone --depth 1 (shallow clone)', 'Split the repo into microrepos', 'Cache the full clone forever'], ans: 1 },
+      { q: 'main branch should only accept code via Pull Requests with at least one reviewer. How to enforce this?', opts: ['Trust developers to follow process', 'Configure Branch Protection Rules on GitHub', 'Add a pre-commit hook', 'Send an email reminder'], ans: 1 }
+    ],
+    // Topic 3: Docker & Containers
+    [
+      { q: 'App works on developer\'s laptop but fails on server due to different environment. Which tool eliminates this?', opts: ['Better documentation', 'Docker containers (same environment everywhere)', 'Virtual Machines', 'Manually matching OS versions'], ans: 1 },
+      { q: 'Jenkins builds a new Docker image on every pipeline run. Old images fill up disk space quickly. What should you add?', opts: ['More disk space', 'docker rmi cleanup step in pipeline after build', 'Stop building Docker images in CI', 'Push only to Docker Hub'], ans: 1 },
+      { q: 'Container crashes and restarts. Application logs are lost each time. How do you persist logs?', opts: ['Increase container memory', 'Mount a volume: docker run -v /host/logs:/app/logs', 'Use a bigger base image', 'Disable container restart policy'], ans: 1 },
+      { q: 'Security scan finds critical vulnerability in base image ubuntu:18.04. What is the immediate fix?', opts: ['Ignore it — old images are stable', 'Update Dockerfile to ubuntu:22.04 and rebuild', 'Add a firewall rule', 'Remove Docker and use VMs'], ans: 1 },
+      { q: 'Dev, Test, Prod need the same app with different database configs. Best practice?', opts: ['Build separate Docker images for each environment', 'Pass configs as environment variables at runtime: docker run -e ENV=prod', 'Hardcode configs in Dockerfile', 'Use different base images'], ans: 1 },
+      { q: 'Docker image is 3.5GB and CI pipeline is very slow due to large image. How do you reduce image size?', opts: ['Use a faster build server', 'Use alpine base image and multi-stage builds with .dockerignore', 'Remove Docker caching', 'Build image on developer laptop only'], ans: 1 },
+      { q: 'Jenkins deploys a new container but old container is still running on port 8090. What happens and how to fix?', opts: ['New container runs on port 8091 automatically', 'Port conflict — stop old container first: docker stop <old-id>', 'Docker replaces old container automatically', 'Restart Docker daemon'], ans: 1 },
+      { q: 'Two containers (app + database) need to communicate. What Docker feature enables this?', opts: ['Expose port 8080 on both containers', 'Docker network — place both containers on same network', 'Use host networking for both', 'Map the same port on both containers'], ans: 1 },
+      { q: 'COPY . /app in Dockerfile copies node_modules/ too, making the build very slow. Fix?', opts: ['Use ADD instead of COPY', 'Add node_modules/ to .dockerignore file', 'Run npm install before docker build', 'Use RUN npm install inside Dockerfile only'], ans: 1 },
+      { q: 'Need to run 10 identical web containers for load balancing. Which tool manages this at scale?', opts: ['Run docker run 10 times manually', 'Docker Swarm or Kubernetes', 'Create 10 Docker images', 'Use 10 separate VMs'], ans: 1 }
+    ],
+    // Topic 4: Configuration Management
+    [
+      { q: 'You need to configure 100 servers identically. Manual SSH would take days. Which approach is best?', opts: ['Hire 10 sysadmins', 'Write a bash script and run manually on each', 'Use Ansible playbook targeting all servers', 'Configure one server and clone it 99 times'], ans: 2 },
+      { q: 'Your team knows Python/YAML but not Ruby. You need a config management tool. Which should you choose?', opts: ['Chef (Ruby DSL)', 'Puppet (Puppet DSL)', 'Ansible (YAML)', 'SaltStack (Python API only)'], ans: 2 },
+      { q: 'Config file has a database password. It must be version-controlled but kept secret. Which feature helps?', opts: ['Store plain text in Git private repo', 'Use Ansible Vault to encrypt secrets', 'Email the password separately', 'Never version-control configs'], ans: 1 },
+      { q: 'Puppet manifest must install Java only on "java-node" servers and Nginx only on others. How?', opts: ['Write two separate Puppet Masters', 'Use the node keyword in manifest to target specific hostnames', 'Run Puppet Agent manually on each server', 'Create separate manifests and pick manually'], ans: 1 },
+      { q: 'SaltStack must push new config to all web servers instantly when a change is made. Which model to use?', opts: ['Pull model — wait for minions to check in', 'Push model: Master pushes via salt "web*" state.apply', 'SSH to each server manually', 'Schedule a cron job on each minion'], ans: 1 },
+      { q: 'After running a Chef recipe 5 times on the same server, nginx is installed only once. Which principle is this?', opts: ['Scalability', 'Automation', 'Idempotency', 'Pull Model'], ans: 2 },
+      { q: 'Ansible playbook fails on 3 of 50 servers. You want to retry only those 3 failed servers. How?', opts: ['Re-run full playbook on all 50', 'Use the .retry file generated by Ansible with --limit', 'SSH manually to 3 servers and configure', 'Create a new inventory with just 3 servers'], ans: 1 },
+      { q: 'Team needs to see which servers have which software installed. Which config tool feature helps?', opts: ['Manually SSH and check each server', 'Use Chef node data / Ansible facts / Puppet inventory', 'Run apt list on each server', 'Check DNS records'], ans: 1 },
+      { q: 'New server spun up on AWS. It should auto-configure without any manual steps. Which approach?', opts: ['SSH in and configure manually', 'Use cloud-init with Ansible/Chef/Puppet to auto-apply config on boot', 'Copy config from another server', 'Leave defaults and configure later'], ans: 1 },
+      { q: 'Chef vs Puppet: your team wants centralized control with a master server and pull-based model. Both support this. What is the key difference in language?', opts: ['Chef uses YAML; Puppet uses JSON', 'Chef uses Ruby DSL; Puppet uses its own Puppet DSL', 'Chef uses Bash; Puppet uses Python', 'Both use the same language'], ans: 1 }
+    ]
+  ];
+
+  // Debug: find the error in config/command/approach
+  const debugData = [
+    // Topic 0: DevOps Fundamentals
+    [
+      { q: 'Team claims to use DevOps but Dev throws code over the wall and Ops deploys it days later with no communication. Which principle is violated?', opts: ['Automation', 'Collaboration / Shared Responsibility', 'Continuous Monitoring', 'Infrastructure as Code'], ans: 1 },
+      { q: 'Monitoring alerts go only to the Ops team. Developers are never notified of production issues. Which DevOps principle is missing?', opts: ['Containerization', 'Transparency and Feedback Loops', 'Continuous Deployment', 'Source Control'], ans: 1 },
+      { q: 'CI is set up but deployment still requires a 3-day manual approval chain. This contradicts which DevOps goal?', opts: ['Security', 'Automation and Continuous Delivery', 'Code Quality', 'Team Size Reduction'], ans: 1 },
+      { q: 'Dev environment uses Ubuntu 20.04. Production uses CentOS 7. App breaks in production. What is the root cause?', opts: ['Bad code quality', 'Environment inconsistency — IaC not applied', 'Too many developers', 'Missing documentation'], ans: 1 },
+      { q: 'CI pipeline only runs on the main branch. Feature branches are never tested automatically. What is the problem?', opts: ['CI is too expensive', 'Branches not integrated — bugs discovered only when merging', 'Feature branches should not be tested', 'CI only works on main by design'], ans: 1 },
+      { q: 'Production outage lasts 6 hours. Team had no runbook or incident response plan. Which DevOps practice was missing?', opts: ['Continuous Deployment', 'Incident Response planning and runbooks', 'More developers on call', 'Automatic scaling'], ans: 1 },
+      { q: 'A new microservice was deployed with no monitoring configured. Issue discovered 2 days later by a user complaint. What was missing?', opts: ['More testing before deployment', 'Continuous Monitoring for new services from day one', 'Manual testing after deployment', 'A staging environment'], ans: 1 },
+      { q: 'Team automates build and test but deploys manually by copying files via FTP. What gap exists in the pipeline?', opts: ['Build automation is broken', 'Continuous Delivery / Deployment automation is missing', 'More tests are needed', 'Source control is missing'], ans: 1 },
+      { q: 'DORA metric: Change Failure Rate is 45%. Industry elite is below 5%. What does this indicate?', opts: ['Deployments are too frequent', 'Most deployments cause failures — quality and testing process needs fixing', 'Team is too large', 'Monitoring is insufficient'], ans: 1 },
+      { q: 'Team blames each other every time production breaks. Ops blames devs; devs blame ops. Which cultural problem exists?', opts: ['Lack of automation tools', 'No blameless culture / missing Shared Responsibility', 'Team is too small', 'CI/CD not configured'], ans: 1 }
+    ],
+    // Topic 1: Jenkins & CI/CD
+    [
+      { q: 'Jenkinsfile is at src/jenkins/Jenkinsfile. Pipeline Script Path is set to default "Jenkinsfile". Build fails. What is wrong?', opts: ['Groovy syntax error in Jenkinsfile', 'Script Path should be updated to src/jenkins/Jenkinsfile', 'Jenkins is not installed correctly', 'Maven is missing'], ans: 1 },
+      { q: 'Jenkins build always shows GREEN even when unit tests fail. Pipeline stage has sh "mvn test || true". What is the bug?', opts: ['mvn test is wrong command', '|| true suppresses the failure exit code — remove it', 'Jenkins does not support Maven', 'Tests are skipped'], ans: 1 },
+      { q: 'pipeline { environment { DB_PASS = "admin123" } } is committed to a public GitHub repo. What is the security error?', opts: ['Environment variables are not supported in Pipelines', 'Secret is exposed in source control — use Jenkins Credentials store instead', 'DB_PASS is the wrong variable name', 'Pipeline syntax is incorrect'], ans: 1 },
+      { q: 'Jenkins docker build fails: "permission denied while trying to connect to Docker daemon socket". What is the fix?', opts: ['Restart the Jenkins server', 'Add jenkins user to the docker group: sudo usermod -aG docker jenkins', 'Install Docker inside Jenkins workspace', 'Use Freestyle job instead of Pipeline'], ans: 1 },
+      { q: 'Jenkins pipeline feature/* branch deploys to production environment without any condition. What is the design error?', opts: ['Feature branches should not have Jenkinsfiles', 'Production deploy should only trigger from main/master branch using when { branch "main" }', 'Jenkins should not build feature branches', 'Webhook is misconfigured'], ans: 1 },
+      { q: 'Jenkins build succeeds but deployed app crashes immediately after deployment. No post-deploy health check exists. What stage is missing?', opts: ['Another build stage', 'Post-deploy smoke test / health check stage', 'Manual QA sign-off only', 'More unit tests in the build stage'], ans: 1 },
+      { q: 'Jenkins is configured to keep 500 builds with full workspace. Server disk is nearly full. What setting is wrong?', opts: ['Jenkins should not save workspaces', 'Build retention policy is too high — set to keep only last 10-20 builds', 'More agents are needed', 'Pipeline is running too frequently'], ans: 1 },
+      { q: 'mvn clean install fails in Jenkins with "Could not resolve dependencies". Works fine on developer laptop. What is the issue?', opts: ['Code is wrong', 'Jenkins server has no internet access or Maven repo is not configured', 'Jenkins version is too old', 'Git pull failed'], ans: 1 },
+      { q: 'Jenkins triggers build on every commit including documentation changes. This wastes build time. What is the fix?', opts: ['Use manual triggers only', 'Add path filter in webhook or pipeline to skip non-code changes', 'Disable CI for documentation repos', 'Write less documentation'], ans: 1 },
+      { q: 'Tomcat Deploy plugin fails with "connection refused" error. Jenkins can reach the server via SSH. What is the specific issue?', opts: ['SSH is blocked', 'Tomcat Manager app not enabled, wrong credentials, or wrong Tomcat port configured in plugin', 'Jenkins plugin is outdated', 'Maven build produced wrong artifact'], ans: 1 }
+    ],
+    // Topic 2: Git & Version Control
+    [
+      { q: 'git commit -m "fix bug" fails with "nothing to commit, working tree clean". Developer is confused. What step was skipped?', opts: ['git push was not done first', 'git add — files were never staged before committing', 'git init was not run', 'Remote was not configured'], ans: 1 },
+      { q: 'git push fails: "src refspec main does not match any". Fresh git init. What is wrong?', opts: ['Remote URL is wrong', 'Repository was cloned incorrectly', 'No commits exist yet — need at least one commit before pushing', 'main branch protection is enabled'], ans: 2 },
+      { q: 'git add . accidentally staged node_modules/ (500MB). Committed and pushed. What is the problem and fix?', opts: ['Nothing — node_modules are needed in repo', 'Repo is bloated; add node_modules/ to .gitignore and git rm -r --cached node_modules/', 'Use git reset --hard to fix', 'Delete the repo and start again'], ans: 1 },
+      { q: '.gitignore has *.log added after app.log was already committed. app.log still appears in git status. Why?', opts: ['.gitignore syntax is wrong', 'Once tracked, .gitignore does not stop tracking — run git rm --cached app.log', 'Git is broken on this machine', 'app.log must be deleted from filesystem'], ans: 1 },
+      { q: 'Developer runs git reset --hard HEAD~5. Immediately regrets it. Are those 5 commits gone permanently?', opts: ['Yes — hard reset is irreversible', 'No — find them via git reflog and recover with git checkout', 'Partially — only uncommitted changes are lost', 'Yes — unless a remote backup exists'], ans: 1 },
+      { q: 'Merge conflict: developer accepts all "incoming" changes without reviewing each one. What is the risk?', opts: ['No risk — incoming is always correct', 'Losing other developer\'s valid work that was in the "current" version', 'Creating duplicate commits', 'Breaking the git history'], ans: 1 },
+      { q: 'Team has 60 stale branches. Nobody knows which are merged. git branch -a shows all. How to find merged branches?', opts: ['Delete all branches and start fresh', 'git branch --merged main shows branches already merged', 'git log --branches lists them', 'git status shows merged branches'], ans: 1 },
+      { q: 'CI/CD clones full 4GB repo for every build. Pipeline takes 15 minutes just for checkout. What is the fix?', opts: ['Add more RAM to CI server', 'git clone --depth 1 (shallow clone) — only get latest commit', 'Split codebase into 10 repos', 'Disable checkout stage'], ans: 1 },
+      { q: 'Developer pushes directly to main branch. Team has a code review policy but it is not enforced technically. What is the fix?', opts: ['Trust developers to follow the policy', 'Enable Branch Protection Rules on GitHub requiring PR review', 'Add a pre-commit hook locally', 'Create a second main branch'], ans: 1 },
+      { q: 'git log shows "fix", "wip", "test", "fix2", "actually fix" as the last 5 commit messages. What practice is missing?', opts: ['More commits are needed', 'Meaningful, descriptive commit messages following a convention', 'git log should not be used', 'Commits should be squashed to one'], ans: 1 }
+    ],
+    // Topic 3: Docker & Containers
+    [
+      { q: 'Dockerfile: FROM ubuntu:latest. Security team flags it as risky. What is wrong?', opts: ['ubuntu is not supported by Docker', 'latest tag means image changes unpredictably — use specific version like ubuntu:22.04', 'FROM must use alpine', 'Dockerfile is missing EXPOSE instruction'], ans: 1 },
+      { q: 'Dockerfile: CMD java -jar app.jar. Container starts but immediately exits. What is the error?', opts: ['Java is not installed', 'CMD should use exec form: CMD ["java", "-jar", "app.jar"]', 'ENTRYPOINT must be used instead', 'app.jar file is missing'], ans: 1 },
+      { q: 'docker run -p 8080:8080 app1 succeeds. Then docker run -p 8080:9090 app2 fails. Why?', opts: ['app2 image is corrupted', 'Host port 8080 is already bound by app1 — use a different host port', 'Docker allows only one container', 'Port 9090 is reserved'], ans: 1 },
+      { q: 'COPY . /app in Dockerfile includes .git folder and node_modules/. Image is 2GB. What is missing?', opts: ['A larger base image', '.dockerignore file to exclude unnecessary files', 'More COPY statements', 'RUN rm -rf command after COPY'], ans: 1 },
+      { q: 'Container needs to write data. Container restarts and all data is lost. What is the architectural error?', opts: ['Container is too small', 'No persistent volume mounted — data inside container is ephemeral', 'Wrong base image used', 'Container should not restart'], ans: 1 },
+      { q: 'App container tries to connect to DB at localhost:5432 but connection fails. What is the error?', opts: ['Port 5432 is wrong for PostgreSQL', 'localhost inside container refers to container itself, not host — use DB container name or host.docker.internal', 'DB is not installed', 'Container lacks network access'], ans: 1 },
+      { q: 'docker build fails: "COPY target/app.war: no such file or directory". What was skipped before running docker build?', opts: ['Docker daemon was not started', 'mvn package was not run — WAR file was never built', 'Dockerfile syntax is wrong', 'Docker Hub is unreachable'], ans: 1 },
+      { q: 'Jenkins pipeline builds Docker image on every PR. After 2 weeks, disk is full. What is the design error?', opts: ['Jenkins builds too frequently', 'No docker image cleanup step — old images accumulate on disk', 'Docker Hub storage is full', 'Images are too large'], ans: 1 },
+      { q: 'Dockerfile has 10 separate RUN commands installing packages. Each creates a new layer. Image is 4GB. What is the fix?', opts: ['Use fewer packages', 'Combine RUN commands with && and clean cache: RUN apt-get install -y pkg && rm -rf /var/lib/apt/lists/*', 'Use ADD instead of RUN', 'Switch to Windows containers'], ans: 1 },
+      { q: 'docker run -e DB_PASS=secret123 is used in a shell script committed to GitHub. What security error exists?', opts: ['No error — environment variables are safe', 'Secret is visible in script committed to source control — use Docker secrets or CI credential store', 'DB_PASS is the wrong variable format', 'Only works on Linux containers'], ans: 1 }
+    ],
+    // Topic 4: Configuration Management
+    [
+      { q: 'Chef recipe has action :nothing for the nginx service. Nginx never starts after installation. What is the bug?', opts: ['Package name is wrong', 'action :nothing means take no action — change to action [:enable, :start]', 'Chef Solo does not support services', 'Nginx is not in the package manager'], ans: 1 },
+      { q: 'Ansible task: apt: name=java state=present. Fails on CentOS servers with "no package manager apt". What is the error?', opts: ['Java package name is wrong', 'apt is Debian/Ubuntu-only — use yum or the generic package module for CentOS', 'CentOS does not support Ansible', 'state=present is wrong syntax'], ans: 1 },
+      { q: 'Puppet manifest: ensure => latest for all packages. All servers upgrade automatically every 30 minutes. What is the risk?', opts: ['Puppet runs too frequently', 'Uncontrolled upgrades may break apps — use specific version: ensure => "1.18.0"', 'Puppet cannot use ensure => latest', 'Servers run out of memory'], ans: 1 },
+      { q: 'Ansible playbook hosts: all is accidentally run against production. What fundamental design error caused this?', opts: ['Ansible is not installed correctly', 'No environment separation — should use specific host groups like hosts: staging', 'Inventory file is wrong', 'SSH keys are not configured'], ans: 1 },
+      { q: 'salt "*" state.apply webserver. Only 3 of 5 minions respond. What should you check?', opts: ['Salt Master is down', 'Salt Minion service not running on 2 servers, or firewall blocking ports 4505/4506', 'State file has syntax error', 'Minion IDs are wrong'], ans: 1 },
+      { q: 'Chef cookbook uploaded to Chef Server. Nodes still running old configuration 2 hours later. What is wrong?', opts: ['Chef Server is broken', 'New cookbook not added to node\'s run list, or chef-client interval has not triggered yet', 'Cookbook has a Ruby error', 'Chef Agent is not installed'], ans: 1 },
+      { q: 'Puppet agent -t fails: "SSL certificate mismatch". What happened?', opts: ['Puppet is not installed correctly', 'Server hostname changed or certificate expired — re-sign certificate on Puppet Master', 'Agent version is incompatible', 'Puppet Master is unreachable'], ans: 1 },
+      { q: 'SaltStack pillar.sls contains plain-text database passwords committed to Git. What security error exists?', opts: ['Pillars cannot store passwords', 'Secrets in plain text in version control — use GPG-encrypted pillars or Vault integration', 'Salt Minions can read pillar data', 'Git does not support .sls files'], ans: 1 },
+      { q: 'Chef Solo: chef-client --local-mode --runlist recipe[nginx]. Error: "WARN: Did not find cookbook". Structure: /home/ubuntu/nginx/recipes/default.rb. What is wrong?', opts: ['Recipe name is spelled wrong', 'Cookbook not inside a cookbooks/ directory — move to /home/ubuntu/cookbooks/nginx/', 'Chef Solo is not supported', 'Ruby version is incompatible'], ans: 1 },
+      { q: 'Ansible playbook runs successfully on 20 servers. Same playbook run again next day. 19 servers show CHANGED. 1 shows OK. What does this reveal?', opts: ['Playbook has a bug', 'Only 1 server was already in the desired state — 19 had configuration drift', 'Ansible ran only on 1 server', 'The playbook is not idempotent for those 19 servers'], ans: 3 }
+    ]
+  ];
+
+  // ── STATE ──
+  let curQuiz = 0, curQ = 0, curQset = [], curQuizType = 'mcq', answers = [], reviewed = false;
+
+  function showTypeScreen() {
+    document.getElementById('quizTypeScreen').style.display = '';
+    document.getElementById('backToTypes').style.display = 'none';
+    document.querySelector('.quiz-progress').style.display = 'none';
+    document.querySelector('.q-nav').style.display = 'none';
+    saveQuizResult(correct, curQset.length, curQuizType, quizzes[curQuiz].title);
+    document.getElementById('quizBody').style.display = 'none';
+    document.getElementById('quizFooter').style.display = 'none';
+    document.getElementById('resultScreen').style.display = 'none';
+    document.getElementById('quizSubtitle').textContent = 'Select a practice type below';
+  }
+
+  function openQuiz(idx) {
+    curQuiz = idx; reviewed = false;
+    const qz = quizzes[idx];
+    document.getElementById('quizTitle').textContent = qz.title;
+    document.getElementById('quizIcon').textContent = qz.icon;
+    document.getElementById('quizOverlay').style.display = 'flex';
+    showTypeScreen();
+  }
+
+  function startQuizType(type) {
+    curQuizType = type;
+    const subtitles = { mcq: '10 questions · MCQ · L1/L2', cmd: '10 questions · Command Output · L2', usecase: '10 questions · Use-Case · L4', debug: '10 questions · Debug / Find Error · L3' };
+    document.getElementById('quizSubtitle').textContent = subtitles[type];
+    if (type === 'mcq') curQset = quizzes[curQuiz].qs;
+    else if (type === 'cmd') curQset = cmdOutputData[curQuiz];
+    else if (type === 'usecase') curQset = usecaseData[curQuiz];
+    else curQset = debugData[curQuiz];
+
+    curQ = 0; reviewed = false;
+    answers = new Array(curQset.length).fill(-1);
+    document.getElementById('quizTypeScreen').style.display = 'none';
+    document.getElementById('backToTypes').style.display = '';
+    document.getElementById('resultScreen').style.display = 'none';
+    document.getElementById('quizBody').style.display = '';
+    document.getElementById('quizFooter').style.display = '';
+    document.querySelector('.quiz-progress').style.display = '';
+    document.querySelector('.q-nav').style.display = '';
+    buildNav(); renderQ(); updateFooter();
+  }
+
+  function closeQuiz() {
+    document.getElementById('quizOverlay').style.display = 'none';
+  }
+
+  function buildNav() {
+    const nav = document.getElementById('qNav');
+    nav.innerHTML = '';
+    curQset.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'q-dot' + (i === curQ ? ' current' : answers[i] !== -1 ? ' answered' : '');
+      d.textContent = i + 1;
+      d.onclick = () => { curQ = i; renderQ(); updateFooter(); buildNav(); };
+      nav.appendChild(d);
+    });
+  }
+
+  function renderQ() {
+    const q = curQset[curQ];
+    const letters = ['A','B','C','D'];
+    document.getElementById('qProgress').textContent = 'Question ' + (curQ+1) + ' of ' + curQset.length;
+    const ansCount = answers.filter(a => a !== -1).length;
+    document.getElementById('qAnswered').textContent = ansCount + ' answered';
+    document.getElementById('progressFill').style.width = (ansCount/curQset.length*100) + '%';
+    const opts = q.opts || q.options;
+    const ansKey = 'ans' in q ? q.ans : q.answer;
+    document.getElementById('quizBody').innerHTML = `
+      <div class="q-block active">
+        <div class="q-text">${curQ+1}. ${q.q.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+        <div class="options-list">
+          ${opts.map((opt, i) => `
+            <label class="option-label${answers[curQ]===i?' selected':''}" onclick="selectOpt(${i})">
+              <input type="radio" name="opt" ${answers[curQ]===i?'checked':''}>
+              <div class="option-bullet">${letters[i]}</div>
+              <span>${opt.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  function selectOpt(i) {
+    if (reviewed) return;
+    answers[curQ] = i;
+    renderQ(); buildNav(); updateFooter();
+  }
+
+  function updateFooter() {
+    document.getElementById('btnPrev').disabled = curQ === 0;
+    const isLast = curQ === curQset.length - 1;
+    document.getElementById('btnNext').style.display = isLast ? 'none' : '';
+    document.getElementById('btnSubmit').style.display = isLast ? '' : 'none';
+    document.getElementById('btnNext').onclick = () => goQ(1);
+    document.getElementById('btnPrev').onclick = () => goQ(-1);
+  }
+
+  function goQ(dir) {
+    curQ = Math.max(0, Math.min(curQset.length - 1, curQ + dir));
+    renderQ(); buildNav(); updateFooter();
+  }
+
+  function getAns(q) { return 'ans' in q ? q.ans : q.answer; }
+
+
+  // ── Save quiz result to backend ──
+  const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api' : '/api';
+
+  async function saveQuizResult(score, total, quizType, topicName) {
+    const token = localStorage.getItem('edu_token');
+    if (!token) return; // not logged in — silently skip
+    try {
+      await fetch(`${API}/quiz/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ course: 'DevOps', topic: topicName, quizType, score, total, timeTaken: 0 })
+      });
+    } catch(e) { /* offline — ignore */ }
+  }
+
+  function submitQuiz() {
+    let correct = 0, wrong = 0, skip = 0;
+    answers.forEach((a, i) => {
+      if (a === -1) skip++;
+      else if (a === getAns(curQset[i])) correct++;
+      else wrong++;
+    });
+    const pct = Math.round(correct / curQset.length * 100);
+
+    document.getElementById('quizBody').style.display = 'none';
+    document.getElementById('quizFooter').style.display = 'none';
+    document.getElementById('backToTypes').style.display = 'none';
+    document.querySelector('.quiz-progress').style.display = 'none';
+    document.querySelector('.q-nav').style.display = 'none';
+    document.getElementById('resultScreen').style.display = 'block';
+
+    document.getElementById('scoreNum').textContent = correct;
+    document.getElementById('scoreOf').textContent = '/ ' + curQset.length;
+    document.getElementById('rbCorrect').textContent = correct;
+    document.getElementById('rbWrong').textContent = wrong;
+    document.getElementById('rbSkip').textContent = skip;
+    document.getElementById('resultPct').textContent = pct + '% score';
+
+    const ring = document.getElementById('resultRing');
+    const msg = document.getElementById('resultMsg');
+    if (pct >= 80) { ring.style.borderColor = 'var(--green)'; ring.style.color = 'var(--green)'; msg.textContent = '🎉 Excellent!'; }
+    else if (pct >= 50) { ring.style.borderColor = 'var(--gold)'; ring.style.color = 'var(--gold)'; msg.textContent = '👍 Good effort!'; }
+    else { ring.style.borderColor = 'var(--red)'; ring.style.color = 'var(--red)'; msg.textContent = '📖 Keep practising!'; }
+  }
+
+  function reviewMode() {
+    reviewed = true; curQ = 0;
+    document.getElementById('resultScreen').style.display = 'none';
+    document.getElementById('quizBody').style.display = '';
+    document.getElementById('quizFooter').style.display = '';
+    document.querySelector('.quiz-progress').style.display = '';
+    document.querySelector('.q-nav').style.display = '';
+    buildReviewNav(); renderReviewQ();
+  }
+
+  function buildReviewNav() {
+    const nav = document.getElementById('qNav');
+    nav.innerHTML = '';
+    curQset.forEach((q, i) => {
+      const d = document.createElement('div');
+      let cls = 'q-dot' + (i === curQ ? ' current' : '');
+      if (i !== curQ) {
+        if (answers[i] === -1) cls = 'q-dot';
+        else if (answers[i] === getAns(q)) cls = 'q-dot correct';
+        else cls = 'q-dot wrong';
+      }
+      d.className = cls;
+      d.textContent = i + 1;
+      d.onclick = () => { curQ = i; renderReviewQ(); buildReviewNav(); };
+      nav.appendChild(d);
+    });
+  }
+
+  function renderReviewQ() {
+    const q = curQset[curQ];
+    const letters = ['A','B','C','D'];
+    const correctAns = getAns(q);
+    const opts = q.opts || q.options;
+    document.getElementById('qProgress').textContent = 'Review: Question ' + (curQ+1) + ' of ' + curQset.length;
+    document.getElementById('progressFill').style.width = ((curQ+1)/curQset.length*100) + '%';
+    document.getElementById('quizBody').innerHTML = `
+      <div class="q-block active">
+        <div class="q-text">${curQ+1}. ${q.q.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+        <div class="options-list">
+          ${opts.map((opt, i) => {
+            let cls = 'option-label';
+            if (i === correctAns) cls += ' correct-ans';
+            else if (answers[curQ] === i) cls += ' wrong-ans';
+            return `<label class="${cls}">
+              <input type="radio" disabled ${answers[curQ]===i?'checked':''}>
+              <div class="option-bullet">${letters[i]}</div>
+              <span>${opt.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+            </label>`;
+          }).join('')}
+        </div>
+      </div>`;
+    document.getElementById('btnPrev').disabled = curQ === 0;
+    const isLast = curQ === curQset.length - 1;
+    document.getElementById('btnNext').style.display = isLast ? 'none' : '';
+    document.getElementById('btnNext').onclick = () => { curQ++; renderReviewQ(); buildReviewNav(); };
+    document.getElementById('btnPrev').onclick = () => { curQ--; renderReviewQ(); buildReviewNav(); };
+    document.getElementById('btnSubmit').style.display = 'none';
+  }
+
+  function retakeQuiz() { startQuizType(curQuizType); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeQuiz();
+  });
+  </script>
+
+</body>
+</html>

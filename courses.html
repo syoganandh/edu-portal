@@ -949,7 +949,7 @@
       </div>
 
       <div style="margin-bottom: 20px; font-size:0.85em; color:var(--muted);">
-        <strong style="color:#C8CADE;">Sessional Marks:</strong> 60 &nbsp;·&nbsp; <strong style="color:#C8CADE;">End Exam:</strong> 40 &nbsp;·&nbsp; <strong style="color:#C8CADE;">Internal Tests:</strong> 2 (T1 after Week 7, T2 after Week 14)
+        <strong style="color:#C8CADE;">Sessional Marks:</strong> 60 &nbsp;·&nbsp; <strong style="color:#C8CADE;">End Exam:</strong> 40 &nbsp;·&nbsp; <strong style="color:#C8CADE;">Internal Tests:</strong> 2 (T1 after CO1 &amp; CO2, T2 after CO3 &amp; CO4)
       </div>
 
       <div style="margin-bottom: 14px; color: var(--text); font-weight: 600; font-size: 0.9em;">Course Outcomes</div>
@@ -1638,6 +1638,19 @@
         </div>
       </div>
 
+
+      <!-- Mid Model Paper -->
+      <div style="margin-top:36px;padding:0 28px 32px;">
+        <div style="font-size:.75em;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">📄 Mid Model Paper</div>
+        <div style="background:#1a1714;border:1px solid #3d3835;border-radius:12px;padding:18px;display:flex;align-items:center;gap:14px;">
+          <div style="font-size:2em;flex-shrink:0;">📝</div>
+          <div style="flex:1;">
+            <div style="font-size:.9em;font-weight:700;color:#c8c4be;margin-bottom:3px;">Mid Model Paper</div>
+            <div style="font-size:.75em;color:#6b6765;">Java Programming Practices · Mid Examination</div>
+          </div>
+          <a href="JPP_Mid_Model_Paper.pdf" download style="padding:8px 16px;background:rgba(240,124,62,.12);border:1px solid rgba(240,124,62,.3);border-radius:8px;color:var(--accent);font-size:.78em;font-weight:700;text-decoration:none;white-space:nowrap;transition:.15s;" onmouseover="this.style.background='rgba(240,124,62,.22)'" onmouseout="this.style.background='rgba(240,124,62,.12)'">⬇ Download</a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1650,34 +1663,41 @@
           <h2 id="quiz-title"></h2>
           <p id="quiz-subtitle">Select a quiz type below</p>
         </div>
-        <button class="close-btn" onclick="closeQuiz()">✕</button>
+        <button type="button" class="close-btn" onclick="closeQuiz()">✕</button>
       </div>
 
       <!-- Quiz Type Selector -->
       <div id="quizTypeScreen" style="padding:20px 24px 28px;">
         <p style="color:var(--muted);font-size:.85em;margin-bottom:18px;">Choose the type of practice you want:</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <button onclick="startQuizType('mcq')" class="qtype-btn">
+          <button type="button" onclick="startQuizType('mcq')" class="qtype-btn">
             <div style="font-size:1.6em;margin-bottom:6px">🎯</div>
             <div style="font-weight:700;color:var(--text)">MCQ Quiz</div>
             <div style="font-size:.75em;color:var(--muted);margin-top:3px">10 questions · L1/L2</div>
           </button>
-          <button onclick="startQuizType('trace')" class="qtype-btn">
+          <button type="button" onclick="startQuizType('trace')" class="qtype-btn">
             <div style="font-size:1.6em;margin-bottom:6px">🔍</div>
             <div style="font-weight:700;color:var(--text)">Trace the Output</div>
             <div style="font-size:.75em;color:var(--muted);margin-top:3px">15 questions · L2</div>
           </button>
-          <button onclick="startQuizType('usecase')" class="qtype-btn">
+          <button type="button" onclick="startQuizType('usecase')" class="qtype-btn">
             <div style="font-size:1.6em;margin-bottom:6px">💼</div>
             <div style="font-weight:700;color:var(--text)">Use-Case</div>
             <div style="font-size:.75em;color:var(--muted);margin-top:3px">15 questions · L4</div>
           </button>
-          <button onclick="startQuizType('debug')" class="qtype-btn">
+          <button type="button" onclick="startQuizType('debug')" class="qtype-btn">
             <div style="font-size:1.6em;margin-bottom:6px">🐛</div>
             <div style="font-weight:700;color:var(--text)">Debug Questions</div>
             <div style="font-size:.75em;color:var(--muted);margin-top:3px">15 questions · L3</div>
           </button>
         </div>
+      </div>
+
+      <!-- Back to type selector -->
+      <div id="backToTypes" style="display:none;padding:6px 24px 0;">
+        <button type="button" onclick="showTypeScreen()" style="background:none;border:none;color:var(--muted);font-size:.8em;cursor:pointer;display:flex;align-items:center;gap:5px;padding:4px 0;transition:.15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+          ← Back to practice types
+        </button>
       </div>
 
       <!-- Progress -->
@@ -1699,9 +1719,9 @@
 
       <!-- Nav buttons -->
       <div class="quiz-footer" id="quizFooter">
-        <button class="btn-prev" id="btnPrev" onclick="goQuestion(-1)" disabled>← Prev</button>
-        <button class="btn-next" id="btnNext" onclick="goQuestion(1)">Next →</button>
-        <button class="btn-submit" id="btnSubmit" style="display:none" onclick="submitQuiz()">Submit Quiz</button>
+        <button type="button" class="btn-prev" id="btnPrev" onclick="goQuestion(-1)" disabled>← Prev</button>
+        <button type="button" class="btn-next" id="btnNext" onclick="goQuestion(1)">Next →</button>
+        <button type="button" class="btn-submit" id="btnSubmit" style="display:none" onclick="submitQuiz()">Submit Quiz</button>
       </div>
 
       <!-- Result screen -->
@@ -1718,8 +1738,8 @@
           <div class="rb-item"><div class="rb-val" id="rbSkipped" style="color:var(--muted)"></div><div class="rb-lbl">Skipped</div></div>
         </div>
         <div class="result-btns">
-          <button class="btn-review" onclick="reviewAnswers()">Review Answers</button>
-          <button class="btn-retake" onclick="retakeQuiz()">Retake Quiz</button>
+          <button type="button" class="btn-review" onclick="reviewAnswers()">Review Answers</button>
+          <button type="button" class="btn-retake" onclick="retakeQuiz()">Retake Quiz</button>
         </div>
       </div>
 
@@ -1732,9 +1752,19 @@
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('panel-' + id).classList.add('active');
-      btn.classList.add('active');
+      if (btn) btn.classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // On load, check URL hash and switch to that tab
+    document.addEventListener('DOMContentLoaded', function() {
+      const hash = window.location.hash.replace('#', '');
+      const valid = ['syllabus', 'marks', 'topics', 'lab'];
+      if (hash && valid.includes(hash)) {
+        const btn = document.querySelector('.tab-btn[onclick*="' + hash + '"]');
+        switchTab(hash, btn);
+      }
+    });
 
     /* ── TOPIC SEARCH ── */
     function filterTopics(q) {
@@ -1905,6 +1935,7 @@
 
     function showTypeScreen() {
       document.getElementById('quizTypeScreen').style.display = '';
+      document.getElementById('backToTypes').style.display = 'none';
       document.getElementById('quizProgress').style.display = 'none';
       document.getElementById('qNav').style.display = 'none';
       document.getElementById('quizBody').style.display = 'none';
@@ -1970,6 +2001,7 @@
         </div>`;
       }).join('');
 
+      document.getElementById('backToTypes').style.display = '';
       document.getElementById('quizProgress').style.display = '';
       document.getElementById('qNav').style.display = '';
       document.getElementById('quizBody').style.display = '';
@@ -2016,6 +2048,23 @@
 
     function jumpTo(qi) { renderQuestion(qi); }
 
+
+    // ── Save quiz result to backend ──
+    const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:5000/api' : '/api';
+
+    async function saveQuizResult(score, total, quizType, topicName) {
+      const token = localStorage.getItem('edu_token');
+      if (!token) return; // not logged in — silently skip
+      try {
+        await fetch(`${API}/quiz/save`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ course: 'JPP', topic: topicName, quizType, score, total, timeTaken: 0 })
+        });
+      } catch(e) { /* offline — ignore */ }
+    }
+
     function submitQuiz() {
       const qset = currentQset;
       const n = qset.length;
@@ -2026,11 +2075,13 @@
       });
       const wrong = n-score-skipped;
       const pct = Math.round(score/n*100);
+      saveQuizResult(score, n, currentQuizType, topicTitles[currentTopicIndex] || 'Unknown');
       quizSubmitted = true;
       document.getElementById('quizProgress').style.display='none';
       document.getElementById('qNav').style.display='none';
       document.getElementById('quizBody').style.display='none';
       document.getElementById('quizFooter').style.display='none';
+      document.getElementById('backToTypes').style.display='none';
       const rs=document.getElementById('quizResultScreen');
       rs.style.display='block';
       const ring=document.getElementById('resultRing');
@@ -2047,6 +2098,7 @@
 
     function reviewAnswers() {
       document.getElementById('quizResultScreen').style.display='none';
+      document.getElementById('backToTypes').style.display='';
       document.getElementById('quizProgress').style.display='';
       document.getElementById('qNav').style.display='';
       document.getElementById('quizBody').style.display='';

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login — Sampathirao Yoganandh</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0F1117;--surf:#181C27;--surf2:#1F2333;--bdr:#2A2F42;--acc:#F07C3E;--gold:#E8C06A;--txt:#E8EAF0;--muted:#6B7194;--grn:#4ECBA0;--red:#F05C5C}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--acc);text-decoration:none}a:hover{color:var(--gold)}
+
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:14px 32px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:1em;font-weight:700;color:var(--gold)}
+.brand span{color:var(--txt);font-weight:400;font-size:.85em}
+
+.page{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 16px}
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:18px;padding:40px 36px;width:100%;max-width:420px}
+
+.card-icon{font-size:2.4em;text-align:center;margin-bottom:10px}
+.card h1{font-size:1.4em;font-weight:800;text-align:center;margin-bottom:4px}
+.card .sub{color:var(--muted);font-size:.85em;text-align:center;margin-bottom:28px}
+
+.form-group{margin-bottom:18px}
+label{display:block;font-size:.8em;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+input{width:100%;padding:11px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:9px;color:var(--txt);font-size:.95em;outline:none;transition:.2s}
+input:focus{border-color:var(--acc)}
+input::placeholder{color:var(--muted)}
+
+.btn{width:100%;padding:13px;background:var(--acc);border:none;border-radius:10px;color:#111;font-size:1em;font-weight:700;cursor:pointer;transition:.15s;margin-top:6px}
+.btn:hover{background:var(--gold)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.err{background:rgba(240,92,92,.1);border:1px solid rgba(240,92,92,.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:.85em;margin-bottom:16px;display:none}
+.suc{background:rgba(78,203,160,.1);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:8px;padding:10px 14px;font-size:.85em;margin-bottom:16px;display:none}
+
+.divider{text-align:center;color:var(--muted);font-size:.8em;margin:20px 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--bdr)}
+.divider::before{left:0}.divider::after{right:0}
+
+.switch{text-align:center;font-size:.85em;color:var(--muted);margin-top:20px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,0,0,.3);border-top-color:#111;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">sampathirao yoganandh <span>· Education Portal</span></div>
+  <a href="index.html" style="font-size:.82em;color:var(--muted)">← Home</a>
+</div>
+
+<div class="page">
+  <div class="card">
+    <div class="card-icon">🎓</div>
+    <h1>Welcome Back</h1>
+    <p class="sub">Login with your Roll Number</p>
+
+    <div class="err" id="errMsg"></div>
+    <div class="suc" id="sucMsg"></div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label>Roll Number</label>
+        <input type="text" id="rollNo" placeholder="e.g. 23CM9A0501" required autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+      </div>
+      <button type="submit" class="btn" id="loginBtn">Login</button>
+    </form>
+
+    <div class="divider">or</div>
+    <div class="switch">New student? <a href="register.html">Create account</a></div>
+  </div>
+</div>
+
+<script>
+  const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : '/api';
+
+  // Redirect if already logged in
+  if (localStorage.getItem('edu_token')) {
+    const user = JSON.parse(localStorage.getItem('edu_user') || '{}');
+    window.location.href = user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('loginBtn');
+    const err = document.getElementById('errMsg');
+    const suc = document.getElementById('sucMsg');
+    err.style.display = 'none';
+    suc.style.display = 'none';
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Logging in...';
+
+    try {
+      const res = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rollNo: document.getElementById('rollNo').value.trim(),
+          password: document.getElementById('password').value
+        })
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message);
+
+      localStorage.setItem('edu_token', data.token);
+      localStorage.setItem('edu_user', JSON.stringify(data.user));
+
+      suc.textContent = `Welcome, ${data.user.name}! Redirecting...`;
+      suc.style.display = 'block';
+
+      setTimeout(() => {
+        window.location.href = data.user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+      }, 800);
+    } catch (error) {
+      err.textContent = error.message || 'Login failed. Try again.';
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = 'Login';
+    }
+  });
+</script>
+</body>
+</html>

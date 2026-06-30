@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DevOps Fundamentals — Week 1 & 2</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0F1117;--surf:#181C27;--surf2:#1F2333;--bdr:#2A2F42;--acc:#F07C3E;--gold:#E8C06A;--txt:#E8EAF0;--muted:#6B7194;--grn:#4ECBA0;--blu:#5BA8F5;--red:#F05C5C;--prp:#A97DF5}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.7;font-size:15px}
+a{color:var(--acc);text-decoration:none}a:hover{color:var(--gold)}
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:12px 32px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100}
+.back-btn{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:.85em;padding:6px 12px;border:1px solid var(--bdr);border-radius:7px;transition:.2s}
+.back-btn:hover{color:var(--txt);border-color:var(--acc)}
+.brand{margin-left:auto;font-size:.78em;color:var(--muted)}
+.brand span{color:var(--gold);font-weight:700}
+.hero{background:linear-gradient(135deg,#181C27 60%,#1a1530);border-bottom:1px solid var(--bdr);padding:40px 32px 28px}
+.hero .week-badge{display:inline-block;background:rgba(240,124,62,.12);border:1px solid rgba(240,124,62,.3);color:var(--acc);font-size:.75em;font-weight:700;padding:3px 12px;border-radius:20px;letter-spacing:.06em;margin-bottom:12px}
+.hero h1{font-size:2em;font-weight:800;letter-spacing:-.02em;background:linear-gradient(120deg,#E8EAF0 40%,#E8C06A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.hero p{color:var(--muted);font-size:.9em}
+.co-pill{display:inline-block;padding:2px 10px;border-radius:5px;font-size:.75em;font-weight:700;margin-left:10px}
+.co1{background:rgba(78,203,160,.12);color:var(--grn)}.co2{background:rgba(91,168,245,.12);color:var(--blu)}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:0;max-width:1200px;margin:0 auto;min-height:calc(100vh - 180px)}
+.sidebar{padding:24px 16px;border-right:1px solid var(--bdr);position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto}
+.sidebar h3{font-size:.7em;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+.toc-list{list-style:none}
+.toc-list li a{display:block;padding:5px 8px;font-size:.82em;color:var(--muted);border-radius:6px;transition:.15s}
+.toc-list li a:hover{background:var(--surf2);color:var(--txt)}
+.toc-list li a.active{background:rgba(240,124,62,.1);color:var(--acc)}
+.content{padding:32px 40px 60px;max-width:860px}
+h2{font-size:1.35em;font-weight:700;color:var(--txt);margin:36px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--bdr);display:flex;align-items:center;gap:10px}
+h2::before{content:attr(data-icon);font-size:1.1em}
+h3{font-size:1.05em;font-weight:700;color:var(--gold);margin:22px 0 10px}
+h4{font-size:.95em;font-weight:700;color:var(--acc);margin:16px 0 6px}
+p{margin-bottom:12px;color:#C8CAD8}
+ul,ol{margin:8px 0 12px 22px;color:#C8CAD8}
+li{margin-bottom:5px}
+.note-box{background:rgba(78,203,160,.07);border:1px solid rgba(78,203,160,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.warn-box{background:rgba(240,92,92,.07);border:1px solid rgba(240,92,92,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.info-box{background:rgba(91,168,245,.07);border:1px solid rgba(91,168,245,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.note-box strong,.warn-box strong,.info-box strong{font-size:.78em;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px}
+.note-box strong{color:var(--grn)}.warn-box strong{color:var(--red)}.info-box strong{color:var(--blu)}
+pre{background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:18px 20px;overflow-x:auto;margin:12px 0 20px;font-size:.85em;line-height:1.6}
+code{font-family:'Cascadia Code','Fira Code',Consolas,monospace;color:#C8CAD8}
+pre code{color:#C8CAD8}
+table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:.88em}
+th{background:var(--surf2);color:var(--gold);padding:10px 14px;text-align:left;border-bottom:2px solid var(--bdr)}
+td{padding:9px 14px;border-bottom:1px solid var(--bdr);color:#C8CAD8}
+tr:hover td{background:rgba(255,255,255,.02)}
+.pdf-section{margin-top:48px;padding:24px;background:var(--surf);border:1px solid var(--bdr);border-radius:14px;display:flex;align-items:center;gap:20px}
+.pdf-icon{font-size:2.4em;flex-shrink:0}
+.pdf-info h3{color:var(--txt);font-size:1em;margin-bottom:4px}
+.pdf-info p{color:var(--muted);font-size:.82em;margin:0}
+.pdf-btn{margin-left:auto;padding:11px 24px;background:var(--acc);border:none;border-radius:9px;color:#111;font-weight:700;font-size:.88em;cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;text-decoration:none;transition:.15s;flex-shrink:0}
+.pdf-btn:hover{background:var(--gold)}
+.nav-bottom{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--bdr)}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;background:var(--surf);border:1px solid var(--bdr);border-radius:9px;color:var(--muted);font-size:.85em;transition:.2s}
+.nav-btn:hover{border-color:var(--acc);color:var(--txt)}
+.nav-btn.next{flex-direction:row-reverse;text-align:right}
+@media print{
+  .topbar,.sidebar,.pdf-section,.nav-bottom{display:none!important}
+  body{background:#fff;color:#000;font-size:12pt}
+  .hero{background:#f5f5f5;border:none;padding:20px}
+  .hero h1{-webkit-text-fill-color:#1a1a1a;font-size:1.5em}
+  .content{padding:10px;max-width:100%}
+  pre{background:#f5f5f5;border:1px solid #ddd;font-size:9pt}
+  h2{border-bottom:2px solid #ccc;color:#1a1a1a}
+  h3{color:#333}p,li,td{color:#222}
+  .note-box{background:#e8f5e9;border:1px solid #4caf50}
+  .info-box{background:#e3f2fd;border:1px solid #2196f3}
+  .layout{display:block}
+  @page{margin:1.5cm}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back-btn" href="devops_courses.html#topics">← Back to DevOps</a>
+  <div class="brand">© 2025 <span>sampathirao yoganandh</span></div>
+</div>
+<div class="hero">
+  <div class="week-badge">Week 1 & 2 · CO-1</div>
+  <h1>DevOps Fundamentals</h1>
+  <p>What is DevOps, Why it Emerged, Core Principles, DevOps Culture, Key Elements & Tools &nbsp;<span class="co-pill co1">CO-1</span></p>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <h3>Contents</h3>
+    <ul class="toc-list">
+      <li><a href="#what_is_devops">What is DevOps?</a></li>
+      <li><a href="#why_devops_emerged">Why DevOps Emerged</a></li>
+      <li><a href="#core_principles">Core Principles</a></li>
+      <li><a href="#devops_culture">DevOps Culture</a></li>
+      <li><a href="#key_elements">Key Elements</a></li>
+      <li><a href="#devops_tools">DevOps Tools</a></li>
+    </ul>
+  </aside>
+  <main class="content">
+
+    <h2 id="what_is_devops" data-icon="🔧">What is DevOps?</h2>
+    <p>DevOps is a modern software development approach where the <strong>Development team</strong> (writes code), <strong>Operations team</strong> (deploys &amp; manages servers), and <strong>Testing team</strong> (checks quality) work together as a single team instead of separately.</p>
+
+    <h3>Why DevOps is Needed</h3>
+    <p>Modern applications require faster updates, fewer bugs, quick bug fixing, stable performance, and zero downtime. The traditional Waterfall method was slow and error-prone. DevOps solves these problems.</p>
+
+    <div class="info-box">
+      <strong>Real-World Analogy</strong>
+      <strong>Without DevOps (Traditional):</strong> A college cultural event where the cultural team, light &amp; sound, and stage setup all come separately — takes days to prepare, miscommunication causes mistakes.<br><br>
+      <strong>With DevOps:</strong> All teams sit together and prepare simultaneously — faster, fewer mistakes, better coordination.
+    </div>
+
+    <h2 id="why_devops_emerged" data-icon="🚀">Why DevOps Emerged</h2>
+    <p>Modern companies like Google, Amazon, and Netflix release updates daily, serve millions of users, and cannot afford downtime. Old methods failed because:</p>
+    <ul>
+      <li>Code was tested only at the end</li>
+      <li>Deployment took hours or days</li>
+      <li>Developers and operations teams never communicated</li>
+      <li>Fixing issues took a long time</li>
+      <li>Bugs appeared in production frequently</li>
+    </ul>
+
+    <h3>Real-World Examples</h3>
+    <table>
+      <thead><tr><th>Example</th><th>Without DevOps</th><th>With DevOps</th></tr></thead>
+      <tbody>
+        <tr><td>Instagram Feature Update</td><td>Slow manual release</td><td>Jenkins → Docker → Kubernetes — fast automated pipeline</td></tr>
+        <tr><td>Online Exam Portal Slowdown</td><td>Server crashes under traffic</td><td>Monitoring detects high CPU → auto-scales servers</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="core_principles" data-icon="⚙️">Core Principles</h2>
+
+    <h3>1. Collaboration</h3>
+    <p>All teams share tools, processes, and knowledge. When developers and operations work separately, communication gaps create delays and errors. With collaboration, problems are solved faster with no blame and common goals.</p>
+    <div class="note-box">
+      <strong>Example</strong>
+      Developer commits code → tester reviews → ops deploys → all discuss feedback immediately.
+    </div>
+
+    <h3>2. Automation</h3>
+    <p>Automation removes manual mistakes and applies to code build, testing, deployment, monitoring, and environment setup.</p>
+    <table>
+      <thead><tr><th>Without Automation</th><th>With Automation</th></tr></thead>
+      <tbody>
+        <tr><td>Tester manually tests login page daily</td><td>Selenium tests login page automatically</td></tr>
+        <tr><td>Ops manually deploys .war file each release</td><td>Jenkins deploys .war file automatically</td></tr>
+      </tbody>
+    </table>
+
+    <h3>3. Continuous Integration (CI)</h3>
+    <p>Developers integrate (merge) their code frequently — often many times a day. If 10 developers work for 10 days without merging, code conflicts occur, bugs remain hidden, and integration becomes painful. CI catches errors early.</p>
+    <div class="note-box">
+      <strong>Example</strong>
+      If one developer's code breaks the build → Jenkins alerts instantly → quick fix.
+    </div>
+
+    <h3>4. Continuous Delivery (CD)</h3>
+    <p>CD ensures that every successful build can be deployed at any time. After CI, Jenkins automatically builds the project, packages .jar/.war, and sends it to the testing environment — the app is always ready for deployment.</p>
+
+    <h3>5. Continuous Deployment</h3>
+    <p>Every change that passes all tests is deployed to production automatically. Amazon deploys new features thousands of times per day using this approach.</p>
+
+    <h3>6. Continuous Monitoring</h3>
+    <p>Monitoring tools track server health, performance, errors, and crashes so issues are detected before users complain.</p>
+    <div class="note-box">
+      <strong>Example</strong>
+      If the login API is slow → monitoring tool alerts the DevOps team → fix is deployed.
+    </div>
+
+    <h2 id="devops_culture" data-icon="🤝">DevOps Culture</h2>
+    <p>DevOps is not only tools — it is behaviour, mindset, and culture.</p>
+
+    <h3>1. Shared Responsibility</h3>
+    <p>Everyone owns the product outcome. If an app crashes: Developer checks code, Ops checks servers, Tester checks functionality — together they fix it quickly.</p>
+
+    <h3>2. Fail Fast, Learn Fast</h3>
+    <p>Failures are used for improvement, not blame. Example: A deployment failed due to wrong config. Instead of blaming, the team creates an automated config checker.</p>
+
+    <h3>3. Transparency</h3>
+    <p>Everyone knows what others are doing. All changes visible in GitHub, all builds visible in Jenkins, all deployments visible in logs. This avoids confusion.</p>
+
+    <h2 id="key_elements" data-icon="🔑">Key Elements of DevOps</h2>
+    <table>
+      <thead><tr><th>Element</th><th>Description</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td>Continuous Integration</td><td>Frequent code merging with automated builds</td><td>Jenkins detects missing semicolon; unit tests fail → pipeline stops</td></tr>
+        <tr><td>Continuous Delivery</td><td>Always-deployable build artifacts</td><td>Maven packages .jar after CI; CD pipeline deploys to testing server daily</td></tr>
+        <tr><td>Continuous Deployment</td><td>Automatic production release after all tests pass</td><td>Bug fix in login module goes live immediately; new banner auto-deployed</td></tr>
+        <tr><td>Infrastructure as Code (IaC)</td><td>Infrastructure managed via code</td><td>Terraform creates 10 servers; Ansible configures 50 servers identically</td></tr>
+        <tr><td>Continuous Monitoring</td><td>Real-time tracking of health &amp; performance</td><td>Grafana shows CPU spikes → auto-scales; Prometheus detects memory leak</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="devops_tools" data-icon="🛠️">DevOps Tools</h2>
+    <table>
+      <thead><tr><th>Tool</th><th>Category</th><th>Example Use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Git</strong></td><td>Code Versioning</td><td>Storing attendance management system code</td></tr>
+        <tr><td><strong>Jenkins</strong></td><td>Automation / CI-CD</td><td>Auto-building student portal</td></tr>
+        <tr><td><strong>Docker</strong></td><td>Containerization</td><td>Packaging Java app with all dependencies</td></tr>
+        <tr><td><strong>Ansible</strong></td><td>Configuration Management</td><td>Installing Java on 50 servers at once</td></tr>
+        <tr><td><strong>Chef</strong></td><td>Configuration Management</td><td>Writing recipes to automate server setup</td></tr>
+        <tr><td><strong>Puppet</strong></td><td>Configuration Management</td><td>Managing multiple nodes via master-agent model</td></tr>
+        <tr><td><strong>SaltStack</strong></td><td>Remote Execution / IaC</td><td>Fast configuration of 100+ servers</td></tr>
+        <tr><td><strong>Grafana</strong></td><td>Monitoring &amp; Visualization</td><td>Tracking CPU, RAM during exam peak time</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <strong>DevOps Lifecycle Summary</strong>
+      Plan → Code → Build (CI) → Test → Release → Deploy (CD) → Operate → Monitor → (back to Plan)
+    </div>
+
+    <div class="pdf-section">
+      <div class="pdf-icon">📄</div>
+      <div class="pdf-info">
+        <h3>DevOps Fundamentals — Notes PDF</h3>
+        <p>Week 1 &amp; 2 · DevOps Introduction, Core Principles &amp; Culture</p>
+      </div>
+      <a class="pdf-btn" href="devops_notes_w01_devops_fundamentals.pdf" download>⬇ Download PDF</a>
+    </div>
+
+    <div class="nav-bottom">
+      <a class="nav-btn" href="devops_courses.html#topics">← Back to DevOps</a>
+      <a class="nav-btn next" href="devops_w03.html">Jenkins &amp; CI/CD →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

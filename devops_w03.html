@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jenkins & CI/CD — Week 3 & 4</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0F1117;--surf:#181C27;--surf2:#1F2333;--bdr:#2A2F42;--acc:#F07C3E;--gold:#E8C06A;--txt:#E8EAF0;--muted:#6B7194;--grn:#4ECBA0;--blu:#5BA8F5;--red:#F05C5C;--prp:#A97DF5}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.7;font-size:15px}
+a{color:var(--acc);text-decoration:none}a:hover{color:var(--gold)}
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:12px 32px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100}
+.back-btn{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:.85em;padding:6px 12px;border:1px solid var(--bdr);border-radius:7px;transition:.2s}
+.back-btn:hover{color:var(--txt);border-color:var(--acc)}
+.brand{margin-left:auto;font-size:.78em;color:var(--muted)}
+.brand span{color:var(--gold);font-weight:700}
+.hero{background:linear-gradient(135deg,#181C27 60%,#1a1530);border-bottom:1px solid var(--bdr);padding:40px 32px 28px}
+.hero .week-badge{display:inline-block;background:rgba(240,124,62,.12);border:1px solid rgba(240,124,62,.3);color:var(--acc);font-size:.75em;font-weight:700;padding:3px 12px;border-radius:20px;letter-spacing:.06em;margin-bottom:12px}
+.hero h1{font-size:2em;font-weight:800;letter-spacing:-.02em;background:linear-gradient(120deg,#E8EAF0 40%,#E8C06A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.hero p{color:var(--muted);font-size:.9em}
+.co-pill{display:inline-block;padding:2px 10px;border-radius:5px;font-size:.75em;font-weight:700;margin-left:10px}
+.co1{background:rgba(78,203,160,.12);color:var(--grn)}.co2{background:rgba(91,168,245,.12);color:var(--blu)}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:0;max-width:1200px;margin:0 auto;min-height:calc(100vh - 180px)}
+.sidebar{padding:24px 16px;border-right:1px solid var(--bdr);position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto}
+.sidebar h3{font-size:.7em;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+.toc-list{list-style:none}
+.toc-list li a{display:block;padding:5px 8px;font-size:.82em;color:var(--muted);border-radius:6px;transition:.15s}
+.toc-list li a:hover{background:var(--surf2);color:var(--txt)}
+.toc-list li a.active{background:rgba(240,124,62,.1);color:var(--acc)}
+.content{padding:32px 40px 60px;max-width:860px}
+h2{font-size:1.35em;font-weight:700;color:var(--txt);margin:36px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--bdr);display:flex;align-items:center;gap:10px}
+h2::before{content:attr(data-icon);font-size:1.1em}
+h3{font-size:1.05em;font-weight:700;color:var(--gold);margin:22px 0 10px}
+h4{font-size:.95em;font-weight:700;color:var(--acc);margin:16px 0 6px}
+p{margin-bottom:12px;color:#C8CAD8}
+ul,ol{margin:8px 0 12px 22px;color:#C8CAD8}
+li{margin-bottom:5px}
+.note-box{background:rgba(78,203,160,.07);border:1px solid rgba(78,203,160,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.warn-box{background:rgba(240,92,92,.07);border:1px solid rgba(240,92,92,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.info-box{background:rgba(91,168,245,.07);border:1px solid rgba(91,168,245,.25);border-radius:10px;padding:14px 18px;margin:16px 0}
+.note-box strong,.warn-box strong,.info-box strong{font-size:.78em;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px}
+.note-box strong{color:var(--grn)}.warn-box strong{color:var(--red)}.info-box strong{color:var(--blu)}
+pre{background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:18px 20px;overflow-x:auto;margin:12px 0 20px;font-size:.85em;line-height:1.6}
+code{font-family:'Cascadia Code','Fira Code',Consolas,monospace;color:#C8CAD8}
+pre code{color:#C8CAD8}
+table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:.88em}
+th{background:var(--surf2);color:var(--gold);padding:10px 14px;text-align:left;border-bottom:2px solid var(--bdr)}
+td{padding:9px 14px;border-bottom:1px solid var(--bdr);color:#C8CAD8}
+tr:hover td{background:rgba(255,255,255,.02)}
+.pdf-section{margin-top:48px;padding:24px;background:var(--surf);border:1px solid var(--bdr);border-radius:14px;display:flex;align-items:center;gap:20px}
+.pdf-icon{font-size:2.4em;flex-shrink:0}
+.pdf-info h3{color:var(--txt);font-size:1em;margin-bottom:4px}
+.pdf-info p{color:var(--muted);font-size:.82em;margin:0}
+.pdf-btn{margin-left:auto;padding:11px 24px;background:var(--acc);border:none;border-radius:9px;color:#111;font-weight:700;font-size:.88em;cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;text-decoration:none;transition:.15s;flex-shrink:0}
+.pdf-btn:hover{background:var(--gold)}
+.nav-bottom{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--bdr)}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;background:var(--surf);border:1px solid var(--bdr);border-radius:9px;color:var(--muted);font-size:.85em;transition:.2s}
+.nav-btn:hover{border-color:var(--acc);color:var(--txt)}
+.nav-btn.next{flex-direction:row-reverse;text-align:right}
+@media print{
+  .topbar,.sidebar,.pdf-section,.nav-bottom{display:none!important}
+  body{background:#fff;color:#000;font-size:12pt}
+  .hero{background:#f5f5f5;border:none;padding:20px}
+  .hero h1{-webkit-text-fill-color:#1a1a1a;font-size:1.5em}
+  .content{padding:10px;max-width:100%}
+  pre{background:#f5f5f5;border:1px solid #ddd;font-size:9pt}
+  h2{border-bottom:2px solid #ccc;color:#1a1a1a}
+  h3{color:#333}p,li,td{color:#222}
+  .layout{display:block}
+  @page{margin:1.5cm}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back-btn" href="devops_courses.html#topics">← Back to DevOps</a>
+  <div class="brand">© 2025 <span>sampathirao yoganandh</span></div>
+</div>
+<div class="hero">
+  <div class="week-badge">Week 3 & 4 · CO-2</div>
+  <h1>Jenkins & CI/CD</h1>
+  <p>Freestyle Jobs, Pipeline Jobs, CI/CD Pipeline with Maven &amp; Tomcat on AWS &nbsp;<span class="co-pill co2">CO-2</span></p>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <h3>Contents</h3>
+    <ul class="toc-list">
+      <li><a href="#intro_jenkins">Introduction to Jenkins</a></li>
+      <li><a href="#freestyle_job">Freestyle Job</a></li>
+      <li><a href="#pipeline_job">Pipeline Job</a></li>
+      <li><a href="#freestyle_vs_pipeline">Freestyle vs Pipeline</a></li>
+      <li><a href="#cicd_pipeline">CI/CD Pipeline Setup</a></li>
+      <li><a href="#tools_required">Tools & Architecture</a></li>
+      <li><a href="#procedure">Step-by-Step Procedure</a></li>
+    </ul>
+  </aside>
+  <main class="content">
+
+    <h2 id="intro_jenkins" data-icon="⚙️">Introduction to Jenkins</h2>
+    <p>Jenkins is an open-source automation server used to implement <strong>Continuous Integration (CI)</strong> and <strong>Continuous Deployment (CD)</strong>. It allows users to create different types of jobs to automate tasks like building, testing, and deploying applications.</p>
+    <div class="note-box">
+      <strong>Key Point</strong>
+      Jenkins is the most widely used CI/CD tool in DevOps. It connects your code repository (GitHub) with your build tools (Maven) and deployment targets (Tomcat, Docker).
+    </div>
+
+    <h2 id="freestyle_job" data-icon="🔧">Freestyle Job</h2>
+    <p>A Freestyle job is the simplest Jenkins job type. It allows you to configure build steps through the Jenkins UI <strong>without writing code</strong>. It is mainly used for basic automation tasks.</p>
+
+    <h3>Steps to Create a Freestyle Job</h3>
+    <ol>
+      <li>Open Jenkins dashboard in browser — <code>http://&lt;server-ip&gt;:8080</code></li>
+      <li>Click <strong>New Item</strong></li>
+      <li>Enter a job name</li>
+      <li>Select <strong>Freestyle project</strong> → Click OK</li>
+      <li>In <em>Source Code Management</em>, select <strong>Git</strong> and provide repository URL</li>
+      <li>In <em>Build Steps</em>, click <strong>Add build step</strong> → <strong>Execute shell</strong></li>
+      <li>Enter build commands like <code>mvn clean install</code></li>
+      <li>Click <strong>Save</strong> → <strong>Build Now</strong> to run the job</li>
+    </ol>
+
+    <h2 id="pipeline_job" data-icon="📋">Pipeline Job</h2>
+    <p>A Pipeline job defines the entire build and deployment process <strong>as code</strong> using a <code>Jenkinsfile</code>. It provides better automation, version control, and complex workflow management.</p>
+
+    <h3>Steps to Create a Pipeline Job</h3>
+    <ol>
+      <li>Open Jenkins dashboard → <strong>New Item</strong></li>
+      <li>Enter a job name → Select <strong>Pipeline</strong> → Click OK</li>
+      <li>Scroll to Pipeline section → Choose <strong>Pipeline script from SCM</strong></li>
+      <li>Select SCM as <strong>Git</strong> → Enter the GitHub repository URL</li>
+      <li>Specify the branch (e.g., <code>main</code> or <code>master</code>)</li>
+      <li>Set Script Path as <code>Jenkinsfile</code></li>
+      <li>Click <strong>Save</strong> → <strong>Build Now</strong></li>
+    </ol>
+
+    <div class="info-box">
+      <strong>Jenkinsfile Location</strong>
+      The Jenkinsfile must be committed in the root of your GitHub repository. Jenkins pulls it automatically when the pipeline runs.
+    </div>
+
+    <h2 id="freestyle_vs_pipeline" data-icon="⚖️">Freestyle vs Pipeline Jobs</h2>
+    <table>
+      <thead><tr><th>Feature</th><th>Freestyle Job</th><th>Pipeline Job</th></tr></thead>
+      <tbody>
+        <tr><td>Configuration</td><td>Via Jenkins UI</td><td>Defined as code in Jenkinsfile</td></tr>
+        <tr><td>Use case</td><td>Simple builds</td><td>Complex CI/CD workflows</td></tr>
+        <tr><td>Version control</td><td>Hard to version control</td><td>Easily version controlled with Git</td></tr>
+        <tr><td>Flexibility</td><td>Limited</td><td>Highly flexible and scalable</td></tr>
+        <tr><td>Recommended for</td><td>Beginners / learning</td><td>Production CI/CD pipelines</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="cicd_pipeline" data-icon="🚀">CI/CD Pipeline for Java Web Application</h2>
+    <p><strong>Aim:</strong> Automate the build and deployment of a Java Maven web application using Jenkins and deploy it to Apache Tomcat on AWS Ubuntu.</p>
+
+    <h2 id="tools_required" data-icon="🛠️">Tools & Architecture</h2>
+    <table>
+      <thead><tr><th>Tool</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>Java 17</td><td>Programming language runtime</td></tr>
+        <tr><td>Apache Maven</td><td>Build and dependency management</td></tr>
+        <tr><td>Jenkins</td><td>CI/CD automation server</td></tr>
+        <tr><td>Apache Tomcat</td><td>Web server to run WAR file</td></tr>
+        <tr><td>GitHub</td><td>Source code repository</td></tr>
+        <tr><td>AWS EC2 Ubuntu</td><td>Cloud server environment</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <strong>Architecture Flow</strong>
+      Developer → GitHub → Jenkins → Maven Build → WAR file → Tomcat → Browser
+    </div>
+
+    <h2 id="procedure" data-icon="📝">Step-by-Step Procedure</h2>
+
+    <h3>Step 1: Install Java 17</h3>
+    <pre><code>sudo apt update
+sudo apt install openjdk-17-jdk -y
+java -version</code></pre>
+
+    <h3>Step 2: Install Maven</h3>
+    <pre><code>sudo apt install maven -y
+mvn -v</code></pre>
+
+    <h3>Step 3: Install Jenkins</h3>
+    <pre><code>sudo apt update
+sudo apt install jenkins -y
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+# Access Jenkins at http://&lt;EC2-IP&gt;:8080</code></pre>
+
+    <h3>Step 4: Install and Configure Tomcat</h3>
+    <pre><code>sudo apt install tomcat10 tomcat10-admin -y</code></pre>
+    <div class="warn-box">
+      <strong>Port Conflict</strong>
+      Jenkins and Tomcat both default to port 8080. Change Tomcat's port to 8090 to avoid conflict.
+    </div>
+    <pre><code># Edit Tomcat server config
+sudo nano /etc/tomcat10/server.xml
+# Find: &lt;Connector port="8080" protocol="HTTP/1.1"
+# Change to: &lt;Connector port="8090" protocol="HTTP/1.1"</code></pre>
+
+    <div class="note-box">
+      <strong>Reference Repository</strong>
+      Fork this repo for a working Jenkinsfile and Dockerfile: <br>
+      <code>https://github.com/syoganandh/spring-boot-maven-example-helloworld.git</code>
+    </div>
+
+    <div class="pdf-section">
+      <div class="pdf-icon">📄</div>
+      <div class="pdf-info">
+        <h3>Jenkins &amp; CI/CD — Notes PDF</h3>
+        <p>Week 3 &amp; 4 · Freestyle Jobs, Pipeline Jobs, Maven &amp; Tomcat</p>
+      </div>
+      <a class="pdf-btn" href="devops_notes_w03_jenkins_cicd.pdf" download>⬇ Download PDF</a>
+    </div>
+
+    <div class="nav-bottom">
+      <a class="nav-btn" href="devops_w01.html">← DevOps Fundamentals</a>
+      <a class="nav-btn next" href="devops_w05.html">Git & Version Control →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

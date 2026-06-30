@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Panel — Sampathirao Yoganandh</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0F1117;--surf:#181C27;--surf2:#1F2333;--bdr:#2A2F42;--acc:#F07C3E;--gold:#E8C06A;--txt:#E8EAF0;--muted:#6B7194;--grn:#4ECBA0;--blu:#5BA8F5;--red:#F05C5C;--prp:#A97DF5}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+a{color:var(--acc);text-decoration:none}
+
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:12px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.brand{font-weight:700;color:var(--gold);font-size:.95em}
+.admin-badge{background:rgba(240,124,62,.12);border:1px solid rgba(240,124,62,.3);color:var(--acc);font-size:.7em;font-weight:700;padding:2px 10px;border-radius:10px;letter-spacing:.05em}
+.logout-btn{margin-left:auto;padding:7px 14px;border:1px solid rgba(240,92,92,.3);border-radius:7px;font-size:.8em;color:var(--red);background:rgba(240,92,92,.1);cursor:pointer}
+.logout-btn:hover{background:rgba(240,92,92,.2)}
+
+.hero{padding:28px 40px 20px;border-bottom:1px solid var(--bdr)}
+.hero h1{font-size:1.5em;font-weight:800;background:linear-gradient(120deg,#E8EAF0 40%,#E8C06A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--muted);font-size:.85em;margin-top:4px}
+
+.main{max-width:1200px;margin:0 auto;padding:28px 40px 60px}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:20px;text-align:center}
+.stat-val{font-size:2em;font-weight:800;margin-bottom:4px}
+.stat-label{font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+.tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--bdr);padding-bottom:0}
+.tab-btn{padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:.88em;font-weight:600;cursor:pointer;transition:.2s;margin-bottom:-1px}
+.tab-btn.active{color:var(--acc);border-bottom-color:var(--acc)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+.section-title{font-size:.7em;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;font-weight:700}
+
+.search-bar{width:100%;padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:9px;color:var(--txt);font-size:.9em;outline:none;margin-bottom:16px}
+.search-bar:focus{border-color:var(--acc)}
+
+table{width:100%;border-collapse:collapse;font-size:.85em;background:var(--surf);border-radius:12px;overflow:hidden;border:1px solid var(--bdr)}
+th{background:var(--surf2);color:var(--gold);padding:11px 14px;text-align:left;border-bottom:2px solid var(--bdr)}
+td{padding:10px 14px;border-bottom:1px solid var(--bdr);color:#C8CAD8}
+tr:hover td{background:rgba(255,255,255,.02)}
+tr:last-child td{border-bottom:none}
+
+.course-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72em;font-weight:700}
+.tag-jpp{background:rgba(78,203,160,.12);color:var(--grn)}
+.tag-devops{background:rgba(169,125,245,.12);color:var(--prp)}
+.tag-both{background:rgba(91,168,245,.12);color:var(--blu)}
+
+.del-btn{background:rgba(240,92,92,.1);border:1px solid rgba(240,92,92,.3);color:var(--red);padding:4px 10px;border-radius:6px;font-size:.75em;cursor:pointer}
+.del-btn:hover{background:rgba(240,92,92,.2)}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75em;font-weight:700}
+.badge-pass{background:rgba(78,203,160,.12);color:var(--grn)}
+.badge-fail{background:rgba(240,92,92,.12);color:var(--red)}
+.badge-avg{background:rgba(232,192,106,.12);color:var(--gold)}
+
+.empty{text-align:center;padding:48px;color:var(--muted)}
+.loading{text-align:center;padding:40px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">sampathirao yoganandh</div>
+  <span class="admin-badge">ADMIN</span>
+  <a href="index.html" style="font-size:.82em;color:var(--muted)">🏠 Site</a>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+<div class="hero">
+  <h1>Admin Panel</h1>
+  <p>Manage students, view quiz results, track performance</p>
+</div>
+
+<div class="main">
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-val" id="statStudents" style="color:var(--acc)">—</div>
+      <div class="stat-label">Total Students</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statAttempts" style="color:var(--blu)">—</div>
+      <div class="stat-label">Total Attempts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statAvg" style="color:var(--grn)">—</div>
+      <div class="stat-label">Class Avg Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statCourses" style="color:var(--gold)">2</div>
+      <div class="stat-label">Active Courses</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('students',this)">👥 Students</button>
+    <button class="tab-btn" onclick="switchTab('results',this)">📊 Quiz Results</button>
+  </div>
+
+  <!-- Students Tab -->
+  <div class="tab-panel active" id="tab-students">
+    <input class="search-bar" type="text" placeholder="🔍 Search by name, roll no, section..." oninput="filterStudents(this.value)">
+    <table>
+      <thead><tr><th>Name</th><th>Roll No</th><th>Section</th><th>Course</th><th>Joined</th><th>Action</th></tr></thead>
+      <tbody id="studentBody"><tr><td colspan="6" class="loading">Loading students...</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- Results Tab -->
+  <div class="tab-panel" id="tab-results">
+    <table>
+      <thead><tr><th>Student</th><th>Roll No</th><th>Topic</th><th>Course</th><th>Type</th><th>Score</th><th>Result</th><th>Date</th></tr></thead>
+      <tbody id="resultsBody"><tr><td colspan="8" class="loading">Loading results...</td></tr></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api' : '/api';
+
+  const token = localStorage.getItem('edu_token');
+  const user  = JSON.parse(localStorage.getItem('edu_user') || '{}');
+
+  if (!token || user.role !== 'admin') { window.location.href = 'login.html'; }
+
+  let allStudents = [];
+
+  function logout() {
+    localStorage.removeItem('edu_token');
+    localStorage.removeItem('edu_user');
+    window.location.href = 'login.html';
+  }
+
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function filterStudents(q) {
+    const lq = q.toLowerCase();
+    const filtered = allStudents.filter(s =>
+      s.name.toLowerCase().includes(lq) ||
+      s.rollNo.toLowerCase().includes(lq) ||
+      (s.section||'').toLowerCase().includes(lq)
+    );
+    renderStudents(filtered);
+  }
+
+  function renderStudents(students) {
+    const tbody = document.getElementById('studentBody');
+    if (!students.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">No students found</td></tr>';
+      return;
+    }
+    tbody.innerHTML = students.map(s => {
+      const tagClass = s.course === 'JPP' ? 'tag-jpp' : s.course === 'DevOps' ? 'tag-devops' : 'tag-both';
+      const date = new Date(s.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
+      return `<tr>
+        <td style="font-weight:600">${s.name}</td>
+        <td style="color:var(--blu)">${s.rollNo}</td>
+        <td>${s.section || '—'}</td>
+        <td><span class="course-tag ${tagClass}">${s.course}</span></td>
+        <td style="color:var(--muted)">${date}</td>
+        <td><button class="del-btn" onclick="deleteStudent('${s._id}','${s.name}')">Delete</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function deleteStudent(id, name) {
+    if (!confirm(`Delete student "${name}"? This will also remove all their quiz results.`)) return;
+    const res = await fetch(`${API}/admin/student/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (res.ok) {
+      allStudents = allStudents.filter(s => s._id !== id);
+      renderStudents(allStudents);
+      document.getElementById('statStudents').textContent = allStudents.length;
+    }
+  }
+
+  async function loadAll() {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+
+      // Stats
+      const statsRes = await fetch(`${API}/admin/stats`, { headers });
+      const stats = await statsRes.json();
+      document.getElementById('statStudents').textContent = stats.totalStudents;
+      document.getElementById('statAttempts').textContent = stats.totalAttempts;
+      document.getElementById('statAvg').textContent = (stats.avgPct || 0) + '%';
+
+      // Students
+      const stuRes = await fetch(`${API}/admin/students`, { headers });
+      allStudents = await stuRes.json();
+      renderStudents(allStudents);
+
+      // Results
+      const resRes = await fetch(`${API}/admin/results`, { headers });
+      const results = await resRes.json();
+      const tbody = document.getElementById('resultsBody');
+      if (!results.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty">No quiz attempts yet</td></tr>';
+      } else {
+        tbody.innerHTML = results.map(r => {
+          const badge = r.percentage>=80?'badge-pass':r.percentage>=50?'badge-avg':'badge-fail';
+          const label = r.percentage>=80?'Pass':r.percentage>=50?'Avg':'Fail';
+          const date = new Date(r.takenAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
+          const tagClass = r.course==='JPP'?'tag-jpp':'tag-devops';
+          return `<tr>
+            <td style="font-weight:600">${r.student?.name||'—'}</td>
+            <td style="color:var(--blu)">${r.student?.rollNo||'—'}</td>
+            <td>${r.topic}</td>
+            <td><span class="course-tag ${tagClass}">${r.course}</span></td>
+            <td style="text-transform:capitalize">${r.quizType}</td>
+            <td>${r.score}/${r.total} <span style="color:var(--muted)">(${r.percentage}%)</span></td>
+            <td><span class="badge ${badge}">${label}</span></td>
+            <td style="color:var(--muted)">${date}</td>
+          </tr>`;
+        }).join('');
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  loadAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Register — Sampathirao Yoganandh</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0F1117;--surf:#181C27;--surf2:#1F2333;--bdr:#2A2F42;--acc:#F07C3E;--gold:#E8C06A;--txt:#E8EAF0;--muted:#6B7194;--grn:#4ECBA0;--red:#F05C5C}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--acc);text-decoration:none}a:hover{color:var(--gold)}
+
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:14px 32px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:1em;font-weight:700;color:var(--gold)}
+.brand span{color:var(--txt);font-weight:400;font-size:.85em}
+
+.page{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 16px}
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:18px;padding:40px 36px;width:100%;max-width:460px}
+
+.card-icon{font-size:2.4em;text-align:center;margin-bottom:10px}
+.card h1{font-size:1.4em;font-weight:800;text-align:center;margin-bottom:4px}
+.card .sub{color:var(--muted);font-size:.85em;text-align:center;margin-bottom:28px}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{margin-bottom:16px}
+label{display:block;font-size:.8em;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+input,select{width:100%;padding:11px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:9px;color:var(--txt);font-size:.95em;outline:none;transition:.2s}
+input:focus,select:focus{border-color:var(--acc)}
+input::placeholder{color:var(--muted)}
+select option{background:var(--surf2)}
+
+.btn{width:100%;padding:13px;background:var(--acc);border:none;border-radius:10px;color:#111;font-size:1em;font-weight:700;cursor:pointer;transition:.15s;margin-top:6px}
+.btn:hover{background:var(--gold)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.err{background:rgba(240,92,92,.1);border:1px solid rgba(240,92,92,.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:.85em;margin-bottom:16px;display:none}
+.suc{background:rgba(78,203,160,.1);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:8px;padding:10px 14px;font-size:.85em;margin-bottom:16px;display:none}
+
+.switch{text-align:center;font-size:.85em;color:var(--muted);margin-top:20px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,0,0,.3);border-top-color:#111;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">sampathirao yoganandh <span>· Education Portal</span></div>
+  <a href="index.html" style="font-size:.82em;color:var(--muted)">← Home</a>
+</div>
+
+<div class="page">
+  <div class="card">
+    <div class="card-icon">📝</div>
+    <h1>Create Account</h1>
+    <p class="sub">Register with your college details</p>
+
+    <div class="err" id="errMsg"></div>
+    <div class="suc" id="sucMsg"></div>
+
+    <form id="regForm">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="Your full name" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Roll Number</label>
+          <input type="text" id="rollNo" placeholder="23CM9A0501" required>
+        </div>
+        <div class="form-group">
+          <label>Section</label>
+          <input type="text" id="section" placeholder="A / B / C">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-group">
+        <label>Course</label>
+        <select id="course">
+          <option value="Both">Both (JPP + DevOps)</option>
+          <option value="JPP">Java Programming Practices</option>
+          <option value="DevOps">DevOps</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Create a password" required minlength="6">
+      </div>
+      <button type="submit" class="btn" id="regBtn">Create Account</button>
+    </form>
+
+    <div class="switch">Already have an account? <a href="login.html">Login</a></div>
+  </div>
+</div>
+
+<script>
+  const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : '/api';
+
+  document.getElementById('regForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('regBtn');
+    const err = document.getElementById('errMsg');
+    const suc = document.getElementById('sucMsg');
+    err.style.display = 'none'; suc.style.display = 'none';
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Creating account...';
+
+    try {
+      const res = await fetch(`${API}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('name').value.trim(),
+          rollNo: document.getElementById('rollNo').value.trim().toUpperCase(),
+          email: document.getElementById('email').value.trim(),
+          password: document.getElementById('password').value,
+          section: document.getElementById('section').value.trim(),
+          course: document.getElementById('course').value
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      localStorage.setItem('edu_token', data.token);
+      localStorage.setItem('edu_user', JSON.stringify(data.user));
+
+      suc.textContent = 'Account created! Redirecting to dashboard...';
+      suc.style.display = 'block';
+      setTimeout(() => window.location.href = 'dashboard.html', 1000);
+    } catch (error) {
+      err.textContent = error.message || 'Registration failed.';
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = 'Create Account';
+    }
+  });
+</script>
+</body>
+</html>
