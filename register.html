@@ -27,6 +27,8 @@ input,select{width:100%;padding:11px 14px;background:var(--surf2);border:1px sol
 input:focus,select:focus{border-color:var(--acc)}
 input::placeholder{color:var(--muted)}
 select option{background:var(--surf2)}
+input.invalid,select.invalid{border-color:var(--red)!important}
+.field-err{color:var(--red);font-size:.75em;margin-top:4px;display:none}
 
 .btn{width:100%;padding:13px;background:var(--acc);border:none;border-radius:10px;color:#111;font-size:1em;font-weight:700;cursor:pointer;transition:.15s;margin-top:6px}
 .btn:hover{background:var(--gold)}
@@ -55,36 +57,43 @@ select option{background:var(--surf2)}
     <div class="err" id="errMsg"></div>
     <div class="suc" id="sucMsg"></div>
 
-    <form id="regForm">
+    <form id="regForm" novalidate>
       <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="name" placeholder="Your full name" required>
+        <label>Full Name <span style="color:var(--red)">*</span></label>
+        <input type="text" id="name" placeholder="Your full name">
+        <div class="field-err" id="err-name">Full name is required</div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Roll Number</label>
-          <input type="text" id="rollNo" placeholder="23CM9A0501" required>
+          <label>Roll Number <span style="color:var(--red)">*</span></label>
+          <input type="text" id="rollNo" placeholder="23CM9A0501">
+          <div class="field-err" id="err-rollNo">Roll number is required</div>
         </div>
         <div class="form-group">
-          <label>Section</label>
+          <label>Section <span style="color:var(--red)">*</span></label>
           <input type="text" id="section" placeholder="A / B / C">
+          <div class="field-err" id="err-section">Section is required</div>
         </div>
       </div>
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="email" placeholder="your@email.com" required>
+        <label>Email <span style="color:var(--red)">*</span></label>
+        <input type="email" id="email" placeholder="your@email.com">
+        <div class="field-err" id="err-email">Valid email is required</div>
       </div>
       <div class="form-group">
-        <label>Course</label>
+        <label>Course <span style="color:var(--red)">*</span></label>
         <select id="course">
+          <option value="">-- Select Course --</option>
           <option value="Both">Both (JPP + DevOps)</option>
           <option value="JPP">Java Programming Practices</option>
           <option value="DevOps">DevOps</option>
         </select>
+        <div class="field-err" id="err-course">Please select a course</div>
       </div>
       <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="Create a password" required minlength="6">
+        <label>Password <span style="color:var(--red)">*</span></label>
+        <input type="password" id="password" placeholder="Min. 6 characters">
+        <div class="field-err" id="err-password">Password must be at least 6 characters</div>
       </div>
       <button type="submit" class="btn" id="regBtn">Create Account</button>
     </form>
@@ -98,8 +107,39 @@ select option{background:var(--surf2)}
     ? 'http://localhost:5000/api'
     : '/api';
 
+  function validate() {
+    const fields = [
+      { id: 'name',     errId: 'err-name',     check: v => v.trim().length > 0 },
+      { id: 'rollNo',   errId: 'err-rollNo',   check: v => v.trim().length > 0 },
+      { id: 'section',  errId: 'err-section',  check: v => v.trim().length > 0 },
+      { id: 'email',    errId: 'err-email',    check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
+      { id: 'course',   errId: 'err-course',   check: v => v !== '' },
+      { id: 'password', errId: 'err-password', check: v => v.length >= 6 }
+    ];
+    let valid = true;
+    fields.forEach(f => {
+      const el = document.getElementById(f.id);
+      const errEl = document.getElementById(f.errId);
+      const ok = f.check(el.value);
+      el.classList.toggle('invalid', !ok);
+      errEl.style.display = ok ? 'none' : 'block';
+      if (!ok) valid = false;
+    });
+    return valid;
+  }
+
+  // Clear error on input
+  ['name','rollNo','section','email','course','password'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      document.getElementById(id).classList.remove('invalid');
+      document.getElementById('err-' + id).style.display = 'none';
+    });
+  });
+
   document.getElementById('regForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!validate()) return;
+
     const btn = document.getElementById('regBtn');
     const err = document.getElementById('errMsg');
     const suc = document.getElementById('sucMsg');
