@@ -71,7 +71,11 @@ input.invalid,select.invalid{border-color:var(--red)!important}
         </div>
         <div class="form-group">
           <label>Section <span style="color:var(--red)">*</span></label>
-          <input type="text" id="section" placeholder="A / B / C">
+          <select id="section">
+            <option value="">-- Select --</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+          </select>
           <div class="field-err" id="err-section">Section is required</div>
         </div>
       </div>
@@ -111,7 +115,7 @@ input.invalid,select.invalid{border-color:var(--red)!important}
     const fields = [
       { id: 'name',     errId: 'err-name',     check: v => v.trim().length > 0 },
       { id: 'rollNo',   errId: 'err-rollNo',   check: v => v.trim().length > 0 },
-      { id: 'section',  errId: 'err-section',  check: v => v.trim().length > 0 },
+      { id: 'section',  errId: 'err-section',  check: v => v !== '' },
       { id: 'email',    errId: 'err-email',    check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
       { id: 'course',   errId: 'err-course',   check: v => v !== '' },
       { id: 'password', errId: 'err-password', check: v => v.length >= 6 }
