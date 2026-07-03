@@ -111,7 +111,7 @@ tr:last-child td{border-bottom:none}
     <button class="tab-btn" onclick="switchTab('assignments',this);loadAssignments()">📝 Assignments</button>
     <button class="tab-btn" onclick="switchTab('notices',this);loadNotices()">📢 Notice Board</button>
     <button class="tab-btn" onclick="switchTab('attendance',this);initAttendance()">📅 Attendance</button>
-    <button class="tab-btn" onclick="switchTab('timetable',this);loadTimetableAdmin()">🗓️ Timetable</button>
+    <button class="tab-btn" onclick="switchTab('timetable',this);switchTtSection(ttSection)">🗓️ Timetable</button>
   </div>
 
   <!-- Students Tab -->
@@ -283,17 +283,114 @@ tr:last-child td{border-bottom:none}
     </div>
     <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:20px">
       <div class="section-title" id="ttSecLabel">Section A — Add Slot</div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
-        <select id="ttDay" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
-          <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option>
-        </select>
-        <input id="ttTime" type="text" placeholder="e.g. 9:00 AM - 10:00 AM" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em;width:200px">
-        <input id="ttSubject" type="text" placeholder="Subject / Topic" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em;flex:1;min-width:150px">
-        <select id="ttCourse" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
-          <option value="JPP">JPP</option><option value="DevOps">DevOps</option><option value="Both">Both</option>
-        </select>
-        <input id="ttRoom" type="text" placeholder="Room (optional)" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em;width:140px">
-        <button type="button" onclick="addTtSlot()" style="padding:9px 18px;background:var(--acc);border:none;border-radius:8px;color:#111;font-weight:700;font-size:.85em;cursor:pointer">+ Add</button>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:14px">
+
+        <!-- Day (filtered by section) -->
+        <div>
+          <label style="font-size:.72em;color:var(--muted);display:block;margin-bottom:4px">Day</label>
+          <select id="ttDay" onchange="updateTtTimes()" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em"></select>
+        </div>
+
+        <!-- Time (filtered by day + section) -->
+        <div>
+          <label style="font-size:.72em;color:var(--muted);display:block;margin-bottom:4px">Time Slot</label>
+          <select id="ttTime" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em"></select>
+        </div>
+
+        <!-- Topic from syllabus -->
+        <div style="grid-column:span 2">
+          <label style="font-size:.72em;color:var(--muted);display:block;margin-bottom:4px">Topic (Syllabus)</label>
+          <select id="ttSubject" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
+            <optgroup label="── Unit 1: Basics ──">
+              <option>Introduction to Java & Features</option>
+              <option>JVM, JDK, JRE Architecture</option>
+              <option>Data Types, Variables & Type Casting</option>
+              <option>Operators in Java</option>
+              <option>Control Statements (if-else, switch)</option>
+              <option>Loops (for, while, do-while)</option>
+              <option>Arrays (1D & 2D)</option>
+              <option>Methods & Recursion</option>
+            </optgroup>
+            <optgroup label="── Unit 2: OOPs ──">
+              <option>Classes & Objects</option>
+              <option>Constructors & Constructor Overloading</option>
+              <option>this & static Keywords</option>
+              <option>Inheritance (Single, Multilevel, Hierarchical)</option>
+              <option>Method Overriding</option>
+              <option>Polymorphism (Compile-time & Runtime)</option>
+              <option>Abstract Classes & Methods</option>
+              <option>Interfaces</option>
+              <option>Encapsulation & Packages</option>
+              <option>Access Modifiers</option>
+            </optgroup>
+            <optgroup label="── Unit 3: Exception Handling & Strings ──">
+              <option>Exception Handling (try-catch-finally)</option>
+              <option>throw & throws</option>
+              <option>User-defined Exceptions</option>
+              <option>String Class & Methods</option>
+              <option>StringBuilder & StringBuffer</option>
+            </optgroup>
+            <optgroup label="── Unit 4: Multithreading ──">
+              <option>Thread Creation (Thread class & Runnable)</option>
+              <option>Thread Lifecycle & Methods</option>
+              <option>Synchronization</option>
+              <option>Inter-thread Communication</option>
+            </optgroup>
+            <optgroup label="── Unit 5: Collections & File I/O ──">
+              <option>ArrayList & LinkedList</option>
+              <option>HashMap & HashSet</option>
+              <option>Iterator & for-each</option>
+              <option>File I/O (FileInputStream / OutputStream)</option>
+              <option>BufferedReader & BufferedWriter</option>
+              <option>Serialization & Deserialization</option>
+            </optgroup>
+            <optgroup label="── Lab Sessions ──">
+              <option>Lab: Basic Java Programs</option>
+              <option>Lab: OOPs Programs</option>
+              <option>Lab: Exception Handling Programs</option>
+              <option>Lab: Multithreading Programs</option>
+              <option>Lab: Collections Programs</option>
+              <option>Lab: File I/O Programs</option>
+              <option>Lab: Mini Project</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Room -->
+        <div>
+          <label style="font-size:.72em;color:var(--muted);display:block;margin-bottom:4px">Room</label>
+          <select id="ttRoom" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
+            <option value="I-303">I-303 (CSM-A)</option>
+            <option value="I-403">I-403 (CSM-B)</option>
+          </select>
+        </div>
+
+        <!-- Content Delivery Method -->
+        <div>
+          <label style="font-size:.72em;color:var(--muted);display:block;margin-bottom:4px">Content Delivery Method</label>
+          <select id="ttDelivery" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
+            <option value="Lecture">Lecture</option>
+            <option value="Discussion">Discussion</option>
+          </select>
+        </div>
+
+        <!-- Innovative Teaching Strategy -->
+        <div>
+          <label style="font-size:.72em;color:var(--muted);display:block;margin-bottom:4px">Innovative Teaching Strategy</label>
+          <select id="ttStrategy" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
+            <option value="PPT">PPT</option>
+            <option value="Black Board">Black Board</option>
+            <option value="Revision">Revision</option>
+            <option value="Case Discussion">Case Discussion</option>
+            <option value="Examples">Examples</option>
+            <option value="IDE">IDE</option>
+          </select>
+        </div>
+
+        <!-- Add button -->
+        <div style="display:flex;align-items:flex-end">
+          <button type="button" onclick="addTtSlot()" style="width:100%;padding:9px 18px;background:var(--acc);border:none;border-radius:8px;color:#111;font-weight:700;font-size:.85em;cursor:pointer">+ Add Slot</button>
+        </div>
       </div>
       <button type="button" onclick="saveTimetable()" style="padding:9px 24px;background:rgba(78,203,160,.15);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:8px;font-weight:700;font-size:.85em;cursor:pointer">💾 Save Section Timetable</button>
       <span id="ttMsg" style="margin-left:12px;font-size:.82em"></span>
@@ -704,18 +801,48 @@ tr:last-child td{border-bottom:none}
   // ── Timetable ──
   const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   let ttSlots = [];
-  let ttSection = 'A'; // currently editing section
+  let ttSection = 'A';
+
+  // Day → time slots per section
+  const TT_SCHEDULE = {
+    A: {
+      Thursday:  ['1:00 PM - 3:30 PM (Lab)'],
+      Friday:    ['9:40 AM - 10:30 AM (Theory)'],
+      Saturday:  ['8:50 AM - 9:40 AM (Theory)']
+    },
+    B: {
+      Wednesday: ['9:40 AM - 12:10 PM (Lab)', '1:50 PM - 2:40 PM (Theory)'],
+      Thursday:  ['9:40 AM - 10:30 AM (Theory)']
+    }
+  };
+
+  function updateTtDays() {
+    const dayEl = document.getElementById('ttDay');
+    const days  = Object.keys(TT_SCHEDULE[ttSection]);
+    dayEl.innerHTML = days.map(d=>`<option>${d}</option>`).join('');
+    updateTtTimes();
+  }
+
+  function updateTtTimes() {
+    const day    = document.getElementById('ttDay').value;
+    const timeEl = document.getElementById('ttTime');
+    const times  = (TT_SCHEDULE[ttSection][day] || []);
+    timeEl.innerHTML = times.map(t=>`<option>${t}</option>`).join('');
+  }
 
   function switchTtSection(sec) {
     ttSection = sec;
     document.getElementById('ttSecLabel').textContent = `Section ${sec} — Add Slot`;
-    // update button styles
-    document.getElementById('ttSecA').style.background  = sec==='A'?'var(--acc)':'transparent';
-    document.getElementById('ttSecA').style.color       = sec==='A'?'#111':'var(--muted)';
-    document.getElementById('ttSecA').style.borderColor = sec==='A'?'var(--acc)':'var(--bdr)';
-    document.getElementById('ttSecB').style.background  = sec==='B'?'var(--acc)':'transparent';
-    document.getElementById('ttSecB').style.color       = sec==='B'?'#111':'var(--muted)';
-    document.getElementById('ttSecB').style.borderColor = sec==='B'?'var(--acc)':'var(--bdr)';
+    document.getElementById('ttSecA').style.cssText = sec==='A'
+      ? 'padding:8px 24px;border-radius:8px;border:2px solid var(--acc);background:var(--acc);color:#111;font-weight:700;font-size:.85em;cursor:pointer'
+      : 'padding:8px 24px;border-radius:8px;border:2px solid var(--bdr);background:transparent;color:var(--muted);font-weight:700;font-size:.85em;cursor:pointer';
+    document.getElementById('ttSecB').style.cssText = sec==='B'
+      ? 'padding:8px 24px;border-radius:8px;border:2px solid var(--acc);background:var(--acc);color:#111;font-weight:700;font-size:.85em;cursor:pointer'
+      : 'padding:8px 24px;border-radius:8px;border:2px solid var(--bdr);background:transparent;color:var(--muted);font-weight:700;font-size:.85em;cursor:pointer';
+    // Set default room per section
+    const roomEl = document.getElementById('ttRoom');
+    if (roomEl) roomEl.value = sec==='A' ? 'I-303' : 'I-403';
+    updateTtDays();
     loadTimetableAdmin();
   }
 
@@ -730,17 +857,16 @@ tr:last-child td{border-bottom:none}
 
   function addTtSlot() {
     const slot = {
-      day: document.getElementById('ttDay').value,
-      time: document.getElementById('ttTime').value.trim(),
-      subject: document.getElementById('ttSubject').value.trim(),
-      course: document.getElementById('ttCourse').value,
-      room: document.getElementById('ttRoom').value.trim()
+      day:              document.getElementById('ttDay').value,
+      time:             document.getElementById('ttTime').value,
+      subject:          document.getElementById('ttSubject').value,
+      course:           'JPP',
+      room:             document.getElementById('ttRoom').value,
+      deliveryMethod:   document.getElementById('ttDelivery').value,
+      teachingStrategy: document.getElementById('ttStrategy').value
     };
-    if (!slot.time || !slot.subject){ alert('Fill time and subject.'); return; }
+    if (!slot.day || !slot.time || !slot.subject){ alert('Fill all required fields.'); return; }
     ttSlots.push(slot);
-    document.getElementById('ttTime').value='';
-    document.getElementById('ttSubject').value='';
-    document.getElementById('ttRoom').value='';
     renderTtGrid();
   }
 
@@ -752,18 +878,18 @@ tr:last-child td{border-bottom:none}
     const byDay = {};
     DAYS.forEach(d => byDay[d]=[]);
     ttSlots.forEach((s,i) => { if(byDay[s.day]) byDay[s.day].push({...s,_i:i}); });
-    const tagClass = c => c==='JPP'?'tag-jpp':c==='DevOps'?'tag-devops':'tag-both';
     container.innerHTML = DAYS.filter(d=>byDay[d].length).map(d=>`
-      <div style="margin-bottom:14px">
+      <div style="margin-bottom:16px">
         <div style="font-weight:700;color:var(--gold);font-size:.82em;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${d}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px">${byDay[d].map(s=>`
-          <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:9px;padding:10px 14px;position:relative;min-width:160px">
-            <button type="button" onclick="removeSlot(${s._i})" style="position:absolute;top:6px;right:8px;background:none;border:none;color:var(--red);cursor:pointer;font-size:.85em">✕</button>
-            <div style="font-size:.78em;color:var(--muted);margin-bottom:3px">${s.time}</div>
-            <div style="font-weight:700;font-size:.88em;margin-bottom:4px">${s.subject}</div>
-            <div style="display:flex;gap:6px;align-items:center">
-              <span class="course-tag ${tagClass(s.course)}" style="font-size:.65em">${s.course}</span>
-              ${s.room?`<span style="font-size:.72em;color:var(--muted)">${s.room}</span>`:''}
+        <div style="display:flex;flex-wrap:wrap;gap:10px">${byDay[d].map(s=>`
+          <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:12px 16px;position:relative;min-width:220px;max-width:300px">
+            <button type="button" onclick="removeSlot(${s._i})" style="position:absolute;top:8px;right:10px;background:none;border:none;color:var(--red);cursor:pointer;font-size:.85em">✕</button>
+            <div style="font-size:.75em;color:var(--muted);margin-bottom:4px">⏰ ${s.time}</div>
+            <div style="font-weight:700;font-size:.88em;margin-bottom:6px">${s.subject}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;font-size:.72em">
+              ${s.room?`<span style="background:rgba(91,168,245,.1);color:var(--blu);padding:2px 7px;border-radius:4px">📍 ${s.room}</span>`:''}
+              ${s.deliveryMethod?`<span style="background:rgba(169,125,245,.1);color:var(--prp);padding:2px 7px;border-radius:4px">${s.deliveryMethod}</span>`:''}
+              ${s.teachingStrategy?`<span style="background:rgba(232,192,106,.1);color:var(--gold);padding:2px 7px;border-radius:4px">${s.teachingStrategy}</span>`:''}
             </div>
           </div>`).join('')}
         </div>
@@ -782,6 +908,9 @@ tr:last-child td{border-bottom:none}
       setTimeout(()=>msg.textContent='',2500);
     } catch(e){ msg.style.color='var(--red)'; msg.textContent=e.message; }
   }
+
+  // Init day/time dropdowns when timetable tab first opens
+  // (called by switchTtSection on load)
 </script>
 </body>
 </html>
