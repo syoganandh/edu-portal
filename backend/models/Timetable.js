@@ -11,4 +11,9 @@ const slotSchema = new mongoose.Schema({
 }, { _id: true });
 
 const timetableSchema = new mongoose.Schema({
-  section:   { type: String, enum: ['A','B'], required: true, unique: tru
+  section:   { type: String, enum: ['A','B'], required: true, unique: true },
+  slots:     [slotSchema],
+  updatedAt: { type: Date, default: Date.now }
+});
+
+module.exports = mongoose.model('Timetable', timetableSchema);
