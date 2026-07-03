@@ -735,34 +735,50 @@ tr:last-child td{border-bottom:none}
   async function loadStudentsForAtt() {
     const key  = document.getElementById('attClassType').value;
     const info = CLASS_INFO[key];
+    const date = document.getElementById('attDate').value;
     document.getElementById('attClassInfo').innerHTML =
       `<span style="background:rgba(91,168,245,.1);border:1px solid rgba(91,168,245,.2);padding:4px 12px;border-radius:6px;color:var(--blu)">📅 ${info.hint}</span>`;
     try {
       const res = await fetch(`${API}/attendance/students/${info.course}?section=${info.section}`,{ headers:{ Authorization:`Bearer ${token}` }});
       attStudents = await res.json();
-      renderAttStudents();
+      // Fetch existing records for this date+class to pre-fill statuses
+      let existingMap = {};
+      if (date) {
+        try {
+          const eRes = await fetch(`${API}/attendance/records?fromDate=${date}&toDate=${date}&section=${info.section}&classType=${info.classType}`,{ headers:{ Authorization:`Bearer ${token}` }});
+          const eData = await eRes.json();
+          eData.forEach(r => { existingMap[r.student?._id || r.student] = r.status; });
+        } catch(e) {}
+      }
+      renderAttStudents(existingMap);
     } catch(e){ document.getElementById('attStudentList').innerHTML='<div class="empty">Failed to load students.</div>'; }
   }
 
-  function renderAttStudents() {
+  function renderAttStudents(existingMap = {}) {
     const container = document.getElementById('attStudentList');
     if (!attStudents.length){ container.innerHTML='<div class="empty">No students found.</div>'; return; }
-    container.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.85em">
+    const hasExisting = Object.keys(existingMap).length > 0;
+    container.innerHTML = `
+      ${hasExisting ? `<div style="margin-bottom:10px;padding:8px 14px;background:rgba(232,192,106,.1);border:1px solid rgba(232,192,106,.3);border-radius:8px;font-size:.82em;color:var(--gold)">✏️ Editing existing attendance — make changes and click Save.</div>` : ''}
+      <table style="width:100%;border-collapse:collapse;font-size:.85em">
       <thead><tr style="background:var(--surf2)">
         <th style="padding:8px 12px;text-align:left;color:var(--gold)">#</th>
         <th style="padding:8px 12px;text-align:left;color:var(--gold)">Name</th>
         <th style="padding:8px 12px;text-align:left;color:var(--gold)">Roll No</th>
         <th style="padding:8px 12px;color:var(--gold)">Status</th>
       </tr></thead>
-      <tbody>${attStudents.map((s,i)=>`<tr style="border-bottom:1px solid var(--bdr)">
-        <td style="padding:8px 12px;color:var(--muted)">${i+1}</td>
-        <td style="padding:8px 12px;font-weight:600">${s.name}</td>
-        <td style="padding:8px 12px;color:var(--blu)">${s.rollNo}</td>
-        <td style="padding:8px 12px;text-align:center">
-          <label style="cursor:pointer;margin-right:12px"><input type="radio" name="att-${s._id}" value="present" checked> <span style="color:var(--grn)">Present</span></label>
-          <label style="cursor:pointer"><input type="radio" name="att-${s._id}" value="absent"> <span style="color:var(--red)">Absent</span></label>
-        </td>
-      </tr>`).join('')}</tbody>
+      <tbody>${attStudents.map((s,i)=>{
+        const status = existingMap[s._id] || 'present';
+        return `<tr style="border-bottom:1px solid var(--bdr)">
+          <td style="padding:8px 12px;color:var(--muted)">${i+1}</td>
+          <td style="padding:8px 12px;font-weight:600">${s.name}</td>
+          <td style="padding:8px 12px;color:var(--blu)">${s.rollNo}</td>
+          <td style="padding:8px 12px;text-align:center">
+            <label style="cursor:pointer;margin-right:12px"><input type="radio" name="att-${s._id}" value="present" ${status==='present'?'checked':''}> <span style="color:var(--grn)">Present</span></label>
+            <label style="cursor:pointer"><input type="radio" name="att-${s._id}" value="absent" ${status==='absent'?'checked':''}> <span style="color:var(--red)">Absent</span></label>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
     </table>`;
   }
 
