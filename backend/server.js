@@ -11,9 +11,11 @@ app.use(express.json());
 app.use(express.static('../')); // Serve static HTML files from root
 
 // ── Routes ──
-app.use('/api/auth',  require('./routes/auth'));
-app.use('/api/quiz',  require('./routes/quiz'));
-app.use('/api/admin', require('./routes/admin'));
+app.use('/api/auth',        require('./routes/auth'));
+app.use('/api/quiz',        require('./routes/quiz'));
+app.use('/api/admin',       require('./routes/admin'));
+app.use('/api/assignments', require('./routes/assignments'));
+app.use('/api/notices',     require('./routes/notices'));
 
 // ── Health check ──
 app.get('/api/health', (req, res) => {

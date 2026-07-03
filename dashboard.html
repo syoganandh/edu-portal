@@ -97,17 +97,53 @@ a{color:var(--acc);text-decoration:none}
     </div>
   </div>
 
-  <div class="section-title">Progress by Topic</div>
-  <div class="topic-grid" id="topicGrid">
-    <div class="loading">Loading your progress...</div>
+  <!-- Tabs -->
+  <div style="display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--bdr)">
+    <button class="dash-tab-btn" id="dtab-progress" onclick="switchDashTab('progress',this)" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--acc);color:var(--acc);font-size:.88em;font-weight:600;cursor:pointer;margin-bottom:-1px">📊 Progress</button>
+    <button class="dash-tab-btn" id="dtab-assignments" onclick="switchDashTab('assignments',this);loadMyAssignments()" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:.88em;font-weight:600;cursor:pointer;margin-bottom:-1px">📝 Assignments</button>
   </div>
 
-  <div class="section-title" style="margin-top:8px">Recent Quiz Attempts</div>
-  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:12px;overflow:hidden">
-    <table class="results-table">
-      <thead><tr><th>Topic</th><th>Course</th><th>Type</th><th>Score</th><th>Result</th><th>Date</th></tr></thead>
-      <tbody id="resultsBody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody>
-    </table>
+  <!-- Progress Panel -->
+  <div id="dash-progress">
+    <!-- Notices -->
+    <div id="noticesBar" style="margin-bottom:20px"></div>
+    <div class="section-title">Progress by Topic</div>
+    <div class="topic-grid" id="topicGrid">
+      <div class="loading">Loading your progress...</div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Recent Quiz Attempts</div>
+    <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:12px;overflow:hidden">
+      <table class="results-table">
+        <thead><tr><th>Topic</th><th>Course</th><th>Type</th><th>Score</th><th>Result</th><th>Date</th></tr></thead>
+        <tbody id="resultsBody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Assignments Panel -->
+  <div id="dash-assignments" style="display:none">
+    <div id="myAsgList"><div class="loading">Loading assignments...</div></div>
+
+    <!-- Submit Modal -->
+    <div id="submitModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center">
+      <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:16px;padding:32px;width:90%;max-width:480px">
+        <h3 style="margin-bottom:16px;font-size:1.05em" id="modalAsgTitle">Submit Assignment</h3>
+        <input type="hidden" id="modalAsgId">
+        <div style="margin-bottom:14px">
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Google Drive Link *</label>
+          <input type="url" id="subDriveLink" placeholder="https://drive.google.com/..." style="width:100%;padding:10px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Note (optional)</label>
+          <textarea id="subNote" rows="2" placeholder="Any note for your teacher..." style="width:100%;padding:10px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em;resize:none"></textarea>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button type="button" onclick="submitAssignment()" style="flex:1;padding:11px;background:var(--acc);border:none;border-radius:9px;color:#111;font-weight:700;cursor:pointer">Submit</button>
+          <button type="button" onclick="closeModal()" style="padding:11px 20px;background:none;border:1px solid var(--bdr);border-radius:9px;color:var(--muted);cursor:pointer">Cancel</button>
+        </div>
+        <div id="subErr" style="margin-top:10px;font-size:.82em;color:var(--red);display:none"></div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -201,6 +237,105 @@ a{color:var(--acc);text-decoration:none}
   }
 
   loadDashboard();
+  loadNotices();
+
+  async function loadNotices() {
+    try {
+      const res = await fetch(`${API}/notices`, { headers:{ Authorization:`Bearer ${token}` }});
+      const data = await res.json();
+      const bar = document.getElementById('noticesBar');
+      if (!data.length){ bar.innerHTML=''; return; }
+      const colors = { info:'rgba(91,168,245,.1)', warning:'rgba(232,192,106,.1)', success:'rgba(78,203,160,.1)' };
+      const borders= { info:'rgba(91,168,245,.3)', warning:'rgba(232,192,106,.3)', success:'rgba(78,203,160,.3)' };
+      const txtcol = { info:'var(--blu)', warning:'var(--gold)', success:'var(--grn)' };
+      bar.innerHTML = data.map(n => `
+        <div style="background:${colors[n.type]};border:1px solid ${borders[n.type]};border-radius:10px;padding:14px 18px;margin-bottom:10px">
+          <div style="font-weight:700;color:${txtcol[n.type]};margin-bottom:4px">${n.type==='info'?'📢':n.type==='warning'?'⚠️':'✅'} ${n.title}</div>
+          <div style="font-size:.85em;color:var(--txt)">${n.message}</div>
+          <div style="font-size:.72em;color:var(--muted);margin-top:4px">${new Date(n.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</div>
+        </div>
+      `).join('');
+    } catch(e){}
+  }
+
+  function switchDashTab(name, btn) {
+    document.querySelectorAll('.dash-tab-btn').forEach(b => {
+      b.style.borderBottomColor='transparent'; b.style.color='var(--muted)';
+    });
+    btn.style.borderBottomColor='var(--acc)'; btn.style.color='var(--acc)';
+    document.getElementById('dash-progress').style.display = name==='progress'?'block':'none';
+    document.getElementById('dash-assignments').style.display = name==='assignments'?'block':'none';
+  }
+
+  async function loadMyAssignments() {
+    const container = document.getElementById('myAsgList');
+    try {
+      const res = await fetch(`${API}/assignments`, { headers:{ Authorization:`Bearer ${token}` }});
+      const data = await res.json();
+      if (!data.length){ container.innerHTML='<div class="empty"><span>📝</span>No assignments yet.</div>'; return; }
+      container.innerHTML = data.map(a => {
+        const due = new Date(a.dueDate);
+        const overdue = due < new Date();
+        const sub = a.mySubmission;
+        const tagClass = a.course==='JPP'?'tag-jpp':a.course==='DevOps'?'tag-devops':'tag-both';
+        return `<div style="background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:20px;margin-bottom:14px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-weight:700">${a.title}</span>
+                <span class="course-tag ${tagClass}">${a.course}</span>
+                ${sub ? '<span style="font-size:.72em;background:rgba(78,203,160,.12);color:var(--grn);padding:2px 8px;border-radius:4px;font-weight:700">✓ Submitted</span>' : ''}
+                ${overdue && !sub ? '<span style="font-size:.72em;background:rgba(240,92,92,.12);color:var(--red);padding:2px 8px;border-radius:4px">Overdue</span>' : ''}
+              </div>
+              <div style="font-size:.83em;color:var(--muted);margin-bottom:8px">${a.description}</div>
+              <div style="font-size:.78em;color:var(--muted)">
+                Due: <span style="color:${overdue?'var(--red)':'var(--gold)'}">${due.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span>
+                ${a.driveLink ? ` · <a href="${a.driveLink}" target="_blank" style="color:var(--blu)">📎 View Assignment</a>` : ''}
+              </div>
+              ${sub ? `<div style="margin-top:8px;font-size:.8em;padding:8px 12px;background:var(--surf2);border-radius:8px">
+                <span style="color:var(--muted)">Your submission: </span><a href="${sub.driveLink}" target="_blank" style="color:var(--acc)">📎 View</a>
+                ${sub.grade ? ` · Grade: <strong style="color:var(--grn)">${sub.grade}</strong>` : ''}
+                ${sub.feedback ? ` · <span style="color:var(--muted)">${sub.feedback}</span>` : ''}
+              </div>` : ''}
+            </div>
+            <button type="button" onclick="openModal('${a._id}','${a.title.replace(/'/g,"\\'")}','${sub?'resubmit':'submit'}')" style="padding:8px 16px;background:${sub?'rgba(91,168,245,.12)':'var(--acc)'};border:${sub?'1px solid rgba(91,168,245,.3)':'none'};color:${sub?'var(--blu)':'#111'};border-radius:8px;font-size:.82em;font-weight:700;cursor:pointer;flex-shrink:0">
+              ${sub ? '✏️ Resubmit' : '📤 Submit'}
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    } catch(e){ container.innerHTML='<div class="empty">Failed to load assignments.</div>'; }
+  }
+
+  function openModal(id, title) {
+    document.getElementById('modalAsgId').value = id;
+    document.getElementById('modalAsgTitle').textContent = 'Submit: ' + title;
+    document.getElementById('subDriveLink').value = '';
+    document.getElementById('subNote').value = '';
+    document.getElementById('subErr').style.display = 'none';
+    document.getElementById('submitModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('submitModal').style.display = 'none';
+  }
+
+  async function submitAssignment() {
+    const id    = document.getElementById('modalAsgId').value;
+    const link  = document.getElementById('subDriveLink').value.trim();
+    const note  = document.getElementById('subNote').value.trim();
+    const errEl = document.getElementById('subErr');
+    if (!link){ errEl.textContent='Please paste your Google Drive link.'; errEl.style.display='block'; return; }
+    try {
+      const res = await fetch(`${API}/assignments/${id}/submit`,{
+        method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
+        body: JSON.stringify({ driveLink:link, note })
+      });
+      if (!res.ok) throw new Error((await res.json()).message);
+      closeModal();
+      loadMyAssignments();
+    } catch(e){ errEl.textContent=e.message; errEl.style.display='block'; }
+  }
 </script>
 </body>
 </html>

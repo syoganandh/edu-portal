@@ -97,6 +97,8 @@ tr:last-child td{border-bottom:none}
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('students',this)">👥 Students</button>
     <button class="tab-btn" onclick="switchTab('results',this)">📊 Quiz Results</button>
+    <button class="tab-btn" onclick="switchTab('assignments',this);loadAssignments()">📝 Assignments</button>
+    <button class="tab-btn" onclick="switchTab('notices',this);loadNotices()">📢 Notice Board</button>
   </div>
 
   <!-- Students Tab -->
@@ -114,6 +116,93 @@ tr:last-child td{border-bottom:none}
       <thead><tr><th>Student</th><th>Roll No</th><th>Topic</th><th>Course</th><th>Type</th><th>Score</th><th>Result</th><th>Date</th></tr></thead>
       <tbody id="resultsBody"><tr><td colspan="8" class="loading">Loading results...</td></tr></tbody>
     </table>
+  </div>
+
+  <!-- Assignments Tab -->
+  <div class="tab-panel" id="tab-assignments">
+    <!-- Create Form -->
+    <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:24px">
+      <div class="section-title">Create New Assignment</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        <div>
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Title *</label>
+          <input id="asgTitle" type="text" placeholder="Assignment title" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+        </div>
+        <div>
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Course *</label>
+          <select id="asgCourse" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+            <option value="Both">Both (JPP + DevOps)</option>
+            <option value="JPP">JPP</option>
+            <option value="DevOps">DevOps</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Due Date *</label>
+          <input id="asgDue" type="date" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+        </div>
+        <div>
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Google Drive Link (optional)</label>
+          <input id="asgDrive" type="url" placeholder="https://drive.google.com/..." style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+        </div>
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Description *</label>
+        <textarea id="asgDesc" rows="3" placeholder="Describe the assignment..." style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em;resize:vertical"></textarea>
+      </div>
+      <button type="button" onclick="createAssignment()" style="padding:9px 24px;background:var(--acc);border:none;border-radius:8px;color:#111;font-weight:700;font-size:.88em;cursor:pointer">+ Create Assignment</button>
+      <span id="asgMsg" style="margin-left:14px;font-size:.82em"></span>
+    </div>
+
+    <!-- Assignment List -->
+    <div id="asgList"><div class="loading">Click the Assignments tab to load...</div></div>
+
+    <!-- Submissions Panel -->
+    <div id="subPanel" style="display:none;margin-top:24px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <button type="button" onclick="document.getElementById('subPanel').style.display='none';document.getElementById('asgList').style.display='block'" style="background:none;border:1px solid var(--bdr);color:var(--muted);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:.82em">← Back</button>
+        <div class="section-title" style="margin:0" id="subTitle">Submissions</div>
+      </div>
+      <table>
+        <thead><tr><th>Student</th><th>Roll No</th><th>Drive Link</th><th>Note</th><th>Submitted</th><th>Grade</th><th>Action</th></tr></thead>
+        <tbody id="subBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Notice Board Tab -->
+  <div class="tab-panel" id="tab-notices">
+    <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:24px">
+      <div class="section-title">Post New Notice</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px">
+        <div>
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Title *</label>
+          <input id="notTitle" type="text" placeholder="Notice title" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+        </div>
+        <div>
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Type</label>
+          <select id="notType" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+            <option value="info">📢 Info</option>
+            <option value="warning">⚠️ Warning</option>
+            <option value="success">✅ Important</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Course</label>
+          <select id="notCourse" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+            <option value="Both">All Students</option>
+            <option value="JPP">JPP Only</option>
+            <option value="DevOps">DevOps Only</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Message *</label>
+        <textarea id="notMsg" rows="3" placeholder="Write your notice here..." style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em;resize:vertical"></textarea>
+      </div>
+      <button type="button" onclick="postNotice()" style="padding:9px 24px;background:var(--acc);border:none;border-radius:8px;color:#111;font-weight:700;font-size:.88em;cursor:pointer">📢 Post Notice</button>
+      <span id="notFeedback" style="margin-left:14px;font-size:.82em"></span>
+    </div>
+    <div id="noticeList"><div class="loading">Click Notice Board tab to load...</div></div>
   </div>
 
 </div>
@@ -231,6 +320,162 @@ tr:last-child td{border-bottom:none}
   }
 
   loadAll();
+
+  // ── Assignments ──
+  async function createAssignment() {
+    const title = document.getElementById('asgTitle').value.trim();
+    const desc  = document.getElementById('asgDesc').value.trim();
+    const course= document.getElementById('asgCourse').value;
+    const due   = document.getElementById('asgDue').value;
+    const drive = document.getElementById('asgDrive').value.trim();
+    const msg   = document.getElementById('asgMsg');
+    if (!title || !desc || !due) { msg.style.color='var(--red)'; msg.textContent='Fill all required fields.'; return; }
+    try {
+      const res = await fetch(`${API}/assignments`, {
+        method:'POST', headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
+        body: JSON.stringify({ title, description:desc, course, dueDate:due, driveLink:drive })
+      });
+      if (!res.ok) throw new Error((await res.json()).message);
+      msg.style.color='var(--grn)'; msg.textContent='Assignment created!';
+      document.getElementById('asgTitle').value='';
+      document.getElementById('asgDesc').value='';
+      document.getElementById('asgDue').value='';
+      document.getElementById('asgDrive').value='';
+      setTimeout(()=>msg.textContent='',2000);
+      loadAssignments();
+    } catch(e){ msg.style.color='var(--red)'; msg.textContent=e.message; }
+  }
+
+  async function loadAssignments() {
+    const container = document.getElementById('asgList');
+    container.style.display='block';
+    document.getElementById('subPanel').style.display='none';
+    try {
+      const res = await fetch(`${API}/assignments/all`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const data = await res.json();
+      if (!data.length){ container.innerHTML='<div class="empty">No assignments yet. Create one above.</div>'; return; }
+      container.innerHTML = data.map(a => {
+        const due = new Date(a.dueDate);
+        const overdue = due < new Date();
+        const tagClass = a.course==='JPP'?'tag-jpp':a.course==='DevOps'?'tag-devops':'tag-both';
+        return `<div style="background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:18px;margin-bottom:12px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-weight:700;font-size:.95em">${a.title}</span>
+              <span class="course-tag ${tagClass}">${a.course}</span>
+              ${overdue?'<span style="font-size:.7em;background:rgba(240,92,92,.12);color:var(--red);padding:2px 8px;border-radius:4px">Overdue</span>':''}
+            </div>
+            <div style="font-size:.82em;color:var(--muted);margin-bottom:6px">${a.description}</div>
+            <div style="font-size:.78em;color:var(--muted)">Due: <span style="color:${overdue?'var(--red)':'var(--gold)'}">${due.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span>
+            ${a.driveLink?` · <a href="${a.driveLink}" target="_blank" style="color:var(--blu)">📎 View PDF</a>`:''}
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0">
+            <button type="button" onclick="viewSubmissions('${a._id}','${a.title}')" style="padding:6px 14px;background:rgba(91,168,245,.12);border:1px solid rgba(91,168,245,.3);color:var(--blu);border-radius:7px;font-size:.78em;cursor:pointer">📋 Submissions (${a.submissionCount})</button>
+            <button type="button" onclick="deleteAssignment('${a._id}')" style="padding:6px 12px;background:rgba(240,92,92,.1);border:1px solid rgba(240,92,92,.3);color:var(--red);border-radius:7px;font-size:.78em;cursor:pointer">Delete</button>
+          </div>
+        </div>`;
+      }).join('');
+    } catch(e){ container.innerHTML='<div class="empty">Failed to load assignments.</div>'; }
+  }
+
+  async function viewSubmissions(id, title) {
+    document.getElementById('asgList').style.display='none';
+    document.getElementById('subPanel').style.display='block';
+    document.getElementById('subTitle').textContent=`Submissions — ${title}`;
+    const tbody = document.getElementById('subBody');
+    tbody.innerHTML='<tr><td colspan="7" class="loading">Loading...</td></tr>';
+    try {
+      const res = await fetch(`${API}/assignments/${id}/submissions`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const data = await res.json();
+      if (!data.length){ tbody.innerHTML='<tr><td colspan="7" class="empty">No submissions yet.</td></tr>'; return; }
+      tbody.innerHTML = data.map(s => {
+        const date = new Date(s.submittedAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
+        return `<tr>
+          <td style="font-weight:600">${s.student?.name||'—'}</td>
+          <td style="color:var(--blu)">${s.student?.rollNo||'—'}</td>
+          <td><a href="${s.driveLink}" target="_blank" style="color:var(--acc)">📎 View</a></td>
+          <td style="color:var(--muted);font-size:.82em">${s.note||'—'}</td>
+          <td style="color:var(--muted)">${date}</td>
+          <td><span style="color:var(--grn);font-weight:600">${s.grade||'—'}</span></td>
+          <td>
+            <input type="text" placeholder="Grade" value="${s.grade||''}" id="grade-${s._id}" style="width:60px;padding:4px 6px;background:var(--surf2);border:1px solid var(--bdr);border-radius:5px;color:var(--txt);font-size:.78em;margin-right:4px">
+            <button type="button" onclick="gradeSubmission('${s._id}')" style="padding:4px 10px;background:rgba(78,203,160,.12);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:5px;font-size:.75em;cursor:pointer">Save</button>
+          </td>
+        </tr>`;
+      }).join('');
+    } catch(e){ tbody.innerHTML='<tr><td colspan="7" class="empty">Error loading submissions.</td></tr>'; }
+  }
+
+  async function gradeSubmission(id) {
+    const grade = document.getElementById(`grade-${id}`).value.trim();
+    await fetch(`${API}/assignments/submission/${id}/grade`,{
+      method:'PUT', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
+      body: JSON.stringify({ grade })
+    });
+  }
+
+  async function deleteAssignment(id) {
+    if (!confirm('Delete this assignment and all its submissions?')) return;
+    await fetch(`${API}/assignments/${id}`,{ method:'DELETE', headers:{ Authorization:`Bearer ${token}` }});
+    loadAssignments();
+  }
+
+  // ── Notices ──
+  const noticeColors = { info:'var(--blu)', warning:'var(--gold)', success:'var(--grn)' };
+  const noticeBg     = { info:'rgba(91,168,245,.08)', warning:'rgba(232,192,106,.08)', success:'rgba(78,203,160,.08)' };
+  const noticeBdr    = { info:'rgba(91,168,245,.25)', warning:'rgba(232,192,106,.25)', success:'rgba(78,203,160,.25)' };
+
+  async function postNotice() {
+    const title  = document.getElementById('notTitle').value.trim();
+    const msg    = document.getElementById('notMsg').value.trim();
+    const type   = document.getElementById('notType').value;
+    const course = document.getElementById('notCourse').value;
+    const fb     = document.getElementById('notFeedback');
+    if (!title || !msg) { fb.style.color='var(--red)'; fb.textContent='Fill title and message.'; return; }
+    try {
+      const res = await fetch(`${API}/notices`,{
+        method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
+        body: JSON.stringify({ title, message:msg, type, course })
+      });
+      if (!res.ok) throw new Error((await res.json()).message);
+      fb.style.color='var(--grn)'; fb.textContent='Notice posted!';
+      document.getElementById('notTitle').value='';
+      document.getElementById('notMsg').value='';
+      setTimeout(()=>fb.textContent='',2000);
+      loadNotices();
+    } catch(e){ fb.style.color='var(--red)'; fb.textContent=e.message; }
+  }
+
+  async function loadNotices() {
+    const container = document.getElementById('noticeList');
+    try {
+      const res = await fetch(`${API}/notices`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const data = await res.json();
+      if (!data.length){ container.innerHTML='<div class="empty">No notices posted yet.</div>'; return; }
+      container.innerHTML = data.map(n => {
+        const date = new Date(n.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+        const tagClass = n.course==='JPP'?'tag-jpp':n.course==='DevOps'?'tag-devops':'tag-both';
+        return `<div style="background:${noticeBg[n.type]};border:1px solid ${noticeBdr[n.type]};border-radius:12px;padding:18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span style="font-weight:700;color:${noticeColors[n.type]}">${n.type==='info'?'📢':n.type==='warning'?'⚠️':'✅'} ${n.title}</span>
+              <span class="course-tag ${tagClass}" style="font-size:.68em">${n.course==='Both'?'All':n.course}</span>
+            </div>
+            <div style="font-size:.85em;color:var(--txt);margin-bottom:6px">${n.message}</div>
+            <div style="font-size:.75em;color:var(--muted)">${date}</div>
+          </div>
+          <button type="button" onclick="deleteNotice('${n._id}')" class="del-btn">Delete</button>
+        </div>`;
+      }).join('');
+    } catch(e){ container.innerHTML='<div class="empty">Failed to load notices.</div>'; }
+  }
+
+  async function deleteNotice(id) {
+    if (!confirm('Delete this notice?')) return;
+    await fetch(`${API}/notices/${id}`,{ method:'DELETE', headers:{ Authorization:`Bearer ${token}` }});
+    loadNotices();
+  }
 </script>
 </body>
 </html>
