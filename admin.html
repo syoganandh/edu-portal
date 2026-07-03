@@ -228,21 +228,14 @@ tr:last-child td{border-bottom:none}
       <div class="section-title">Mark Attendance</div>
       <div style="display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;align-items:flex-end">
         <div>
-          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Class</label>
-          <select id="attClassType" onchange="loadStudentsForAtt()" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
-            <option value="Theory-A">JPP Theory – Section A (50 min)</option>
-            <option value="Theory-B">JPP Theory – Section B (50 min)</option>
-            <option value="Lab-A">JPP Lab – Section A (3 hrs)</option>
-            <option value="Lab-B">JPP Lab – Section B (3 hrs)</option>
-          </select>
-        </div>
-        <div>
           <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Date</label>
-          <input type="date" id="attDate" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+          <input type="date" id="attDate" onchange="updateAttClassesByDate()" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
         </div>
         <div>
-          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Topic (optional)</label>
-          <input type="text" id="attTopic" placeholder="e.g. Loops, Arrays..." style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em;width:200px">
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Class</label>
+          <select id="attClassType" onchange="loadStudentsForAtt()" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em;min-width:260px">
+            <option value="">— Pick a date first —</option>
+          </select>
         </div>
         <div style="display:flex;gap:8px">
           <button type="button" onclick="markAllPresent()" style="padding:9px 14px;background:rgba(78,203,160,.12);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:8px;font-size:.82em;cursor:pointer">✅ All Present</button>
@@ -682,19 +675,55 @@ tr:last-child td{border-bottom:none}
   // ── Attendance ──
   let attStudents = [];
 
-  // Map class type selection to section, classType, periods, and schedule info
   const CLASS_INFO = {
-    'Theory-A': { section:'A', classType:'Theory', periods:1, course:'JPP', hint:'FRI Period 2 (9:40–10:30 AM) · SAT Period 1 (8:50–9:40 AM)' },
-    'Theory-B': { section:'B', classType:'Theory', periods:1, course:'JPP', hint:'WED Period 6 (1:50–2:40 PM) · THU Period 2 (9:40–10:30 AM)' },
-    'Lab-A':    { section:'A', classType:'Lab',    periods:3, course:'JPP', hint:'THU Periods 5-6-7 (1:00–3:30 PM) — counts as 3 periods' },
-    'Lab-B':    { section:'B', classType:'Lab',    periods:3, course:'JPP', hint:'WED Periods 2-3-4 (9:40 AM–12:10 PM) — counts as 3 periods' },
+    'Theory-A': { section:'A', classType:'Theory', periods:1, course:'JPP', hint:'Period 2 (9:40–10:30 AM)' },
+    'Theory-B': { section:'B', classType:'Theory', periods:1, course:'JPP', hint:'Period 2/6 (9:40–10:30 AM or 1:50–2:40 PM)' },
+    'Lab-A':    { section:'A', classType:'Lab',    periods:3, course:'JPP', hint:'Periods 5-6-7 (1:00–3:30 PM)' },
+    'Lab-B':    { section:'B', classType:'Lab',    periods:3, course:'JPP', hint:'Periods 2-3-4 (9:40 AM–12:10 PM)' },
   };
+
+  // Classes that run on each day (based on actual timetable)
+  const DAY_CLASSES = {
+    Monday:    [],
+    Tuesday:   [],
+    Wednesday: [
+      { value:'Lab-B',    label:'JPP Lab – Section B (9:40 AM – 12:10 PM, 3 hrs)' },
+      { value:'Theory-B', label:'JPP Theory – Section B (1:50 PM – 2:40 PM, 50 min)' }
+    ],
+    Thursday: [
+      { value:'Theory-B', label:'JPP Theory – Section B (9:40 AM – 10:30 AM, 50 min)' },
+      { value:'Lab-A',    label:'JPP Lab – Section A (1:00 PM – 3:30 PM, 3 hrs)' }
+    ],
+    Friday: [
+      { value:'Theory-A', label:'JPP Theory – Section A (9:40 AM – 10:30 AM, 50 min)' }
+    ],
+    Saturday: [
+      { value:'Theory-A', label:'JPP Theory – Section A (8:50 AM – 9:40 AM, 50 min)' }
+    ]
+  };
+
+  function updateAttClassesByDate() {
+    const dateVal = document.getElementById('attDate').value;
+    const sel     = document.getElementById('attClassType');
+    const info    = document.getElementById('attClassInfo');
+    if (!dateVal) return;
+    const day = new Date(dateVal + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' });
+    const classes = DAY_CLASSES[day] || [];
+    if (!classes.length) {
+      sel.innerHTML = '<option value="">No JPP classes on ' + day + '</option>';
+      info.innerHTML = `<span style="color:var(--muted)">📅 No JPP classes scheduled on ${day}s.</span>`;
+      document.getElementById('attStudentList').innerHTML = '';
+      return;
+    }
+    sel.innerHTML = classes.map(c => `<option value="${c.value}">${c.label}</option>`).join('');
+    loadStudentsForAtt();
+  }
 
   function initAttendance() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('attDate').value = today;
     document.getElementById('viewAttDate').value = today;
-    loadStudentsForAtt();
+    updateAttClassesByDate();
   }
 
   async function loadStudentsForAtt() {
@@ -738,7 +767,6 @@ tr:last-child td{border-bottom:none}
     const key   = document.getElementById('attClassType').value;
     const info  = CLASS_INFO[key];
     const date  = document.getElementById('attDate').value;
-    const topic = document.getElementById('attTopic').value.trim();
     const msg   = document.getElementById('attMsg');
     if (!date){ msg.style.color='var(--red)'; msg.textContent='Select a date.'; return; }
     const records = attStudents.map(s => ({
@@ -748,7 +776,7 @@ tr:last-child td{border-bottom:none}
     try {
       const res = await fetch(`${API}/attendance/mark`,{
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
-        body: JSON.stringify({ course: info.course, section: info.section, classType: info.classType, periods: info.periods, date, topic, records })
+        body: JSON.stringify({ course: info.course, section: info.section, classType: info.classType, periods: info.periods, date, records })
       });
       if (!res.ok) throw new Error((await res.json()).message);
       const presentCount = records.filter(r=>r.status==='present').length;
