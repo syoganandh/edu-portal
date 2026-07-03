@@ -8,11 +8,11 @@ const { protect, adminOnly } = require('../middleware/auth');
 // Body: { course, section, date, classType, periods, topic, records: [{ studentId, status }] }
 router.post('/mark', protect, adminOnly, async (req, res) => {
   try {
-    const { course, section, date, classType = 'Theory', periods = 1, topic, records } = req.body;
+    const { course, section, date, classType = 'Theory', periods = 1, topic, deliveryMethod, teachingStrategy, records } = req.body;
     const ops = records.map(r => ({
       updateOne: {
         filter: { student: r.studentId, course, date: new Date(date), classType },
-        update: { $set: { status: r.status, topic: topic||'', section, periods: Number(periods) } },
+        update: { $set: { status: r.status, topic: topic||'', section, periods: Number(periods), deliveryMethod: deliveryMethod||'', teachingStrategy: teachingStrategy||'' } },
         upsert: true
       }
     }));

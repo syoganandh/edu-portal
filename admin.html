@@ -226,7 +226,7 @@ tr:last-child td{border-bottom:none}
     <!-- Mark Attendance -->
     <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:24px">
       <div class="section-title">Mark Attendance</div>
-      <div style="display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;align-items:flex-end">
+      <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-end">
         <div>
           <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Date</label>
           <input type="date" id="attDate" onchange="updateAttClassesByDate()" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
@@ -237,10 +237,28 @@ tr:last-child td{border-bottom:none}
             <option value="">— Pick a date first —</option>
           </select>
         </div>
-        <div style="display:flex;gap:8px">
-          <button type="button" onclick="markAllPresent()" style="padding:9px 14px;background:rgba(78,203,160,.12);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:8px;font-size:.82em;cursor:pointer">✅ All Present</button>
-          <button type="button" onclick="markAllAbsent()" style="padding:9px 14px;background:rgba(240,92,92,.1);border:1px solid rgba(240,92,92,.3);color:var(--red);border-radius:8px;font-size:.82em;cursor:pointer">❌ All Absent</button>
+        <div>
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Content Delivery Method</label>
+          <select id="attDelivery" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+            <option value="Lecture">Lecture</option>
+            <option value="Discussion">Discussion</option>
+          </select>
         </div>
+        <div>
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Innovative Teaching Strategy</label>
+          <select id="attStrategy" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+            <option value="PPT">PPT</option>
+            <option value="Black Board">Black Board</option>
+            <option value="Revision">Revision</option>
+            <option value="Case Discussion">Case Discussion</option>
+            <option value="Examples">Examples</option>
+            <option value="IDE">IDE</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button type="button" onclick="markAllPresent()" style="padding:9px 14px;background:rgba(78,203,160,.12);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:8px;font-size:.82em;cursor:pointer">✅ All Present</button>
+        <button type="button" onclick="markAllAbsent()" style="padding:9px 14px;background:rgba(240,92,92,.1);border:1px solid rgba(240,92,92,.3);color:var(--red);border-radius:8px;font-size:.82em;cursor:pointer">❌ All Absent</button>
       </div>
       <div id="attClassInfo" style="font-size:.8em;color:var(--muted);margin-bottom:12px"></div>
       <div id="attStudentList"><div class="empty">Select class to load students</div></div>
@@ -355,28 +373,6 @@ tr:last-child td{border-bottom:none}
           <select id="ttRoom" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
             <option value="I-303">I-303 (CSM-A)</option>
             <option value="I-403">I-403 (CSM-B)</option>
-          </select>
-        </div>
-
-        <!-- Content Delivery Method -->
-        <div>
-          <label style="font-size:.72em;color:var(--muted);display:block;margin-bottom:4px">Content Delivery Method</label>
-          <select id="ttDelivery" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
-            <option value="Lecture">Lecture</option>
-            <option value="Discussion">Discussion</option>
-          </select>
-        </div>
-
-        <!-- Innovative Teaching Strategy -->
-        <div>
-          <label style="font-size:.72em;color:var(--muted);display:block;margin-bottom:4px">Innovative Teaching Strategy</label>
-          <select id="ttStrategy" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
-            <option value="PPT">PPT</option>
-            <option value="Black Board">Black Board</option>
-            <option value="Revision">Revision</option>
-            <option value="Case Discussion">Case Discussion</option>
-            <option value="Examples">Examples</option>
-            <option value="IDE">IDE</option>
           </select>
         </div>
 
@@ -766,8 +762,10 @@ tr:last-child td{border-bottom:none}
   async function submitAttendance() {
     const key   = document.getElementById('attClassType').value;
     const info  = CLASS_INFO[key];
-    const date  = document.getElementById('attDate').value;
-    const msg   = document.getElementById('attMsg');
+    const date             = document.getElementById('attDate').value;
+    const deliveryMethod   = document.getElementById('attDelivery').value;
+    const teachingStrategy = document.getElementById('attStrategy').value;
+    const msg              = document.getElementById('attMsg');
     if (!date){ msg.style.color='var(--red)'; msg.textContent='Select a date.'; return; }
     const records = attStudents.map(s => ({
       studentId: s._id,
@@ -776,7 +774,7 @@ tr:last-child td{border-bottom:none}
     try {
       const res = await fetch(`${API}/attendance/mark`,{
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
-        body: JSON.stringify({ course: info.course, section: info.section, classType: info.classType, periods: info.periods, date, records })
+        body: JSON.stringify({ course: info.course, section: info.section, classType: info.classType, periods: info.periods, date, deliveryMethod, teachingStrategy, records })
       });
       if (!res.ok) throw new Error((await res.json()).message);
       const presentCount = records.filter(r=>r.status==='present').length;
@@ -889,9 +887,7 @@ tr:last-child td{border-bottom:none}
       time:             document.getElementById('ttTime').value,
       subject:          document.getElementById('ttSubject').value,
       course:           'JPP',
-      room:             document.getElementById('ttRoom').value,
-      deliveryMethod:   document.getElementById('ttDelivery').value,
-      teachingStrategy: document.getElementById('ttStrategy').value
+      room:             document.getElementById('ttRoom').value
     };
     if (!slot.day || !slot.time || !slot.subject){ alert('Fill all required fields.'); return; }
     ttSlots.push(slot);

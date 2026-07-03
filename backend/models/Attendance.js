@@ -7,8 +7,10 @@ const attendanceSchema = new mongoose.Schema({
   date:      { type: Date, required: true },
   classType: { type: String, enum: ['Theory','Lab'], default: 'Theory' },
   periods:   { type: Number, default: 1 }, // Theory=1, Lab=3
-  status:    { type: String, enum: ['present', 'absent'], required: true },
-  topic:     { type: String, default: '' }
+  status:           { type: String, enum: ['present', 'absent'], required: true },
+  topic:            { type: String, default: '' },
+  deliveryMethod:   { type: String, default: '' },
+  teachingStrategy: { type: String, default: '' }
 });
 
 // unique per student + course + date + classType
