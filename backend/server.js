@@ -17,6 +17,13 @@ app.use('/api/admin',       require('./routes/admin'));
 app.use('/api/assignments', require('./routes/assignments'));
 app.use('/api/notices',     require('./routes/notices'));
 
+app.use('/api/attendance',  require('./routes/attendance'));
+app.use('/api/timetable',   require('./routes/timetable'));
+app.use('/api/reset',       require('./routes/resetPassword'));
+
+// Start cron jobs
+require('./cron');
+
 // ── Health check ──
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Sampathirao Edu Portal API running' });

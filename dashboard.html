@@ -58,6 +58,18 @@ a{color:var(--acc);text-decoration:none}
 .empty span{font-size:2.5em;display:block;margin-bottom:10px}
 
 .loading{text-align:center;padding:60px;color:var(--muted)}
+
+@media(max-width:768px){
+  .main{padding:16px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:10px}
+  .topic-grid{grid-template-columns:1fr!important}
+  .hero{padding:20px 16px}
+  .hero h1{font-size:1.3em}
+  .topbar{padding:10px 16px}
+  .results-table{font-size:.75em}
+  .results-table th,.results-table td{padding:7px 8px}
+  .dash-tab-btn{padding:8px 10px!important;font-size:.78em!important}
+}
 </style>
 </head>
 <body>
@@ -101,6 +113,9 @@ a{color:var(--acc);text-decoration:none}
   <div style="display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--bdr)">
     <button class="dash-tab-btn" id="dtab-progress" onclick="switchDashTab('progress',this)" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--acc);color:var(--acc);font-size:.88em;font-weight:600;cursor:pointer;margin-bottom:-1px">📊 Progress</button>
     <button class="dash-tab-btn" id="dtab-assignments" onclick="switchDashTab('assignments',this);loadMyAssignments()" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:.88em;font-weight:600;cursor:pointer;margin-bottom:-1px">📝 Assignments</button>
+    <button class="dash-tab-btn" id="dtab-leaderboard" onclick="switchDashTab('leaderboard',this);loadLeaderboard()" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:.88em;font-weight:600;cursor:pointer;margin-bottom:-1px">🏆 Leaderboard</button>
+    <button class="dash-tab-btn" id="dtab-attendance" onclick="switchDashTab('attendance',this);loadMyAttendance()" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:.88em;font-weight:600;cursor:pointer;margin-bottom:-1px">📅 Attendance</button>
+    <button class="dash-tab-btn" id="dtab-timetable" onclick="switchDashTab('timetable',this);loadMyTimetable()" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:.88em;font-weight:600;cursor:pointer;margin-bottom:-1px">🗓️ Timetable</button>
   </div>
 
   <!-- Progress Panel -->
@@ -118,6 +133,27 @@ a{color:var(--acc);text-decoration:none}
         <tbody id="resultsBody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody>
       </table>
     </div>
+  </div>
+
+  <!-- Timetable Panel -->
+  <div id="dash-timetable" style="display:none">
+    <div id="myTimetable"><div class="loading">Loading timetable...</div></div>
+  </div>
+
+  <!-- Attendance Panel -->
+  <div id="dash-attendance" style="display:none">
+    <div id="attSummaryCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px"></div>
+    <div class="section-title">Recent Attendance</div>
+    <div id="attRecentList"></div>
+  </div>
+
+  <!-- Leaderboard Panel -->
+  <div id="dash-leaderboard" style="display:none">
+    <div style="display:flex;gap:12px;margin-bottom:20px">
+      <button type="button" onclick="loadLeaderboard('JPP')" id="lb-jpp" style="padding:8px 20px;border-radius:8px;border:1px solid var(--bdr);background:var(--surf2);color:var(--txt);cursor:pointer;font-weight:600;font-size:.85em">☕ JPP</button>
+      <button type="button" onclick="loadLeaderboard('DevOps')" id="lb-devops" style="padding:8px 20px;border-radius:8px;border:1px solid var(--bdr);background:var(--surf2);color:var(--txt);cursor:pointer;font-weight:600;font-size:.85em">🛠️ DevOps</button>
+    </div>
+    <div id="leaderboardContent"><div class="loading">Loading leaderboard...</div></div>
   </div>
 
   <!-- Assignments Panel -->
@@ -263,8 +299,40 @@ a{color:var(--acc);text-decoration:none}
       b.style.borderBottomColor='transparent'; b.style.color='var(--muted)';
     });
     btn.style.borderBottomColor='var(--acc)'; btn.style.color='var(--acc)';
-    document.getElementById('dash-progress').style.display = name==='progress'?'block':'none';
-    document.getElementById('dash-assignments').style.display = name==='assignments'?'block':'none';
+    ['progress','assignments','leaderboard','attendance','timetable'].forEach(t =>
+      document.getElementById('dash-'+t).style.display = t===name?'block':'none'
+    );
+  }
+
+  let currentLbCourse = 'JPP';
+  async function loadLeaderboard(course) {
+    currentLbCourse = course || currentLbCourse;
+    ['JPP','DevOps'].forEach(c => {
+      const btn = document.getElementById('lb-'+c.toLowerCase());
+      if(btn){ btn.style.background = c===currentLbCourse?'var(--acc)':'var(--surf2)'; btn.style.color = c===currentLbCourse?'#111':'var(--txt)'; btn.style.borderColor = c===currentLbCourse?'var(--acc)':'var(--bdr)'; }
+    });
+    const container = document.getElementById('leaderboardContent');
+    try {
+      const res = await fetch(`${API}/quiz/leaderboard/${currentLbCourse}`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const data = await res.json();
+      if (!data.length){ container.innerHTML='<div class="empty"><span>🏆</span>No quiz attempts yet for this course.</div>'; return; }
+      const medals = ['🥇','🥈','🥉'];
+      container.innerHTML = `<div style="background:var(--surf);border:1px solid var(--bdr);border-radius:12px;overflow:hidden">
+        <table class="results-table">
+          <thead><tr><th>Rank</th><th>Student</th><th>Roll No</th><th>Avg Score</th><th>Attempts</th></tr></thead>
+          <tbody>${data.map((s,i) => {
+            const isMe = s.rollNo === user.rollNo;
+            return `<tr style="${isMe?'background:rgba(240,124,62,.08);':''}">
+              <td style="font-size:1.1em">${medals[i]||'#'+(i+1)}</td>
+              <td style="font-weight:${isMe?'800':'600'};color:${isMe?'var(--acc)':'var(--txt)'}">${s.name}${isMe?' (You)':''}</td>
+              <td style="color:var(--blu)">${s.rollNo}</td>
+              <td><span style="color:${s.avgPct>=80?'var(--grn)':s.avgPct>=50?'var(--gold)':'var(--red)'};font-weight:700">${s.avgPct}%</span></td>
+              <td style="color:var(--muted)">${s.attempts}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>`;
+    } catch(e){ container.innerHTML='<div class="empty">Failed to load leaderboard.</div>'; }
   }
 
   async function loadMyAssignments() {
@@ -318,6 +386,67 @@ a{color:var(--acc);text-decoration:none}
 
   function closeModal() {
     document.getElementById('submitModal').style.display = 'none';
+  }
+
+  async function loadMyTimetable() {
+    const container = document.getElementById('myTimetable');
+    try {
+      const res = await fetch(`${API}/timetable`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const data = await res.json();
+      const slots = (data.slots||[]).filter(s => s.course===user.course || s.course==='Both' || user.course==='Both');
+      if (!slots.length){ container.innerHTML='<div class="empty"><span>🗓️</span>No timetable set yet.</div>'; return; }
+      const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      const byDay = {}; DAYS.forEach(d=>byDay[d]=[]);
+      slots.forEach(s=>{ if(byDay[s.day]) byDay[s.day].push(s); });
+      const tagClass = c => c==='JPP'?'tag-jpp':c==='DevOps'?'tag-devops':'tag-both';
+      const today = new Date().toLocaleDateString('en-US',{weekday:'long'});
+      container.innerHTML = DAYS.filter(d=>byDay[d].length).map(d=>`
+        <div style="margin-bottom:16px">
+          <div style="font-weight:700;color:${d===today?'var(--acc)':'var(--gold)'};font-size:.82em;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${d}${d===today?' (Today)':''}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">${byDay[d].map(s=>`
+            <div style="background:var(--surf);border:1px solid ${d===today?'var(--acc)':'var(--bdr)'};border-radius:9px;padding:12px 16px;min-width:160px">
+              <div style="font-size:.75em;color:var(--muted);margin-bottom:4px">⏰ ${s.time}</div>
+              <div style="font-weight:700;font-size:.9em;margin-bottom:4px">${s.subject}</div>
+              <span class="course-tag ${tagClass(s.course)}" style="font-size:.65em">${s.course}</span>
+              ${s.room?`<span style="font-size:.72em;color:var(--muted);margin-left:6px">📍 ${s.room}</span>`:''}
+            </div>`).join('')}
+          </div>
+        </div>`).join('');
+    } catch(e){ container.innerHTML='<div class="empty">Failed to load timetable.</div>'; }
+  }
+
+  async function loadMyAttendance() {
+    try {
+      const res = await fetch(`${API}/attendance/my`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const { summary, records } = await res.json();
+      const cards = document.getElementById('attSummaryCards');
+      if (!summary.length) {
+        cards.innerHTML='<div class="empty"><span>📅</span>No attendance records yet.</div>';
+      } else {
+        cards.innerHTML = summary.map(s => {
+          const color = s.percentage>=75?'var(--grn)':s.percentage>=50?'var(--gold)':'var(--red)';
+          return `<div style="background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:20px;text-align:center">
+            <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${s.course}</div>
+            <div style="font-size:2.2em;font-weight:800;color:${color};margin-bottom:4px">${s.percentage}%</div>
+            <div style="font-size:.78em;color:var(--muted)">${s.present} present / ${s.total} classes</div>
+            ${s.percentage<75?'<div style="font-size:.72em;color:var(--red);margin-top:6px">⚠️ Below 75%</div>':''}
+          </div>`;
+        }).join('');
+      }
+      const list = document.getElementById('attRecentList');
+      if (!records.length) { list.innerHTML=''; return; }
+      list.innerHTML = `<div style="background:var(--surf);border:1px solid var(--bdr);border-radius:12px;overflow:hidden">
+        <table class="results-table">
+          <thead><tr><th>Date</th><th>Course</th><th>Topic</th><th>Status</th></tr></thead>
+          <tbody>${records.map(r=>`<tr>
+            <td>${new Date(r.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</td>
+            <td><span class="course-tag ${r.course==='JPP'?'tag-jpp':'tag-devops'}">${r.course}</span></td>
+            <td style="color:var(--muted)">${r.topic||'—'}</td>
+            <td><span style="padding:3px 10px;border-radius:5px;font-size:.78em;font-weight:700;background:${r.status==='present'?'rgba(78,203,160,.12)':'rgba(240,92,92,.12)'};color:${r.status==='present'?'var(--grn)':'var(--red)'}">${r.status==='present'?'✅ Present':'❌ Absent'}</span></td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>`;
+    } catch(e){ document.getElementById('attSummaryCards').innerHTML='<div class="empty">Failed to load attendance.</div>'; }
   }
 
   async function submitAssignment() {
