@@ -391,7 +391,7 @@ a{color:var(--acc);text-decoration:none}
   async function loadMyTimetable() {
     const container = document.getElementById('myTimetable');
     try {
-      const res = await fetch(`${API}/timetable`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const res = await fetch(`${API}/timetable?section=${user.section||'A'}`,{ headers:{ Authorization:`Bearer ${token}` }});
       const data = await res.json();
       const slots = (data.slots||[]).filter(s => s.course===user.course || s.course==='Both' || user.course==='Both');
       if (!slots.length){ container.innerHTML='<div class="empty"><span>🗓️</span>No timetable set yet.</div>'; return; }

@@ -267,8 +267,13 @@ tr:last-child td{border-bottom:none}
 
   <!-- Timetable Tab -->
   <div class="tab-panel" id="tab-timetable">
+    <!-- Section A / B toggle -->
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <button id="ttSecA" onclick="switchTtSection('A')" style="padding:8px 24px;border-radius:8px;border:2px solid var(--acc);background:var(--acc);color:#111;font-weight:700;font-size:.85em;cursor:pointer">Section A</button>
+      <button id="ttSecB" onclick="switchTtSection('B')" style="padding:8px 24px;border-radius:8px;border:2px solid var(--bdr);background:transparent;color:var(--muted);font-weight:700;font-size:.85em;cursor:pointer">Section B</button>
+    </div>
     <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:20px">
-      <div class="section-title">Add Slot</div>
+      <div class="section-title" id="ttSecLabel">Section A — Add Slot</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
         <select id="ttDay" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
           <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option>
@@ -281,7 +286,7 @@ tr:last-child td{border-bottom:none}
         <input id="ttRoom" type="text" placeholder="Room (optional)" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em;width:140px">
         <button type="button" onclick="addTtSlot()" style="padding:9px 18px;background:var(--acc);border:none;border-radius:8px;color:#111;font-weight:700;font-size:.85em;cursor:pointer">+ Add</button>
       </div>
-      <button type="button" onclick="saveTimetable()" style="padding:9px 24px;background:rgba(78,203,160,.15);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:8px;font-weight:700;font-size:.85em;cursor:pointer">💾 Save Timetable</button>
+      <button type="button" onclick="saveTimetable()" style="padding:9px 24px;background:rgba(78,203,160,.15);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:8px;font-weight:700;font-size:.85em;cursor:pointer">💾 Save Section Timetable</button>
       <span id="ttMsg" style="margin-left:12px;font-size:.82em"></span>
     </div>
     <div id="ttGrid"></div>
@@ -657,10 +662,24 @@ tr:last-child td{border-bottom:none}
   // ── Timetable ──
   const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   let ttSlots = [];
+  let ttSection = 'A'; // currently editing section
+
+  function switchTtSection(sec) {
+    ttSection = sec;
+    document.getElementById('ttSecLabel').textContent = `Section ${sec} — Add Slot`;
+    // update button styles
+    document.getElementById('ttSecA').style.background  = sec==='A'?'var(--acc)':'transparent';
+    document.getElementById('ttSecA').style.color       = sec==='A'?'#111':'var(--muted)';
+    document.getElementById('ttSecA').style.borderColor = sec==='A'?'var(--acc)':'var(--bdr)';
+    document.getElementById('ttSecB').style.background  = sec==='B'?'var(--acc)':'transparent';
+    document.getElementById('ttSecB').style.color       = sec==='B'?'#111':'var(--muted)';
+    document.getElementById('ttSecB').style.borderColor = sec==='B'?'var(--acc)':'var(--bdr)';
+    loadTimetableAdmin();
+  }
 
   async function loadTimetableAdmin() {
     try {
-      const res = await fetch(`${API}/timetable`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const res = await fetch(`${API}/timetable?section=${ttSection}`,{ headers:{ Authorization:`Bearer ${token}` }});
       const data = await res.json();
       ttSlots = data.slots || [];
       renderTtGrid();
@@ -687,7 +706,7 @@ tr:last-child td{border-bottom:none}
 
   function renderTtGrid() {
     const container = document.getElementById('ttGrid');
-    if (!ttSlots.length){ container.innerHTML='<div class="empty">No slots added yet.</div>'; return; }
+    if (!ttSlots.length){ container.innerHTML=`<div class="empty">No slots for Section ${ttSection} yet.</div>`; return; }
     const byDay = {};
     DAYS.forEach(d => byDay[d]=[]);
     ttSlots.forEach((s,i) => { if(byDay[s.day]) byDay[s.day].push({...s,_i:i}); });
@@ -714,11 +733,11 @@ tr:last-child td{border-bottom:none}
     try {
       const res = await fetch(`${API}/timetable`,{
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
-        body: JSON.stringify({ slots: ttSlots })
+        body: JSON.stringify({ section: ttSection, slots: ttSlots })
       });
       if (!res.ok) throw new Error((await res.json()).message);
-      msg.style.color='var(--grn)'; msg.textContent='Timetable saved!';
-      setTimeout(()=>msg.textContent='',2000);
+      msg.style.color='var(--grn)'; msg.textContent=`Section ${ttSection} timetable saved!`;
+      setTimeout(()=>msg.textContent='',2500);
     } catch(e){ msg.style.color='var(--red)'; msg.textContent=e.message; }
   }
 </script>
