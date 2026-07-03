@@ -314,7 +314,7 @@ tr:last-child td{border-bottom:none}
         <!-- Time (filtered by day + section) -->
         <div>
           <label style="font-size:.72em;color:var(--muted);display:block;margin-bottom:4px">Time Slot</label>
-          <select id="ttTime" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em"></select>
+          <select id="ttTime" onchange="autoSetRoom()" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em"></select>
         </div>
 
         <!-- Topic from syllabus -->
@@ -382,6 +382,9 @@ tr:last-child td{border-bottom:none}
           <select id="ttRoom" style="width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
             <option value="I-303">I-303 (CSM-A)</option>
             <option value="I-403">I-403 (CSM-B)</option>
+            <option value="Lab 1">Lab 1</option>
+            <option value="Lab 2">Lab 2</option>
+            <option value="Lab 1 & Lab 2">Lab 1 & Lab 2</option>
           </select>
         </div>
 
@@ -956,6 +959,18 @@ tr:last-child td{border-bottom:none}
     const timeEl = document.getElementById('ttTime');
     const times  = (TT_SCHEDULE[ttSection][day] || []);
     timeEl.innerHTML = times.map(t=>`<option>${t}</option>`).join('');
+    autoSetRoom();
+  }
+
+  function autoSetRoom() {
+    const timeVal = document.getElementById('ttTime').value || '';
+    const roomEl  = document.getElementById('ttRoom');
+    if (!roomEl) return;
+    if (timeVal.includes('Lab')) {
+      roomEl.value = 'Lab 1 & Lab 2';
+    } else {
+      roomEl.value = ttSection === 'A' ? 'I-303' : 'I-403';
+    }
   }
 
   function switchTtSection(sec) {
@@ -967,9 +982,6 @@ tr:last-child td{border-bottom:none}
     document.getElementById('ttSecB').style.cssText = sec==='B'
       ? 'padding:8px 24px;border-radius:8px;border:2px solid var(--acc);background:var(--acc);color:#111;font-weight:700;font-size:.85em;cursor:pointer'
       : 'padding:8px 24px;border-radius:8px;border:2px solid var(--bdr);background:transparent;color:var(--muted);font-weight:700;font-size:.85em;cursor:pointer';
-    // Set default room per section
-    const roomEl = document.getElementById('ttRoom');
-    if (roomEl) roomEl.value = sec==='A' ? 'I-303' : 'I-403';
     updateTtDays();
     loadTimetableAdmin();
   }
