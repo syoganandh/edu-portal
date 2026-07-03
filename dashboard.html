@@ -428,7 +428,8 @@ a{color:var(--acc);text-decoration:none}
           return `<div style="background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:20px;text-align:center">
             <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${s.course}</div>
             <div style="font-size:2.2em;font-weight:800;color:${color};margin-bottom:4px">${s.percentage}%</div>
-            <div style="font-size:.78em;color:var(--muted)">${s.present} present / ${s.total} classes</div>
+            <div style="font-size:.78em;color:var(--muted)">${s.presentPeriods} / ${s.totalPeriods} periods attended</div>
+            <div style="font-size:.72em;color:var(--muted);margin-top:2px">${s.sessions} session${s.sessions!==1?'s':''} recorded</div>
             ${s.percentage<75?'<div style="font-size:.72em;color:var(--red);margin-top:6px">⚠️ Below 75%</div>':''}
           </div>`;
         }).join('');
@@ -437,10 +438,12 @@ a{color:var(--acc);text-decoration:none}
       if (!records.length) { list.innerHTML=''; return; }
       list.innerHTML = `<div style="background:var(--surf);border:1px solid var(--bdr);border-radius:12px;overflow:hidden">
         <table class="results-table">
-          <thead><tr><th>Date</th><th>Course</th><th>Topic</th><th>Status</th></tr></thead>
+          <thead><tr><th>Date</th><th>Course</th><th>Type</th><th>Periods</th><th>Topic</th><th>Status</th></tr></thead>
           <tbody>${records.map(r=>`<tr>
             <td>${new Date(r.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</td>
             <td><span class="course-tag ${r.course==='JPP'?'tag-jpp':'tag-devops'}">${r.course}</span></td>
+            <td style="color:var(--muted)">${r.classType||'Theory'}</td>
+            <td style="color:var(--muted);text-align:center">${r.periods||1}</td>
             <td style="color:var(--muted)">${r.topic||'—'}</td>
             <td><span style="padding:3px 10px;border-radius:5px;font-size:.78em;font-weight:700;background:${r.status==='present'?'rgba(78,203,160,.12)':'rgba(240,92,92,.12)'};color:${r.status==='present'?'var(--grn)':'var(--red)'}">${r.status==='present'?'✅ Present':'❌ Absent'}</span></td>
           </tr>`).join('')}</tbody>

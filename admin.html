@@ -226,12 +226,14 @@ tr:last-child td{border-bottom:none}
     <!-- Mark Attendance -->
     <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:24px">
       <div class="section-title">Mark Attendance</div>
-      <div style="display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;align-items:flex-end">
         <div>
-          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Course</label>
-          <select id="attCourse" onchange="loadStudentsForAtt()" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
-            <option value="JPP">JPP</option>
-            <option value="DevOps">DevOps</option>
+          <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Class</label>
+          <select id="attClassType" onchange="loadStudentsForAtt()" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+            <option value="Theory-A">JPP Theory – Section A (50 min)</option>
+            <option value="Theory-B">JPP Theory – Section B (50 min)</option>
+            <option value="Lab-A">JPP Lab – Section A (3 hrs)</option>
+            <option value="Lab-B">JPP Lab – Section B (3 hrs)</option>
           </select>
         </div>
         <div>
@@ -240,14 +242,15 @@ tr:last-child td{border-bottom:none}
         </div>
         <div>
           <label style="font-size:.78em;color:var(--muted);display:block;margin-bottom:6px">Topic (optional)</label>
-          <input type="text" id="attTopic" placeholder="e.g. Loops in Java" style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em">
+          <input type="text" id="attTopic" placeholder="e.g. Loops, Arrays..." style="padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.88em;width:200px">
         </div>
-        <div style="display:flex;align-items:flex-end;gap:8px">
+        <div style="display:flex;gap:8px">
           <button type="button" onclick="markAllPresent()" style="padding:9px 14px;background:rgba(78,203,160,.12);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:8px;font-size:.82em;cursor:pointer">✅ All Present</button>
           <button type="button" onclick="markAllAbsent()" style="padding:9px 14px;background:rgba(240,92,92,.1);border:1px solid rgba(240,92,92,.3);color:var(--red);border-radius:8px;font-size:.82em;cursor:pointer">❌ All Absent</button>
         </div>
       </div>
-      <div id="attStudentList"><div class="empty">Select course to load students</div></div>
+      <div id="attClassInfo" style="font-size:.8em;color:var(--muted);margin-bottom:12px"></div>
+      <div id="attStudentList"><div class="empty">Select class to load students</div></div>
       <div style="margin-top:16px">
         <button type="button" onclick="submitAttendance()" style="padding:10px 28px;background:var(--acc);border:none;border-radius:8px;color:#111;font-weight:700;font-size:.88em;cursor:pointer">Save Attendance</button>
         <span id="attMsg" style="margin-left:14px;font-size:.82em"></span>
@@ -259,6 +262,12 @@ tr:last-child td{border-bottom:none}
       <div class="section-title">View Records</div>
       <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
         <input type="date" id="viewAttDate" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
+        <select id="viewAttSection" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
+          <option value="">All Sections</option><option value="A">Section A</option><option value="B">Section B</option>
+        </select>
+        <select id="viewAttType" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
+          <option value="">All Types</option><option value="Theory">Theory</option><option value="Lab">Lab</option>
+        </select>
         <button type="button" onclick="viewAttRecords()" style="padding:8px 18px;background:var(--acc);border:none;border-radius:8px;color:#111;font-weight:700;font-size:.82em;cursor:pointer">View</button>
       </div>
       <div id="attRecords"></div>
@@ -576,6 +585,14 @@ tr:last-child td{border-bottom:none}
   // ── Attendance ──
   let attStudents = [];
 
+  // Map class type selection to section, classType, periods, and schedule info
+  const CLASS_INFO = {
+    'Theory-A': { section:'A', classType:'Theory', periods:1, course:'JPP', hint:'FRI Period 2 (9:40–10:30 AM) · SAT Period 1 (8:50–9:40 AM)' },
+    'Theory-B': { section:'B', classType:'Theory', periods:1, course:'JPP', hint:'WED Period 6 (1:50–2:40 PM) · THU Period 2 (9:40–10:30 AM)' },
+    'Lab-A':    { section:'A', classType:'Lab',    periods:3, course:'JPP', hint:'THU Periods 5-6-7 (1:00–3:30 PM) — counts as 3 periods' },
+    'Lab-B':    { section:'B', classType:'Lab',    periods:3, course:'JPP', hint:'WED Periods 2-3-4 (9:40 AM–12:10 PM) — counts as 3 periods' },
+  };
+
   function initAttendance() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('attDate').value = today;
@@ -584,9 +601,12 @@ tr:last-child td{border-bottom:none}
   }
 
   async function loadStudentsForAtt() {
-    const course = document.getElementById('attCourse').value;
+    const key  = document.getElementById('attClassType').value;
+    const info = CLASS_INFO[key];
+    document.getElementById('attClassInfo').innerHTML =
+      `<span style="background:rgba(91,168,245,.1);border:1px solid rgba(91,168,245,.2);padding:4px 12px;border-radius:6px;color:var(--blu)">📅 ${info.hint}</span>`;
     try {
-      const res = await fetch(`${API}/attendance/students/${course}`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const res = await fetch(`${API}/attendance/students/${info.course}?section=${info.section}`,{ headers:{ Authorization:`Bearer ${token}` }});
       attStudents = await res.json();
       renderAttStudents();
     } catch(e){ document.getElementById('attStudentList').innerHTML='<div class="empty">Failed to load students.</div>'; }
@@ -594,13 +614,18 @@ tr:last-child td{border-bottom:none}
 
   function renderAttStudents() {
     const container = document.getElementById('attStudentList');
-    if (!attStudents.length){ container.innerHTML='<div class="empty">No students found for this course.</div>'; return; }
+    if (!attStudents.length){ container.innerHTML='<div class="empty">No students found.</div>'; return; }
     container.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.85em">
-      <thead><tr style="background:var(--surf2)"><th style="padding:8px 12px;text-align:left;color:var(--gold)">Name</th><th style="padding:8px 12px;text-align:left;color:var(--gold)">Roll No</th><th style="padding:8px 12px;text-align:left;color:var(--gold)">Section</th><th style="padding:8px 12px;color:var(--gold)">Status</th></tr></thead>
-      <tbody>${attStudents.map(s=>`<tr style="border-bottom:1px solid var(--bdr)">
+      <thead><tr style="background:var(--surf2)">
+        <th style="padding:8px 12px;text-align:left;color:var(--gold)">#</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--gold)">Name</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--gold)">Roll No</th>
+        <th style="padding:8px 12px;color:var(--gold)">Status</th>
+      </tr></thead>
+      <tbody>${attStudents.map((s,i)=>`<tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:8px 12px;color:var(--muted)">${i+1}</td>
         <td style="padding:8px 12px;font-weight:600">${s.name}</td>
         <td style="padding:8px 12px;color:var(--blu)">${s.rollNo}</td>
-        <td style="padding:8px 12px;color:var(--muted)">${s.section||'—'}</td>
         <td style="padding:8px 12px;text-align:center">
           <label style="cursor:pointer;margin-right:12px"><input type="radio" name="att-${s._id}" value="present" checked> <span style="color:var(--grn)">Present</span></label>
           <label style="cursor:pointer"><input type="radio" name="att-${s._id}" value="absent"> <span style="color:var(--red)">Absent</span></label>
@@ -613,10 +638,11 @@ tr:last-child td{border-bottom:none}
   function markAllAbsent()  { attStudents.forEach(s => { const r = document.querySelector(`input[name="att-${s._id}"][value="absent"]`);  if(r) r.checked=true; }); }
 
   async function submitAttendance() {
-    const course = document.getElementById('attCourse').value;
-    const date   = document.getElementById('attDate').value;
-    const topic  = document.getElementById('attTopic').value.trim();
-    const msg    = document.getElementById('attMsg');
+    const key   = document.getElementById('attClassType').value;
+    const info  = CLASS_INFO[key];
+    const date  = document.getElementById('attDate').value;
+    const topic = document.getElementById('attTopic').value.trim();
+    const msg   = document.getElementById('attMsg');
     if (!date){ msg.style.color='var(--red)'; msg.textContent='Select a date.'; return; }
     const records = attStudents.map(s => ({
       studentId: s._id,
@@ -625,27 +651,43 @@ tr:last-child td{border-bottom:none}
     try {
       const res = await fetch(`${API}/attendance/mark`,{
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
-        body: JSON.stringify({ course, date, topic, records })
+        body: JSON.stringify({ course: info.course, section: info.section, classType: info.classType, periods: info.periods, date, topic, records })
       });
       if (!res.ok) throw new Error((await res.json()).message);
-      msg.style.color='var(--grn)'; msg.textContent=`Attendance saved for ${records.length} students!`;
-      setTimeout(()=>msg.textContent='',3000);
+      const presentCount = records.filter(r=>r.status==='present').length;
+      msg.style.color='var(--grn)'; msg.textContent=`✅ Saved! ${presentCount}/${records.length} present (${info.periods} period${info.periods>1?'s':''} each)`;
+      setTimeout(()=>msg.textContent='',4000);
     } catch(e){ msg.style.color='var(--red)'; msg.textContent=e.message; }
   }
 
   async function viewAttRecords() {
-    const date = document.getElementById('viewAttDate').value;
+    const date    = document.getElementById('viewAttDate').value;
+    const section = document.getElementById('viewAttSection').value;
+    const type    = document.getElementById('viewAttType').value;
     const container = document.getElementById('attRecords');
     try {
-      const res = await fetch(`${API}/attendance/records?date=${date}`,{ headers:{ Authorization:`Bearer ${token}` }});
+      let url = `${API}/attendance/records?date=${date}`;
+      if (section) url += `&section=${section}`;
+      if (type)    url += `&classType=${type}`;
+      const res  = await fetch(url,{ headers:{ Authorization:`Bearer ${token}` }});
       const data = await res.json();
       if (!data.length){ container.innerHTML='<div class="empty">No records for this date.</div>'; return; }
       container.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.85em;background:var(--surf2);border-radius:10px;overflow:hidden">
-        <thead><tr><th style="padding:9px 12px;text-align:left;color:var(--gold);background:var(--surf)">Name</th><th style="padding:9px 12px;text-align:left;color:var(--gold);background:var(--surf)">Roll No</th><th style="padding:9px 12px;text-align:left;color:var(--gold);background:var(--surf)">Course</th><th style="padding:9px 12px;text-align:left;color:var(--gold);background:var(--surf)">Topic</th><th style="padding:9px 12px;text-align:center;color:var(--gold);background:var(--surf)">Status</th></tr></thead>
+        <thead><tr>
+          <th style="padding:9px 12px;text-align:left;color:var(--gold);background:var(--surf)">Name</th>
+          <th style="padding:9px 12px;text-align:left;color:var(--gold);background:var(--surf)">Roll No</th>
+          <th style="padding:9px 12px;text-align:left;color:var(--gold);background:var(--surf)">Sec</th>
+          <th style="padding:9px 12px;text-align:left;color:var(--gold);background:var(--surf)">Type</th>
+          <th style="padding:9px 12px;text-align:left;color:var(--gold);background:var(--surf)">Periods</th>
+          <th style="padding:9px 12px;text-align:left;color:var(--gold);background:var(--surf)">Topic</th>
+          <th style="padding:9px 12px;text-align:center;color:var(--gold);background:var(--surf)">Status</th>
+        </tr></thead>
         <tbody>${data.map(r=>`<tr style="border-bottom:1px solid var(--bdr)">
           <td style="padding:8px 12px;font-weight:600">${r.student?.name||'—'}</td>
           <td style="padding:8px 12px;color:var(--blu)">${r.student?.rollNo||'—'}</td>
-          <td style="padding:8px 12px;color:var(--muted)">${r.course}</td>
+          <td style="padding:8px 12px;color:var(--muted)">${r.section||'—'}</td>
+          <td style="padding:8px 12px;color:var(--muted)">${r.classType||'Theory'}</td>
+          <td style="padding:8px 12px;color:var(--muted)">${r.periods||1}</td>
           <td style="padding:8px 12px;color:var(--muted)">${r.topic||'—'}</td>
           <td style="padding:8px 12px;text-align:center"><span style="padding:3px 10px;border-radius:5px;font-weight:700;font-size:.8em;background:${r.status==='present'?'rgba(78,203,160,.12)':'rgba(240,92,92,.12)'};color:${r.status==='present'?'var(--grn)':'var(--red)'}">${r.status==='present'?'✅ Present':'❌ Absent'}</span></td>
         </tr>`).join('')}</tbody>
