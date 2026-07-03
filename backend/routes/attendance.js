@@ -42,12 +42,16 @@ router.get('/students/:course', protect, adminOnly, async (req, res) => {
 // ADMIN: Get attendance records (filterable)
 router.get('/records', protect, adminOnly, async (req, res) => {
   try {
-    const { course, date, section, classType } = req.query;
+    const { course, date, fromDate, toDate, section, classType } = req.query;
     const filter = {};
     if (course && course !== 'All') filter.course = course;
     if (section) filter.section = section;
     if (classType) filter.classType = classType;
-    if (date) {
+    if (fromDate || toDate) {
+      filter.date = {};
+      if (fromDate) filter.date.$gte = new Date(fromDate + 'T00:00:00.000Z');
+      if (toDate)   filter.date.$lte = new Date(toDate   + 'T23:59:59.999Z');
+    } else if (date) {
       const d = new Date(date);
       filter.date = { $gte: new Date(d.setHours(0,0,0,0)), $lte: new Date(d.setHours(23,59,59,999)) };
     }

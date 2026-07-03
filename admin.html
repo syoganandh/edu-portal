@@ -69,6 +69,7 @@ tr:last-child td{border-bottom:none}
   .section-title{margin-top:16px}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -271,8 +272,15 @@ tr:last-child td{border-bottom:none}
     <!-- View Records -->
     <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:20px">
       <div class="section-title">View Records</div>
-      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-        <input type="date" id="viewAttDate" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:flex-end">
+        <div>
+          <label style="font-size:.75em;color:var(--muted);display:block;margin-bottom:4px">From Date</label>
+          <input type="date" id="viewAttFrom" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
+        </div>
+        <div>
+          <label style="font-size:.75em;color:var(--muted);display:block;margin-bottom:4px">To Date</label>
+          <input type="date" id="viewAttTo" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
+        </div>
         <select id="viewAttSection" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);outline:none;font-size:.85em">
           <option value="">All Sections</option><option value="A">Section A</option><option value="B">Section B</option>
         </select>
@@ -280,6 +288,7 @@ tr:last-child td{border-bottom:none}
           <option value="">All Types</option><option value="Theory">Theory</option><option value="Lab">Lab</option>
         </select>
         <button type="button" onclick="viewAttRecords()" style="padding:8px 18px;background:var(--acc);border:none;border-radius:8px;color:#111;font-weight:700;font-size:.82em;cursor:pointer">View</button>
+        <button type="button" onclick="downloadSemReport()" style="padding:8px 18px;background:rgba(78,203,160,.15);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:8px;font-weight:700;font-size:.82em;cursor:pointer">⬇️ Download Excel Report</button>
       </div>
       <div id="attRecords"></div>
     </div>
@@ -784,14 +793,17 @@ tr:last-child td{border-bottom:none}
   }
 
   async function viewAttRecords() {
-    const date    = document.getElementById('viewAttDate').value;
-    const section = document.getElementById('viewAttSection').value;
-    const type    = document.getElementById('viewAttType').value;
+    const fromDate  = document.getElementById('viewAttFrom').value;
+    const toDate    = document.getElementById('viewAttTo').value;
+    const section   = document.getElementById('viewAttSection').value;
+    const type      = document.getElementById('viewAttType').value;
     const container = document.getElementById('attRecords');
     try {
-      let url = `${API}/attendance/records?date=${date}`;
-      if (section) url += `&section=${section}`;
-      if (type)    url += `&classType=${type}`;
+      let url = `${API}/attendance/records?`;
+      if (fromDate) url += `fromDate=${fromDate}&`;
+      if (toDate)   url += `toDate=${toDate}&`;
+      if (section)  url += `section=${section}&`;
+      if (type)     url += `classType=${type}`;
       const res  = await fetch(url,{ headers:{ Authorization:`Bearer ${token}` }});
       const data = await res.json();
       if (!data.length){ container.innerHTML='<div class="empty">No records for this date.</div>'; return; }
@@ -816,6 +828,96 @@ tr:last-child td{border-bottom:none}
         </tr>`).join('')}</tbody>
       </table>`;
     } catch(e){ container.innerHTML='<div class="empty">Failed to load records.</div>'; }
+  }
+
+  async function downloadSemReport() {
+    const fromDate = document.getElementById('viewAttFrom').value;
+    const toDate   = document.getElementById('viewAttTo').value;
+    const section  = document.getElementById('viewAttSection').value;
+    const type     = document.getElementById('viewAttType').value;
+    try {
+      // Fetch all records for selected filters
+      let url = `${API}/attendance/records?`;
+      if (fromDate) url += `fromDate=${fromDate}&`;
+      if (toDate)   url += `toDate=${toDate}&`;
+      if (section)  url += `section=${section}&`;
+      if (type)     url += `classType=${type}`;
+      const res     = await fetch(url, { headers:{ Authorization:`Bearer ${token}` }});
+      const records = await res.json();
+      if (!records.length) { alert('No records found for selected filters.'); return; }
+
+      // --- Sheet 1: Student Summary ---
+      const summaryMap = {};
+      records.forEach(r => {
+        const id  = r.student?._id || r.student;
+        const key = id + (r.section || '');
+        if (!summaryMap[key]) summaryMap[key] = {
+          name: r.student?.name || '—',
+          rollNo: r.student?.rollNo || '—',
+          section: r.section || '—',
+          theoryTotal: 0, theoryPresent: 0,
+          labTotal: 0,    labPresent: 0
+        };
+        const p = r.periods || 1;
+        if (r.classType === 'Lab') {
+          summaryMap[key].labTotal   += p;
+          if (r.status === 'present') summaryMap[key].labPresent += p;
+        } else {
+          summaryMap[key].theoryTotal   += p;
+          if (r.status === 'present') summaryMap[key].theoryPresent += p;
+        }
+      });
+
+      const summaryRows = [['S.No','Name','Roll No','Section',
+        'Theory Periods (Total)','Theory Periods (Present)','Theory Periods (Absent)','Theory %',
+        'Lab Periods (Total)','Lab Periods (Present)','Lab Periods (Absent)','Lab %',
+        'Overall Total','Overall Present','Overall Absent','Overall %']];
+      let sno = 1;
+      Object.values(summaryMap)
+        .sort((a,b) => a.rollNo.localeCompare(b.rollNo))
+        .forEach(s => {
+          const tAbs = s.theoryTotal - s.theoryPresent;
+          const lAbs = s.labTotal    - s.labPresent;
+          const oTotal   = s.theoryTotal   + s.labTotal;
+          const oPresent = s.theoryPresent + s.labPresent;
+          const oAbs     = oTotal - oPresent;
+          const tPct  = s.theoryTotal ? Math.round(s.theoryPresent/s.theoryTotal*100) : 0;
+          const lPct  = s.labTotal    ? Math.round(s.labPresent/s.labTotal*100)       : 0;
+          const oPct  = oTotal        ? Math.round(oPresent/oTotal*100)               : 0;
+          summaryRows.push([sno++, s.name, s.rollNo, s.section,
+            s.theoryTotal, s.theoryPresent, tAbs, tPct+'%',
+            s.labTotal,    s.labPresent,    lAbs, lPct+'%',
+            oTotal, oPresent, oAbs, oPct+'%']);
+        });
+
+      // --- Sheet 2: Date-wise Detail ---
+      const detailRows = [['S.No','Date','Day','Section','Class Type','Periods','Name','Roll No','Status','Delivery Method','Teaching Strategy']];
+      let dno = 1;
+      [...records].sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(r => {
+        const d   = new Date(r.date);
+        const day = d.toLocaleDateString('en-US',{weekday:'long'});
+        const dt  = d.toLocaleDateString('en-IN');
+        detailRows.push([dno++, dt, day, r.section||'—', r.classType||'Theory', r.periods||1,
+          r.student?.name||'—', r.student?.rollNo||'—',
+          r.status==='present'?'Present':'Absent',
+          r.deliveryMethod||'—', r.teachingStrategy||'—']);
+      });
+
+      // --- Build workbook ---
+      const wb  = XLSX.utils.book_new();
+      const ws1 = XLSX.utils.aoa_to_sheet(summaryRows);
+      const ws2 = XLSX.utils.aoa_to_sheet(detailRows);
+
+      // Column widths Sheet 1
+      ws1['!cols'] = [5,22,12,9,20,20,20,10,18,18,18,8,14,14,14,10].map(w=>({wch:w}));
+      ws2['!cols'] = [5,12,12,9,12,9,22,12,10,18,20].map(w=>({wch:w}));
+
+      XLSX.utils.book_append_sheet(wb, ws1, 'Student Summary');
+      XLSX.utils.book_append_sheet(wb, ws2, 'Date-wise Detail');
+
+      const fname = `Attendance_Report_${fromDate||'all'}_to_${toDate||'all'}.xlsx`;
+      XLSX.writeFile(wb, fname);
+    } catch(e) { alert('Failed to generate report: ' + e.message); }
   }
 
   async function deleteNotice(id) {
