@@ -1008,6 +1008,25 @@ tr:last-child td{border-bottom:none}
 
   function removeSlot(i) { ttSlots.splice(i,1); renderTtGrid(); }
 
+  function editSlot(i) {
+    const s = ttSlots[i];
+    // Pre-fill day
+    const dayEl = document.getElementById('ttDay');
+    dayEl.value = s.day;
+    updateTtTimes();
+    // Pre-fill time
+    document.getElementById('ttTime').value = s.time;
+    // Pre-fill subject
+    document.getElementById('ttSubject').value = s.subject;
+    // Pre-fill room
+    document.getElementById('ttRoom').value = s.room || '';
+    // Remove the slot so it gets replaced when user clicks Add Slot
+    ttSlots.splice(i, 1);
+    renderTtGrid();
+    // Scroll to form
+    document.getElementById('ttSecLabel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   function renderTtGrid() {
     const container = document.getElementById('ttGrid');
     if (!ttSlots.length){ container.innerHTML=`<div class="empty">No slots for Section ${ttSection} yet.</div>`; return; }
@@ -1019,7 +1038,10 @@ tr:last-child td{border-bottom:none}
         <div style="font-weight:700;color:var(--gold);font-size:.82em;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${d}</div>
         <div style="display:flex;flex-wrap:wrap;gap:10px">${byDay[d].map(s=>`
           <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:12px 16px;position:relative;min-width:220px;max-width:300px">
-            <button type="button" onclick="removeSlot(${s._i})" style="position:absolute;top:8px;right:10px;background:none;border:none;color:var(--red);cursor:pointer;font-size:.85em">✕</button>
+            <div style="position:absolute;top:8px;right:10px;display:flex;gap:6px">
+              <button type="button" onclick="editSlot(${s._i})" style="background:none;border:none;color:var(--acc);cursor:pointer;font-size:.85em" title="Edit">✎</button>
+              <button type="button" onclick="removeSlot(${s._i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.85em" title="Remove">✕</button>
+            </div>
             <div style="font-size:.75em;color:var(--muted);margin-bottom:4px">⏰ ${s.time}</div>
             <div style="font-weight:700;font-size:.88em;margin-bottom:6px">${s.subject}</div>
             <div style="display:flex;flex-wrap:wrap;gap:5px;font-size:.72em">
