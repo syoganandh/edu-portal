@@ -1944,12 +1944,21 @@
       document.getElementById('quiz-subtitle').textContent = 'Select a quiz type below';
     }
 
-    function openQuiz(index) {
+    async function openQuiz(index) {
       currentTopicIndex = index;
       document.getElementById('quiz-title').textContent = topicTitles[index] || 'Quiz';
       showTypeScreen();
       document.getElementById('quizModal').style.display = 'block';
       document.body.style.overflow = 'hidden';
+      // Remove any existing cooldown msg
+      let cd = document.getElementById('cooldownMsg');
+      if (!cd) {
+        cd = document.createElement('div');
+        cd.id = 'cooldownMsg';
+        cd.style.cssText = 'display:none;margin:12px 20px;padding:10px 16px;background:rgba(232,192,106,.12);border:1px solid rgba(232,192,106,.3);border-radius:8px;color:var(--gold);font-size:.85em;text-align:center';
+        document.getElementById('quizResultScreen')?.parentNode?.insertBefore(cd, document.getElementById('quizResultScreen'));
+      }
+      cd.style.display = 'none';
     }
 
     function startQuizType(type) {
@@ -2055,13 +2064,18 @@
 
     async function saveQuizResult(score, total, quizType, topicName) {
       const token = localStorage.getItem('edu_token');
-      if (!token) return; // not logged in — silently skip
+      if (!token) return;
       try {
-        await fetch(`${API}/quiz/save`, {
+        const res = await fetch(`${API}/quiz/save`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ course: 'JPP', topic: topicName, quizType, score, total, timeTaken: 0 })
         });
+        if (res.status === 429) {
+          const data = await res.json();
+          const cd = document.getElementById('cooldownMsg');
+          if (cd) { cd.style.display='block'; cd.textContent=`⏳ ${data.message}`; }
+        }
       } catch(e) { /* offline — ignore */ }
     }
 

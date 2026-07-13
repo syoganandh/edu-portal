@@ -4,18 +4,53 @@ const { protect } = require('../middleware/auth');
 
 const router = express.Router();
 
+const COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
+
 // POST /api/quiz/save  — save a quiz result
 router.post('/save', protect, async (req, res) => {
   try {
     const { course, topic, quizType, score, total, timeTaken } = req.body;
-    const percentage = Math.round((score / total) * 100);
 
+    // Check cool-down: last attempt for same student + topic + quizType
+    const last = await QuizResult.findOne({
+      student: req.user._id, topic, quizType
+    }).sort({ takenAt: -1 });
+
+    if (last) {
+      const elapsed = Date.now() - new Date(last.takenAt).getTime();
+      if (elapsed < COOLDOWN_MS) {
+        const remaining = Math.ceil((COOLDOWN_MS - elapsed) / 60000); // minutes
+        return res.status(429).json({
+          message: `Cool-down active. Try again in ${remaining} minute${remaining !== 1 ? 's' : ''}.`,
+          remainingMinutes: remaining
+        });
+      }
+    }
+
+    const percentage = Math.round((score / total) * 100);
     const result = await QuizResult.create({
       student: req.user._id,
       course, topic, quizType, score, total, percentage, timeTaken
     });
 
     res.status(201).json({ message: 'Result saved', result });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/quiz/cooldown?topic=X&quizType=Y — check cool-down status
+router.get('/cooldown', protect, async (req, res) => {
+  try {
+    const { topic, quizType } = req.query;
+    const last = await QuizResult.findOne({
+      student: req.user._id, topic, quizType
+    }).sort({ takenAt: -1 });
+    if (!last) return res.json({ canAttempt: true, remainingMinutes: 0 });
+    const elapsed = Date.now() - new Date(last.takenAt).getTime();
+    if (elapsed >= COOLDOWN_MS) return res.json({ canAttempt: true, remainingMinutes: 0 });
+    const remaining = Math.ceil((COOLDOWN_MS - elapsed) / 60000);
+    res.json({ canAttempt: false, remainingMinutes: remaining });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -1819,13 +1819,24 @@
 
   async function saveQuizResult(score, total, quizType, topicName) {
     const token = localStorage.getItem('edu_token');
-    if (!token) return; // not logged in — silently skip
+    if (!token) return;
     try {
-      await fetch(`${API}/quiz/save`, {
+      const res = await fetch(`${API}/quiz/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ course: 'DevOps', topic: topicName, quizType, score, total, timeTaken: 0 })
       });
+      if (res.status === 429) {
+        const data = await res.json();
+        let cd = document.getElementById('cooldownMsg');
+        if (!cd) {
+          cd = document.createElement('div');
+          cd.id = 'cooldownMsg';
+          cd.style.cssText = 'margin:12px 20px;padding:10px 16px;background:rgba(232,192,106,.12);border:1px solid rgba(232,192,106,.3);border-radius:8px;color:var(--gold);font-size:.85em;text-align:center';
+          document.querySelector('.quiz-result-screen')?.prepend(cd);
+        }
+        cd.textContent = `⏳ ${data.message}`;
+      }
     } catch(e) { /* offline — ignore */ }
   }
 
