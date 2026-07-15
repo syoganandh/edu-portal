@@ -71,7 +71,7 @@ router.post('/request', async (req, res) => {
     res.json({ message: genericMsg });
   } catch (err) {
     console.error('Reset email error:', err.message);
-    res.status(500).json({ message: 'Failed to send reset email. Please contact admin.' });
+    res.status(500).json({ message: 'Failed to send reset email.', debug: err.message });
   }
 });
 
