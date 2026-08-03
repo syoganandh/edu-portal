@@ -175,7 +175,14 @@ tr:last-child td{border-bottom:none}
 
     <!-- Row 3: Filterable table -->
     <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
-      <input id="quizSearch" oninput="filterResultsTable()" type="text" placeholder="Search student / topic..." style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.84em;width:220px;outline:none">
+      <input id="quizSearch" oninput="filterResultsTable()" type="text" placeholder="Search student / roll / topic..." style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.84em;width:220px;outline:none">
+      <select id="quizSectionFilter" onchange="filterResultsTable()" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.84em">
+        <option value="">All Sections</option>
+        <option value="A">CSM-A</option>
+        <option value="B">CSM-B</option>
+        <option value="C">CSM-C</option>
+        <option value="D">CSM-D</option>
+      </select>
       <select id="quizTypeFilter" onchange="filterResultsTable()" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.84em">
         <option value="">All Types</option>
         <option value="debug">Debug</option>
@@ -191,9 +198,34 @@ tr:last-child td{border-bottom:none}
       <span id="quizCount" style="font-size:.8em;color:var(--muted);margin-left:4px"></span>
     </div>
     <table>
-      <thead><tr><th>Student</th><th>Roll No</th><th>Topic</th><th>Course</th><th>Type</th><th>Score</th><th>Result</th><th>Date</th></tr></thead>
-      <tbody id="resultsBody"><tr><td colspan="8" class="loading">Loading results...</td></tr></tbody>
+      <thead><tr><th>Student</th><th>Roll No</th><th>Section</th><th>Topic</th><th>Course</th><th>Type</th><th>Score</th><th>Result</th><th>Date</th></tr></thead>
+      <tbody id="resultsBody"><tr><td colspan="9" class="loading">Loading results...</td></tr></tbody>
     </table>
+
+    <!-- Row 4: Coverage — who done / not done -->
+    <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:18px;margin-top:18px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+        <div style="font-size:.82em;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">📋 Quiz Coverage — Who Done / Not Done</div>
+        <select id="covCourse" onchange="renderCoverage()" style="padding:6px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.82em">
+          <option value="JPP">JPP</option>
+          <option value="DevOps">DevOps</option>
+        </select>
+        <select id="covSection" onchange="renderCoverage()" style="padding:6px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.82em">
+          <option value="">All Sections</option>
+          <option value="A">CSM-A</option>
+          <option value="B">CSM-B</option>
+          <option value="C">CSM-C</option>
+          <option value="D">CSM-D</option>
+        </select>
+        <select id="covTopic" onchange="renderCoverage()" style="padding:6px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.82em;max-width:200px">
+          <option value="">All Topics</option>
+        </select>
+        <span id="covCount" style="font-size:.8em;color:var(--muted);margin-left:4px"></span>
+      </div>
+      <div id="coverageTableWrap" style="overflow-x:auto">
+        <div class="empty">Loading coverage...</div>
+      </div>
+    </div>
   </div>
 
   <!-- Assignments Tab -->
@@ -564,6 +596,7 @@ tr:last-child td{border-bottom:none}
       renderResultsTable(allQuizResults);
       buildCharts(allQuizResults);
       populateStudentSelect(allQuizResults);
+      renderCoverage();
     } catch(err) {
       console.error(err);
     }
@@ -724,18 +757,34 @@ tr:last-child td{border-bottom:none}
   function renderResultsTable(results) {
     const tbody = document.getElementById('resultsBody');
     if (!results.length) {
-      tbody.innerHTML = '<tr><td colspan="8" class="empty">No quiz attempts yet</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="empty">No quiz attempts yet</td></tr>';
       document.getElementById('quizCount').textContent = '';
       return;
     }
-    tbody.innerHTML = results.map(r => {
+    // Sort by section → rollNo → date
+    const sorted = [...results].sort((a, b) => {
+      const sa = (a.student?.section||'').localeCompare(b.student?.section||'');
+      if (sa !== 0) return sa;
+      const ra = (a.student?.rollNo||'').localeCompare(b.student?.rollNo||'');
+      if (ra !== 0) return ra;
+      return new Date(b.takenAt) - new Date(a.takenAt);
+    });
+    let lastSection = null;
+    tbody.innerHTML = sorted.map(r => {
       const badge    = r.percentage>=80?'badge-pass':r.percentage>=50?'badge-avg':'badge-fail';
       const label    = r.percentage>=80?'Pass':r.percentage>=50?'Avg':'Fail';
       const date     = new Date(r.takenAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
       const tagClass = r.course==='JPP'?'tag-jpp':'tag-devops';
-      return `<tr>
+      const sec      = r.student?.section||'—';
+      let sectionRow = '';
+      if (sec !== lastSection) {
+        lastSection = sec;
+        sectionRow = `<tr style="background:rgba(240,124,62,.07)"><td colspan="9" style="font-weight:700;font-size:.78em;color:var(--acc);padding:6px 12px;letter-spacing:.08em">▸ SECTION ${sec}</td></tr>`;
+      }
+      return sectionRow + `<tr>
         <td style="font-weight:600">${r.student?.name||'—'}</td>
-        <td style="color:var(--blu)">${r.student?.rollNo||'—'}</td>
+        <td style="color:var(--blu);font-family:monospace">${r.student?.rollNo||'—'}</td>
+        <td style="color:var(--acc);font-weight:600">${sec}</td>
         <td>${r.topic}</td>
         <td><span class="course-tag ${tagClass}">${r.course}</span></td>
         <td style="text-transform:capitalize">${r.quizType}</td>
@@ -749,15 +798,113 @@ tr:last-child td{border-bottom:none}
 
   function filterResultsTable() {
     const q    = (document.getElementById('quizSearch').value||'').toLowerCase();
+    const sec  = (document.getElementById('quizSectionFilter').value||'');
     const type = (document.getElementById('quizTypeFilter').value||'').toLowerCase();
     const res  = (document.getElementById('quizResultFilter').value||'');
     const filtered = allQuizResults.filter(r => {
       const nameMatch  = !q || (r.student?.name||'').toLowerCase().includes(q) || (r.student?.rollNo||'').toLowerCase().includes(q) || r.topic.toLowerCase().includes(q);
+      const secMatch   = !sec  || (r.student?.section||'') === sec;
       const typeMatch  = !type || r.quizType === type;
       const resMatch   = !res  || (res==='pass'&&r.percentage>=80) || (res==='avg'&&r.percentage>=50&&r.percentage<80) || (res==='fail'&&r.percentage<50);
-      return nameMatch && typeMatch && resMatch;
+      return nameMatch && secMatch && typeMatch && resMatch;
     });
     renderResultsTable(filtered);
+  }
+
+  // ── Coverage: who done / not done ──
+  function renderCoverage() {
+    const course  = document.getElementById('covCourse').value;
+    const secF    = document.getElementById('covSection').value;
+    const topicF  = document.getElementById('covTopic').value;
+    const wrap    = document.getElementById('coverageTableWrap');
+
+    // All results for this course
+    const courseResults = allQuizResults.filter(r => r.course === course);
+
+    // Unique topics for this course (update dropdown once per course change)
+    const allTopics = [...new Set(courseResults.map(r => r.topic))].sort();
+    const topicSel  = document.getElementById('covTopic');
+    const prev = topicSel.value;
+    topicSel.innerHTML = '<option value="">All Topics</option>' +
+      allTopics.map(t => `<option value="${t}"${t===prev?' selected':''}>${t}</option>`).join('');
+
+    const topics = topicF ? [topicF] : allTopics;
+    const TYPES  = ['debug','trace','usecase'];
+
+    // Build done-set: key = studentId + topic + type
+    const doneSet = new Set();
+    courseResults.forEach(r => {
+      if (r.student?._id) doneSet.add(`${r.student._id}::${r.topic}::${r.quizType}`);
+    });
+
+    // Filter students by section
+    let students = allStudents.filter(s => s.role !== 'admin');
+    if (secF) students = students.filter(s => (s.section||'') === secF);
+    students = students.sort((a,b)=>{
+      const ss = (a.section||'').localeCompare(b.section||'');
+      return ss !== 0 ? ss : (a.rollNo||'').localeCompare(b.rollNo||'');
+    });
+
+    if (!students.length) {
+      wrap.innerHTML = '<div class="empty">No students found for this section.</div>';
+      document.getElementById('covCount').textContent = '';
+      return;
+    }
+
+    // Count stats
+    const totalCells = students.length * topics.length * TYPES.length;
+    let doneCount = 0;
+
+    // Build table
+    const colSpan = topics.length * TYPES.length;
+    let html = `<table style="font-size:.78em;border-collapse:collapse;min-width:100%">
+      <thead>
+        <tr>
+          <th style="position:sticky;left:0;z-index:2;background:var(--surf2);padding:8px 10px;border:1px solid var(--bdr);white-space:nowrap">Roll No</th>
+          <th style="position:sticky;left:70px;z-index:2;background:var(--surf2);padding:8px 10px;border:1px solid var(--bdr);white-space:nowrap">Name</th>
+          <th style="background:var(--surf2);padding:8px 10px;border:1px solid var(--bdr)">Sec</th>`;
+
+    topics.forEach(t => {
+      const shortT = t.length > 18 ? t.substring(0,16)+'…' : t;
+      TYPES.forEach(ty => {
+        const clr = ty==='debug'?'#5BA8F5':ty==='trace'?'#F07C3E':'#4ECBA0';
+        html += `<th title="${t} · ${ty}" style="background:var(--surf2);padding:6px 8px;border:1px solid var(--bdr);white-space:nowrap;min-width:68px;text-align:center">
+          <div style="color:var(--muted)">${shortT}</div>
+          <div style="color:${clr};font-size:.9em;text-transform:capitalize">${ty}</div>
+        </th>`;
+      });
+    });
+    html += '</tr></thead><tbody>';
+
+    let lastSec = null;
+    students.forEach(s => {
+      const sec = s.section || '—';
+      if (sec !== lastSec) {
+        lastSec = sec;
+        html += `<tr style="background:rgba(240,124,62,.07)"><td colspan="${3 + colSpan}" style="font-weight:700;font-size:.8em;color:var(--acc);padding:5px 12px;letter-spacing:.08em">▸ SECTION ${sec}</td></tr>`;
+      }
+      html += `<tr>
+        <td style="position:sticky;left:0;z-index:1;background:var(--surf);font-family:monospace;padding:5px 8px;border:1px solid var(--bdr);white-space:nowrap;color:var(--blu)">${s.rollNo}</td>
+        <td style="position:sticky;left:70px;z-index:1;background:var(--surf);padding:5px 10px;border:1px solid var(--bdr);white-space:nowrap;font-weight:600">${s.name}</td>
+        <td style="padding:5px 8px;border:1px solid var(--bdr);text-align:center;color:var(--acc);font-weight:600">${sec}</td>`;
+      topics.forEach(t => {
+        TYPES.forEach(ty => {
+          const key  = `${s._id}::${t}::${ty}`;
+          const done = doneSet.has(key);
+          if (done) doneCount++;
+          html += `<td style="text-align:center;padding:4px;border:1px solid var(--bdr);background:${done?'rgba(78,203,160,.1)':'rgba(240,92,92,.06)'}">
+            ${done ? '<span style="color:var(--grn);font-size:1.1em" title="Done">✔</span>' : '<span style="color:var(--bdr);font-size:1em" title="Not done">—</span>'}
+          </td>`;
+        });
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+
+    wrap.innerHTML = html;
+    const pct = totalCells ? Math.round(doneCount/totalCells*100) : 0;
+    document.getElementById('covCount').textContent =
+      `${doneCount}/${totalCells} done (${pct}%) · ${students.length} students`;
   }
 
   // ── Assignments ──
