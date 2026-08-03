@@ -832,9 +832,13 @@ tr:last-child td{border-bottom:none}
     const TYPES  = ['debug','trace','usecase'];
 
     // Build done-set: key = studentId + topic + type
-    const doneSet = new Set();
+    const doneMap = new Map();
     courseResults.forEach(r => {
-      if (r.student?._id) doneSet.add(`${r.student._id}::${r.topic}::${r.quizType}`);
+      if (r.student?._id) {
+        const key = `${r.student._id}::${r.topic}::${r.quizType}`;
+        if (!doneMap.has(key)) // first attempt only (results already deduplicated by API)
+          doneMap.set(key, { score: r.score, total: r.total, pct: r.percentage });
+      }
     });
 
     // Filter students by section
@@ -890,10 +894,13 @@ tr:last-child td{border-bottom:none}
       topics.forEach(t => {
         TYPES.forEach(ty => {
           const key  = `${s._id}::${t}::${ty}`;
-          const done = doneSet.has(key);
-          if (done) doneCount++;
-          html += `<td style="text-align:center;padding:4px;border:1px solid var(--bdr);background:${done?'rgba(78,203,160,.1)':'rgba(240,92,92,.06)'}">
-            ${done ? '<span style="color:var(--grn);font-size:1.1em" title="Done">✔</span>' : '<span style="color:var(--bdr);font-size:1em" title="Not done">—</span>'}
+          const res = doneMap.get(key);
+          if (res) doneCount++;
+          const bg  = res ? (res.pct>=80?'rgba(78,203,160,.13)':res.pct>=50?'rgba(232,192,106,.13)':'rgba(240,92,92,.13)') : 'transparent';
+          const clr = res ? (res.pct>=80?'var(--grn)':res.pct>=50?'var(--gold)':'var(--red)') : 'var(--bdr)';
+          const txt = res ? `${res.score}/${res.total}` : '—';
+          html += `<td style="text-align:center;padding:4px 6px;border:1px solid var(--bdr);background:${bg}">
+            <span style="color:${clr};font-weight:${res?'700':'400'};font-size:.85em" title="${res?res.pct+'%':'Not done'}">${txt}</span>
           </td>`;
         });
       });
