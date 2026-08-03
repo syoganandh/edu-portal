@@ -2080,6 +2080,10 @@
     }
 
     function submitQuiz() {
+      if (quizSubmitted) return;
+      quizSubmitted = true;
+      const btn = document.getElementById('btnSubmit');
+      if (btn) btn.disabled = true;
       const qset = currentQset;
       const n = qset.length;
       let score=0, skipped=0;
@@ -2090,7 +2094,6 @@
       const wrong = n-score-skipped;
       const pct = Math.round(score/n*100);
       saveQuizResult(score, n, currentQuizType, topicTitles[currentTopicIndex] || 'Unknown');
-      quizSubmitted = true;
       document.getElementById('quizProgress').style.display='none';
       document.getElementById('qNav').style.display='none';
       document.getElementById('quizBody').style.display='none';

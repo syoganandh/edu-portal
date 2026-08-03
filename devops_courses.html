@@ -1706,7 +1706,7 @@
   ];
 
   // ── STATE ──
-  let curQuiz = 0, curQ = 0, curQset = [], curQuizType = 'mcq', answers = [], reviewed = false;
+  let curQuiz = 0, curQ = 0, curQset = [], curQuizType = 'mcq', answers = [], reviewed = false, quizSubmitted = false;
 
   function showTypeScreen() {
     document.getElementById('quizTypeScreen').style.display = '';
@@ -1738,7 +1738,7 @@
     else if (type === 'usecase') curQset = usecaseData[curQuiz];
     else curQset = debugData[curQuiz];
 
-    curQ = 0; reviewed = false;
+    curQ = 0; reviewed = false; quizSubmitted = false;
     answers = new Array(curQset.length).fill(-1);
     document.getElementById('quizTypeScreen').style.display = 'none';
     document.getElementById('backToTypes').style.display = '';
@@ -1841,6 +1841,10 @@
   }
 
   function submitQuiz() {
+    if (quizSubmitted) return;
+    quizSubmitted = true;
+    const btn = document.getElementById('btnSubmit');
+    if (btn) btn.disabled = true;
     let correct = 0, wrong = 0, skip = 0;
     answers.forEach((a, i) => {
       if (a === -1) skip++;
