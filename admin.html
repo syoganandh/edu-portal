@@ -70,6 +70,7 @@ tr:last-child td{border-bottom:none}
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -129,6 +130,66 @@ tr:last-child td{border-bottom:none}
 
   <!-- Results Tab -->
   <div class="tab-panel" id="tab-results">
+
+    <!-- Row 1: Type-wise + Top Students charts -->
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:18px">
+      <!-- Type-wise avg -->
+      <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:18px">
+        <div style="font-size:.82em;font-weight:700;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em">Avg Score by Quiz Type</div>
+        <canvas id="typeChart"></canvas>
+      </div>
+      <!-- Top students -->
+      <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="font-size:.82em;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Top Students by Avg Score</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="quizCourseFilter" onchange="rebuildCharts()" style="padding:5px 10px;background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:.78em">
+              <option value="">All Courses</option>
+              <option value="JPP">JPP</option>
+              <option value="DevOps">DevOps</option>
+            </select>
+            <select id="topNSelect" onchange="rebuildCharts()" style="padding:5px 10px;background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:.78em">
+              <option value="10">Top 10</option>
+              <option value="20">Top 20</option>
+              <option value="30">Top 30</option>
+            </select>
+          </div>
+        </div>
+        <canvas id="topStudentChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Row 2: Student detail chart -->
+    <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:18px;margin-bottom:18px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+        <div style="font-size:.82em;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Student Performance Breakdown</div>
+        <select id="studentSelect" onchange="showStudentChart()" style="padding:6px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.84em;min-width:220px">
+          <option value="">— Select a student —</option>
+        </select>
+      </div>
+      <div id="studentChartWrap" style="display:none">
+        <canvas id="studentChart" style="max-height:220px"></canvas>
+      </div>
+      <div id="studentChartEmpty" style="text-align:center;color:var(--muted);padding:28px;font-size:.88em">Select a student above to see their topic × type breakdown</div>
+    </div>
+
+    <!-- Row 3: Filterable table -->
+    <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+      <input id="quizSearch" oninput="filterResultsTable()" type="text" placeholder="Search student / topic..." style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.84em;width:220px;outline:none">
+      <select id="quizTypeFilter" onchange="filterResultsTable()" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.84em">
+        <option value="">All Types</option>
+        <option value="debug">Debug</option>
+        <option value="trace">Trace</option>
+        <option value="usecase">Usecase</option>
+      </select>
+      <select id="quizResultFilter" onchange="filterResultsTable()" style="padding:8px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:.84em">
+        <option value="">All Results</option>
+        <option value="pass">Pass (≥80%)</option>
+        <option value="avg">Average (50–79%)</option>
+        <option value="fail">Fail (&lt;50%)</option>
+      </select>
+      <span id="quizCount" style="font-size:.8em;color:var(--muted);margin-left:4px"></span>
+    </div>
     <table>
       <thead><tr><th>Student</th><th>Roll No</th><th>Topic</th><th>Course</th><th>Type</th><th>Score</th><th>Result</th><th>Date</th></tr></thead>
       <tbody id="resultsBody"><tr><td colspan="8" class="loading">Loading results...</td></tr></tbody>
@@ -499,34 +560,205 @@ tr:last-child td{border-bottom:none}
 
       // Results
       const resRes = await fetch(`${API}/admin/results`, { headers });
-      const results = await resRes.json();
-      const tbody = document.getElementById('resultsBody');
-      if (!results.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="empty">No quiz attempts yet</td></tr>';
-      } else {
-        tbody.innerHTML = results.map(r => {
-          const badge = r.percentage>=80?'badge-pass':r.percentage>=50?'badge-avg':'badge-fail';
-          const label = r.percentage>=80?'Pass':r.percentage>=50?'Avg':'Fail';
-          const date = new Date(r.takenAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
-          const tagClass = r.course==='JPP'?'tag-jpp':'tag-devops';
-          return `<tr>
-            <td style="font-weight:600">${r.student?.name||'—'}</td>
-            <td style="color:var(--blu)">${r.student?.rollNo||'—'}</td>
-            <td>${r.topic}</td>
-            <td><span class="course-tag ${tagClass}">${r.course}</span></td>
-            <td style="text-transform:capitalize">${r.quizType}</td>
-            <td>${r.score}/${r.total} <span style="color:var(--muted)">(${r.percentage}%)</span></td>
-            <td><span class="badge ${badge}">${label}</span></td>
-            <td style="color:var(--muted)">${date}</td>
-          </tr>`;
-        }).join('');
-      }
+      allQuizResults = await resRes.json();
+      renderResultsTable(allQuizResults);
+      buildCharts(allQuizResults);
+      populateStudentSelect(allQuizResults);
     } catch(err) {
       console.error(err);
     }
   }
 
   loadAll();
+
+  // ── Quiz Charts ──
+  let allQuizResults = [];
+  let chartType = null, chartTop = null, chartStudent = null;
+
+  const CHART_COLORS = {
+    debug:   { bg: 'rgba(91,168,245,0.7)',   border: '#5BA8F5' },
+    trace:   { bg: 'rgba(240,124,62,0.7)',   border: '#F07C3E' },
+    usecase: { bg: 'rgba(78,203,160,0.7)',   border: '#4ECBA0' },
+  };
+  const CHART_DEFAULTS = {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#E8EAF0', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#6B7194' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      y: { ticks: { color: '#6B7194' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+    }
+  };
+
+  function avg(arr) { return arr.length ? Math.round(arr.reduce((s,v)=>s+v,0)/arr.length) : 0; }
+
+  function filteredResults() {
+    const course = document.getElementById('quizCourseFilter')?.value || '';
+    return course ? allQuizResults.filter(r => r.course === course) : allQuizResults;
+  }
+
+  function buildCharts(results) {
+    const data = filteredResults();
+
+    // ── 1. Type-wise avg chart ──
+    const types = ['debug','trace','usecase'];
+    const typeAvgs = types.map(t => avg(data.filter(r=>r.quizType===t).map(r=>r.percentage)));
+    if (chartType) chartType.destroy();
+    chartType = new Chart(document.getElementById('typeChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Debug','Trace','Usecase'],
+        datasets: [{
+          label: 'Avg %',
+          data: typeAvgs,
+          backgroundColor: types.map(t => CHART_COLORS[t].bg),
+          borderColor:     types.map(t => CHART_COLORS[t].border),
+          borderWidth: 2, borderRadius: 8
+        }]
+      },
+      options: {
+        ...CHART_DEFAULTS,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#6B7194' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { min: 0, max: 100, ticks: { color: '#6B7194', callback: v => v+'%' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        }
+      }
+    });
+
+    // ── 2. Top students chart ──
+    const topN = parseInt(document.getElementById('topNSelect')?.value || 10);
+    const byStudent = {};
+    data.forEach(r => {
+      const key = r.student?.rollNo || '—';
+      if (!byStudent[key]) byStudent[key] = { name: r.student?.name || '—', scores: [] };
+      byStudent[key].scores.push(r.percentage);
+    });
+    const ranked = Object.values(byStudent)
+      .map(s => ({ name: s.name.split(' ').slice(0,2).join(' '), avg: avg(s.scores) }))
+      .sort((a,b) => b.avg - a.avg)
+      .slice(0, topN);
+
+    if (chartTop) chartTop.destroy();
+    chartTop = new Chart(document.getElementById('topStudentChart'), {
+      type: 'bar',
+      data: {
+        labels: ranked.map(s => s.name),
+        datasets: [{
+          label: 'Avg Score %',
+          data: ranked.map(s => s.avg),
+          backgroundColor: ranked.map(s =>
+            s.avg>=80?'rgba(78,203,160,0.7)':s.avg>=50?'rgba(240,124,62,0.7)':'rgba(240,92,92,0.7)'
+          ),
+          borderColor: ranked.map(s =>
+            s.avg>=80?'#4ECBA0':s.avg>=50?'#F07C3E':'#F05C5C'
+          ),
+          borderWidth: 2, borderRadius: 6
+        }]
+      },
+      options: {
+        ...CHART_DEFAULTS,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { min: 0, max: 100, ticks: { color: '#6B7194', callback: v => v+'%' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { ticks: { color: '#E8EAF0', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        }
+      }
+    });
+  }
+
+  function rebuildCharts() { buildCharts(allQuizResults); }
+
+  function populateStudentSelect(results) {
+    const seen = new Map();
+    results.forEach(r => {
+      const key = r.student?.rollNo;
+      if (key && !seen.has(key)) seen.set(key, r.student?.name || key);
+    });
+    const sel = document.getElementById('studentSelect');
+    const sorted = [...seen.entries()].sort((a,b) => a[1].localeCompare(b[1]));
+    sorted.forEach(([roll, name]) => {
+      const opt = document.createElement('option');
+      opt.value = roll; opt.textContent = `${name} (${roll})`;
+      sel.appendChild(opt);
+    });
+  }
+
+  function showStudentChart() {
+    const roll = document.getElementById('studentSelect').value;
+    const wrap  = document.getElementById('studentChartWrap');
+    const empty = document.getElementById('studentChartEmpty');
+    if (!roll) { wrap.style.display='none'; empty.style.display='block'; return; }
+
+    const data = allQuizResults.filter(r => r.student?.rollNo === roll);
+    const topics = [...new Set(data.map(r => r.topic))].sort();
+    const types  = ['debug','trace','usecase'];
+
+    const datasets = types.map(t => ({
+      label: t.charAt(0).toUpperCase()+t.slice(1),
+      data: topics.map(topic => {
+        const matches = data.filter(r => r.topic===topic && r.quizType===t);
+        return matches.length ? avg(matches.map(r=>r.percentage)) : null;
+      }),
+      backgroundColor: CHART_COLORS[t].bg,
+      borderColor:     CHART_COLORS[t].border,
+      borderWidth: 2, borderRadius: 6, spanGaps: false
+    }));
+
+    if (chartStudent) chartStudent.destroy();
+    wrap.style.display='block'; empty.style.display='none';
+    chartStudent = new Chart(document.getElementById('studentChart'), {
+      type: 'bar',
+      data: { labels: topics, datasets },
+      options: {
+        ...CHART_DEFAULTS,
+        plugins: { legend: { labels: { color: '#E8EAF0', font: { size: 11 } } } },
+        scales: {
+          x: { ticks: { color: '#E8EAF0', font:{size:10} }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { min:0, max:100, ticks: { color:'#6B7194', callback: v=>v+'%' }, grid: { color:'rgba(255,255,255,0.05)' } }
+        }
+      }
+    });
+  }
+
+  function renderResultsTable(results) {
+    const tbody = document.getElementById('resultsBody');
+    if (!results.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty">No quiz attempts yet</td></tr>';
+      document.getElementById('quizCount').textContent = '';
+      return;
+    }
+    tbody.innerHTML = results.map(r => {
+      const badge    = r.percentage>=80?'badge-pass':r.percentage>=50?'badge-avg':'badge-fail';
+      const label    = r.percentage>=80?'Pass':r.percentage>=50?'Avg':'Fail';
+      const date     = new Date(r.takenAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
+      const tagClass = r.course==='JPP'?'tag-jpp':'tag-devops';
+      return `<tr>
+        <td style="font-weight:600">${r.student?.name||'—'}</td>
+        <td style="color:var(--blu)">${r.student?.rollNo||'—'}</td>
+        <td>${r.topic}</td>
+        <td><span class="course-tag ${tagClass}">${r.course}</span></td>
+        <td style="text-transform:capitalize">${r.quizType}</td>
+        <td>${r.score}/${r.total} <span style="color:var(--muted)">(${r.percentage}%)</span></td>
+        <td><span class="badge ${badge}">${label}</span></td>
+        <td style="color:var(--muted)">${date}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('quizCount').textContent = `${results.length} records`;
+  }
+
+  function filterResultsTable() {
+    const q    = (document.getElementById('quizSearch').value||'').toLowerCase();
+    const type = (document.getElementById('quizTypeFilter').value||'').toLowerCase();
+    const res  = (document.getElementById('quizResultFilter').value||'');
+    const filtered = allQuizResults.filter(r => {
+      const nameMatch  = !q || (r.student?.name||'').toLowerCase().includes(q) || (r.student?.rollNo||'').toLowerCase().includes(q) || r.topic.toLowerCase().includes(q);
+      const typeMatch  = !type || r.quizType === type;
+      const resMatch   = !res  || (res==='pass'&&r.percentage>=80) || (res==='avg'&&r.percentage>=50&&r.percentage<80) || (res==='fail'&&r.percentage<50);
+      return nameMatch && typeMatch && resMatch;
+    });
+    renderResultsTable(filtered);
+  }
 
   // ── Assignments ──
   async function createAssignment() {
