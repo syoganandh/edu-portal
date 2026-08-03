@@ -18,13 +18,22 @@ router.get('/students', async (req, res) => {
   }
 });
 
-// GET /api/admin/results — all quiz results
+// GET /api/admin/results — first attempt only per student+topic+quizType
 router.get('/results', async (req, res) => {
   try {
-    const results = await QuizResult.find()
-      .populate('student', 'name rollNo section')
-      .sort({ takenAt: -1 })
-      .limit(500);
+    const results = await QuizResult.aggregate([
+      { $sort: { takenAt: 1 } },                              // oldest first
+      { $group: {
+          _id: { student: '$student', topic: '$topic', quizType: '$quizType' },
+          doc: { $first: '$$ROOT' }                           // keep first attempt
+        }
+      },
+      { $replaceRoot: { newRoot: '$doc' } },
+      { $lookup: { from: 'users', localField: 'student', foreignField: '_id', as: 'studentArr' } },
+      { $addFields: { student: { $arrayElemAt: ['$studentArr', 0] } } },
+      { $project: { studentArr: 0, 'student.password': 0, 'student.__v': 0 } },
+      { $sort: { 'student.section': 1, 'student.rollNo': 1, takenAt: 1 } }
+    ]);
     res.json(results);
   } catch (err) {
     res.status(500).json({ message: err.message });
