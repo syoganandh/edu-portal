@@ -4,27 +4,23 @@ const { protect } = require('../middleware/auth');
 
 const router = express.Router();
 
-const COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
+const MAX_ATTEMPTS = 3;
 
-// POST /api/quiz/save  — save a quiz result
+// POST /api/quiz/save  — save a quiz result (max 3 attempts per student+topic+quizType)
 router.post('/save', protect, async (req, res) => {
   try {
     const { course, topic, quizType, score, total, timeTaken } = req.body;
 
-    // Check cool-down: last attempt for same student + topic + quizType
-    const last = await QuizResult.findOne({
+    const attemptsUsed = await QuizResult.countDocuments({
       student: req.user._id, topic, quizType
-    }).sort({ takenAt: -1 });
+    });
 
-    if (last) {
-      const elapsed = Date.now() - new Date(last.takenAt).getTime();
-      if (elapsed < COOLDOWN_MS) {
-        const remaining = Math.ceil((COOLDOWN_MS - elapsed) / 60000); // minutes
-        return res.status(429).json({
-          message: `Cool-down active. Try again in ${remaining} minute${remaining !== 1 ? 's' : ''}.`,
-          remainingMinutes: remaining
-        });
-      }
+    if (attemptsUsed >= MAX_ATTEMPTS) {
+      return res.status(429).json({
+        message: `You have used all ${MAX_ATTEMPTS} attempts for this quiz.`,
+        attemptsUsed,
+        attemptsLeft: 0
+      });
     }
 
     const percentage = Math.round((score / total) * 100);
@@ -33,24 +29,29 @@ router.post('/save', protect, async (req, res) => {
       course, topic, quizType, score, total, percentage, timeTaken
     });
 
-    res.status(201).json({ message: 'Result saved', result });
+    res.status(201).json({
+      message: 'Result saved',
+      result,
+      attemptsUsed: attemptsUsed + 1,
+      attemptsLeft: MAX_ATTEMPTS - (attemptsUsed + 1)
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// GET /api/quiz/cooldown?topic=X&quizType=Y — check cool-down status
+// GET /api/quiz/cooldown?topic=X&quizType=Y — check attempt count
 router.get('/cooldown', protect, async (req, res) => {
   try {
     const { topic, quizType } = req.query;
-    const last = await QuizResult.findOne({
+    const attemptsUsed = await QuizResult.countDocuments({
       student: req.user._id, topic, quizType
-    }).sort({ takenAt: -1 });
-    if (!last) return res.json({ canAttempt: true, remainingMinutes: 0 });
-    const elapsed = Date.now() - new Date(last.takenAt).getTime();
-    if (elapsed >= COOLDOWN_MS) return res.json({ canAttempt: true, remainingMinutes: 0 });
-    const remaining = Math.ceil((COOLDOWN_MS - elapsed) / 60000);
-    res.json({ canAttempt: false, remainingMinutes: remaining });
+    });
+    res.json({
+      canAttempt: attemptsUsed < MAX_ATTEMPTS,
+      attemptsUsed,
+      attemptsLeft: Math.max(0, MAX_ATTEMPTS - attemptsUsed)
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

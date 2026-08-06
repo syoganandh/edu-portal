@@ -1981,6 +1981,8 @@
       currentQset = qset;
       currentQ = 0;
       quizSubmitted = false;
+      const btn = document.getElementById('btnSubmit');
+      if (btn) btn.disabled = false;
       userAnswers = new Array(qset.length).fill(null);
 
       document.getElementById('quizTypeScreen').style.display = 'none';
@@ -2071,10 +2073,18 @@
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ course: 'JPP', topic: topicName, quizType, score, total, timeTaken: 0 })
         });
+        const data = await res.json();
+        const cd = document.getElementById('cooldownMsg');
         if (res.status === 429) {
-          const data = await res.json();
-          const cd = document.getElementById('cooldownMsg');
-          if (cd) { cd.style.display='block'; cd.textContent=`⏳ ${data.message}`; }
+          if (cd) { cd.style.display='block'; cd.textContent=`🚫 ${data.message}`; }
+        } else if (res.ok && data.attemptsLeft !== undefined) {
+          if (cd) {
+            if (data.attemptsLeft === 0) {
+              cd.style.display='block'; cd.textContent=`✅ Score saved. You have used all 3 attempts for this quiz.`;
+            } else {
+              cd.style.display='block'; cd.textContent=`✅ Score saved. Attempts left: ${data.attemptsLeft}/3`;
+            }
+          }
         }
       } catch(e) { /* offline — ignore */ }
     }
