@@ -123,8 +123,8 @@ tr:last-child td{border-bottom:none}
       <button type="button" onclick="exportStudentsCSV()" style="padding:10px 18px;background:rgba(78,203,160,.12);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:9px;font-size:.82em;font-weight:700;cursor:pointer;white-space:nowrap">⬇️ Export Excel</button>
     </div>
     <table>
-      <thead><tr><th>Name</th><th>Roll No</th><th>Section</th><th>Course</th><th>Joined</th><th>Action</th></tr></thead>
-      <tbody id="studentBody"><tr><td colspan="6" class="loading">Loading students...</td></tr></tbody>
+      <thead><tr><th>Name</th><th>Roll No</th><th>Section</th><th>Course</th><th>Joined</th><th>Role</th><th>Action</th></tr></thead>
+      <tbody id="studentBody"><tr><td colspan="7" class="loading">Loading students...</td></tr></tbody>
     </table>
   </div>
 
@@ -529,21 +529,47 @@ tr:last-child td{border-bottom:none}
   function renderStudents(students) {
     const tbody = document.getElementById('studentBody');
     if (!students.length) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty">No students found</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="empty">No students found</td></tr>';
       return;
     }
     tbody.innerHTML = students.map(s => {
       const tagClass = s.course === 'JPP' ? 'tag-jpp' : s.course === 'DevOps' ? 'tag-devops' : 'tag-both';
       const date = new Date(s.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
+      const isAdmin = s.role === 'admin';
+      const roleBtn = isAdmin
+        ? `<button onclick="promoteStudent('${s._id}','${s.name}','student')" style="padding:4px 10px;background:rgba(232,192,106,.15);border:1px solid rgba(232,192,106,.4);color:var(--gold);border-radius:6px;font-size:.75em;cursor:pointer">👑 Admin · Demote</button>`
+        : `<button onclick="promoteStudent('${s._id}','${s.name}','admin')" style="padding:4px 10px;background:rgba(78,203,160,.1);border:1px solid rgba(78,203,160,.3);color:var(--grn);border-radius:6px;font-size:.75em;cursor:pointer">Make Admin</button>`;
       return `<tr>
-        <td style="font-weight:600">${s.name}</td>
+        <td style="font-weight:600">${s.name}${isAdmin?' <span style="color:var(--gold);font-size:.75em">👑</span>':''}</td>
         <td style="color:var(--blu)">${s.rollNo}</td>
         <td>${s.section || '—'}</td>
         <td><span class="course-tag ${tagClass}">${s.course}</span></td>
         <td style="color:var(--muted)">${date}</td>
+        <td>${roleBtn}</td>
         <td><button class="del-btn" onclick="deleteStudent('${s._id}','${s.name}')">Delete</button></td>
       </tr>`;
     }).join('');
+  }
+
+  async function promoteStudent(id, name, newRole) {
+    const action = newRole === 'admin' ? `give admin access to "${name}"` : `remove admin access from "${name}"`;
+    if (!confirm(`Are you sure you want to ${action}?`)) return;
+    const res = await fetch(`${API}/admin/student/${id}/role`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ role: newRole })
+    });
+    if (res.ok) {
+      const idx = allStudents.findIndex(s => s._id === id);
+      if (idx !== -1) allStudents[idx].role = newRole;
+      renderStudents(allStudents.filter(s => {
+        const q = (document.getElementById('studentSearch')?.value || '').toLowerCase();
+        return !q || s.name.toLowerCase().includes(q) || s.rollNo.toLowerCase().includes(q);
+      }));
+    } else {
+      const data = await res.json();
+      alert(data.message || 'Failed to update role.');
+    }
   }
 
   function exportStudentsCSV() {

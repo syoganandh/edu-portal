@@ -8,10 +8,10 @@ const router = express.Router();
 // All admin routes require login + admin role
 router.use(protect, adminOnly);
 
-// GET /api/admin/students — all students
+// GET /api/admin/students — all users (students + admins)
 router.get('/students', async (req, res) => {
   try {
-    const students = await User.find({ role: 'student' }).select('-password').sort({ rollNo: 1 });
+    const students = await User.find({}).select('-password').sort({ section: 1, rollNo: 1 });
     res.json(students);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -57,6 +57,25 @@ router.get('/stats', async (req, res) => {
       avgPct: avgPct[0]?.avg?.toFixed(1) || 0,
       courseBreakdown
     });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// PUT /api/admin/student/:id/role — promote to admin or demote to student
+router.put('/student/:id/role', async (req, res) => {
+  try {
+    const { role } = req.body;
+    if (!['admin', 'student'].includes(role)) {
+      return res.status(400).json({ message: 'Role must be admin or student.' });
+    }
+    const updated = await User.findByIdAndUpdate(
+      req.params.id,
+      { role },
+      { new: true, select: '-password' }
+    );
+    if (!updated) return res.status(404).json({ message: 'User not found.' });
+    res.json({ message: `Role updated to ${role}`, user: updated });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
