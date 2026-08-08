@@ -501,6 +501,16 @@ tr:last-child td{border-bottom:none}
 
   if (!token || user.role !== 'admin') { window.location.href = 'login.html'; }
 
+  // Main admin (ADMIN001) gets full access; other admins see Students/Results/Assignments/Notices only
+  const isMainAdmin = user.rollNo === 'ADMIN001';
+  if (!isMainAdmin) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      if (btn.textContent.includes('Attendance') || btn.textContent.includes('Timetable')) {
+        btn.style.display = 'none';
+      }
+    });
+  }
+
   let allStudents = [];
 
   function logout() {
