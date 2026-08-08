@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({
       token: generateToken(user._id),
-      user: { id: user._id, name: user.name, rollNo: user.rollNo, email: user.email, role: user.role, course: user.course }
+      user: { id: user._id, name: user.name, rollNo: user.rollNo, email: user.email, role: user.role, course: user.course, section: user.section }
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -41,7 +41,7 @@ router.post('/login', async (req, res) => {
 
     res.json({
       token: generateToken(user._id),
-      user: { id: user._id, name: user.name, rollNo: user.rollNo, email: user.email, role: user.role, course: user.course }
+      user: { id: user._id, name: user.name, rollNo: user.rollNo, email: user.email, role: user.role, course: user.course, section: user.section }
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

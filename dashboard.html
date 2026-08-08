@@ -208,9 +208,10 @@ a{color:var(--acc);text-decoration:none}
 
   // Set section-specific lab rubric PDF
   const sec = user.section || 'A';
-  document.getElementById('rubricSection').textContent = `Section ${sec}`;
-  document.getElementById('rubricLink').href = sec === 'A' ? '/CSM-A-lab-rubrics.pdf' : '/CSM-B-lab-rubrics.pdf';
-  document.getElementById('rubricLink').setAttribute('download', sec === 'A' ? 'CSM-A-lab-rubrics.pdf' : 'CSM-B-lab-rubrics.pdf');
+  document.getElementById('rubricSection').textContent = `CSM-${sec}`;
+  const rubricFile = ['C','D'].includes(sec) ? `CSM-${sec}-lab-rubrics.pdf` : `CSM-${sec}-lab-rubrics.pdf`;
+  document.getElementById('rubricLink').href = '/' + rubricFile;
+  document.getElementById('rubricLink').setAttribute('download', rubricFile);
 
   function logout() {
     localStorage.removeItem('edu_token');
