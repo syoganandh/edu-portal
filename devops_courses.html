@@ -1828,24 +1828,14 @@
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ course: 'DevOps', topic: topicName, quizType, score, total, timeTaken: 0 })
       });
-      const data = await res.json();
       let cd = document.getElementById('cooldownMsg');
       if (!cd) {
         cd = document.createElement('div');
         cd.id = 'cooldownMsg';
-        cd.style.cssText = 'margin:12px 20px;padding:10px 16px;background:rgba(232,192,106,.12);border:1px solid rgba(232,192,106,.3);border-radius:8px;color:var(--gold);font-size:.85em;text-align:center';
+        cd.style.cssText = 'margin:12px 20px;padding:10px 16px;background:rgba(78,203,160,.1);border:1px solid rgba(78,203,160,.3);border-radius:8px;color:var(--grn);font-size:.85em;text-align:center';
         document.querySelector('.quiz-result-screen')?.prepend(cd);
       }
-      if (res.status === 429) {
-        cd.textContent = `🚫 ${data.message}`;
-      } else if (res.ok && data.attemptsLeft !== undefined) {
-        cd.style.background = 'rgba(78,203,160,.1)';
-        cd.style.borderColor = 'rgba(78,203,160,.3)';
-        cd.style.color = 'var(--grn)';
-        cd.textContent = data.attemptsLeft === 0
-          ? `✅ Score saved. You have used all 3 attempts for this quiz.`
-          : `✅ Score saved. Attempts left: ${data.attemptsLeft}/3`;
-      }
+      if (res.ok) { cd.textContent = '✅ Score saved.'; }
     } catch(e) { /* offline — ignore */ }
   }
 

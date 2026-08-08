@@ -4,24 +4,10 @@ const { protect } = require('../middleware/auth');
 
 const router = express.Router();
 
-const MAX_ATTEMPTS = 3;
-
-// POST /api/quiz/save  — save a quiz result (max 3 attempts per student+topic+quizType)
+// POST /api/quiz/save  — save a quiz result (unlimited attempts; admin view shows first attempt only)
 router.post('/save', protect, async (req, res) => {
   try {
     const { course, topic, quizType, score, total, timeTaken } = req.body;
-
-    const attemptsUsed = await QuizResult.countDocuments({
-      student: req.user._id, topic, quizType
-    });
-
-    if (attemptsUsed >= MAX_ATTEMPTS) {
-      return res.status(429).json({
-        message: `You have used all ${MAX_ATTEMPTS} attempts for this quiz.`,
-        attemptsUsed,
-        attemptsLeft: 0
-      });
-    }
 
     const percentage = Math.round((score / total) * 100);
     const result = await QuizResult.create({
@@ -29,29 +15,20 @@ router.post('/save', protect, async (req, res) => {
       course, topic, quizType, score, total, percentage, timeTaken
     });
 
-    res.status(201).json({
-      message: 'Result saved',
-      result,
-      attemptsUsed: attemptsUsed + 1,
-      attemptsLeft: MAX_ATTEMPTS - (attemptsUsed + 1)
-    });
+    res.status(201).json({ message: 'Result saved', result });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// GET /api/quiz/cooldown?topic=X&quizType=Y — check attempt count
+// GET /api/quiz/cooldown?topic=X&quizType=Y — always allowed (unlimited attempts)
 router.get('/cooldown', protect, async (req, res) => {
   try {
     const { topic, quizType } = req.query;
     const attemptsUsed = await QuizResult.countDocuments({
       student: req.user._id, topic, quizType
     });
-    res.json({
-      canAttempt: attemptsUsed < MAX_ATTEMPTS,
-      attemptsUsed,
-      attemptsLeft: Math.max(0, MAX_ATTEMPTS - attemptsUsed)
-    });
+    res.json({ canAttempt: true, attemptsUsed });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

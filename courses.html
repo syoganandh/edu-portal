@@ -2073,19 +2073,8 @@
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ course: 'JPP', topic: topicName, quizType, score, total, timeTaken: 0 })
         });
-        const data = await res.json();
         const cd = document.getElementById('cooldownMsg');
-        if (res.status === 429) {
-          if (cd) { cd.style.display='block'; cd.textContent=`🚫 ${data.message}`; }
-        } else if (res.ok && data.attemptsLeft !== undefined) {
-          if (cd) {
-            if (data.attemptsLeft === 0) {
-              cd.style.display='block'; cd.textContent=`✅ Score saved. You have used all 3 attempts for this quiz.`;
-            } else {
-              cd.style.display='block'; cd.textContent=`✅ Score saved. Attempts left: ${data.attemptsLeft}/3`;
-            }
-          }
-        }
+        if (res.ok && cd) { cd.style.display='block'; cd.textContent='✅ Score saved.'; }
       } catch(e) { /* offline — ignore */ }
     }
 
