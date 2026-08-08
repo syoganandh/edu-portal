@@ -209,9 +209,15 @@ a{color:var(--acc);text-decoration:none}
   // Set section-specific lab rubric PDF
   const sec = user.section || 'A';
   document.getElementById('rubricSection').textContent = `CSM-${sec}`;
-  const rubricFile = ['C','D'].includes(sec) ? `CSM-${sec}-lab-rubrics.pdf` : `CSM-${sec}-lab-rubrics.pdf`;
+  const rubricFile = `CSM-${sec}-lab-rubrics.pdf`;
   document.getElementById('rubricLink').href = '/' + rubricFile;
   document.getElementById('rubricLink').setAttribute('download', rubricFile);
+
+  // Hide Attendance & Timetable tabs for CSM-C and CSM-D (managed by separate faculty)
+  if (['C','D'].includes(sec)) {
+    document.getElementById('dtab-attendance').style.display = 'none';
+    document.getElementById('dtab-timetable').style.display = 'none';
+  }
 
   function logout() {
     localStorage.removeItem('edu_token');
