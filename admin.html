@@ -915,6 +915,10 @@ tr:last-child td{border-bottom:none}
         </th>`;
       });
     });
+    html += `<th style="background:#1a1030;padding:8px 12px;border:2px solid var(--prp);text-align:center;white-space:nowrap;min-width:80px">
+      <div style="color:var(--prp);font-size:.95em;font-weight:800">Final</div>
+      <div style="color:var(--muted);font-size:.82em">/15 Marks</div>
+    </th>`;
     html += '</tr></thead><tbody>';
 
     let lastSec = null;
@@ -922,7 +926,7 @@ tr:last-child td{border-bottom:none}
       const sec = s.section || '—';
       if (sec !== lastSec) {
         lastSec = sec;
-        html += `<tr style="background:rgba(240,124,62,.07)"><td colspan="${4 + colSpan}" style="font-weight:700;font-size:.8em;color:var(--acc);padding:5px 12px;letter-spacing:.08em">▸ SECTION ${sec}</td></tr>`;
+        html += `<tr style="background:rgba(240,124,62,.07)"><td colspan="${5 + colSpan}" style="font-weight:700;font-size:.8em;color:var(--acc);padding:5px 12px;letter-spacing:.08em">▸ SECTION ${sec}</td></tr>`;
       }
       // Compute per-student average across all topic×type done cells
       let stuScoreSum = 0, stuTotalSum = 0;
@@ -936,6 +940,12 @@ tr:last-child td{border-bottom:none}
       const avgBg  = stuAvgPct === null ? 'transparent' : stuAvgPct>=80?'rgba(78,203,160,.18)':stuAvgPct>=50?'rgba(232,192,106,.18)':'rgba(240,92,92,.18)';
       const avgClr = stuAvgPct === null ? 'var(--muted)' : stuAvgPct>=80?'var(--grn)':stuAvgPct>=50?'var(--gold)':'var(--red)';
       const avgTxt = stuAvgPct === null ? '—' : `${stuAvgPct}%`;
+
+      // Final mark out of 15
+      const finalMark = stuTotalSum > 0 ? (stuScoreSum / stuTotalSum * 15).toFixed(1) : null;
+      const finalBg  = finalMark === null ? 'transparent' : finalMark>=12?'rgba(78,203,160,.22)':finalMark>=7.5?'rgba(232,192,106,.22)':'rgba(240,92,92,.22)';
+      const finalClr = finalMark === null ? 'var(--muted)' : finalMark>=12?'var(--grn)':finalMark>=7.5?'var(--gold)':'var(--red)';
+      const finalTxt = finalMark === null ? '—' : `${finalMark}<span style="font-size:.8em;opacity:.7">/15</span>`;
 
       html += `<tr>
         <td style="position:sticky;left:0;z-index:1;background:var(--surf);font-family:monospace;padding:5px 8px;border:1px solid var(--bdr);white-space:nowrap;color:var(--blu)">${s.rollNo}</td>
@@ -957,6 +967,9 @@ tr:last-child td{border-bottom:none}
           </td>`;
         });
       });
+      html += `<td style="text-align:center;padding:6px 10px;border:2px solid var(--prp);background:${finalBg}">
+        <span style="color:${finalClr};font-weight:800;font-size:1em">${finalTxt}</span>
+      </td>`;
       html += '</tr>';
     });
     html += '</tbody></table>';
