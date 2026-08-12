@@ -90,7 +90,7 @@ a{color:var(--acc);text-decoration:none}
 
 <div class="main">
 
-  <div class="stats-grid">
+  <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
     <div class="stat-card">
       <div class="stat-val" id="statAttempts" style="color:var(--acc)">—</div>
       <div class="stat-label">Total Attempts</div>
@@ -106,6 +106,23 @@ a{color:var(--acc);text-decoration:none}
     <div class="stat-card">
       <div class="stat-val" id="statTopics" style="color:var(--blu)">—</div>
       <div class="stat-label">Topics Covered</div>
+    </div>
+  </div>
+
+  <!-- Final Mark Banner -->
+  <div id="finalMarkBanner" style="display:none;margin-bottom:24px;border-radius:16px;padding:22px 28px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;border:2px solid rgba(169,125,245,.4);background:linear-gradient(135deg,rgba(169,125,245,.08),rgba(91,168,245,.06))">
+    <div style="font-size:2.4em">🏅</div>
+    <div style="flex:1;min-width:200px">
+      <div style="font-size:.75em;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:700;margin-bottom:4px">Your Quiz Final Mark</div>
+      <div style="font-size:.85em;color:var(--muted);line-height:1.5">Based on average of all quiz types across all topics you have attempted.</div>
+    </div>
+    <div style="text-align:center">
+      <div id="finalMarkVal" style="font-size:3em;font-weight:900;line-height:1">—</div>
+      <div style="font-size:.78em;color:var(--muted);margin-top:2px">out of 15</div>
+    </div>
+    <div style="text-align:center;min-width:80px">
+      <div id="finalMarkPct" style="font-size:1.4em;font-weight:800">—</div>
+      <div style="font-size:.72em;color:var(--muted);margin-top:2px">overall avg</div>
     </div>
   </div>
 
@@ -249,6 +266,30 @@ a{color:var(--acc);text-decoration:none}
       document.getElementById('statAvg').textContent = avg + '%';
       document.getElementById('statBest').textContent = best + '%';
       document.getElementById('statTopics').textContent = summary.length;
+
+      // Final Mark /15 — weighted: sum(score) / sum(total) * 15
+      // Use first attempt per topic+quizType (same logic as admin view)
+      const seenKeys = new Set();
+      let scoreSum = 0, totalSum = 0;
+      [...results].sort((a,b)=>new Date(a.takenAt)-new Date(b.takenAt)).forEach(r => {
+        const key = `${r.topic}::${r.quizType}`;
+        if (!seenKeys.has(key)) {
+          seenKeys.add(key);
+          scoreSum += r.score;
+          totalSum += r.total;
+        }
+      });
+      const banner = document.getElementById('finalMarkBanner');
+      if (totalSum > 0) {
+        const finalMark = (scoreSum / totalSum * 15).toFixed(1);
+        const finalPct  = Math.round(scoreSum / totalSum * 100);
+        const clr = finalPct>=80?'var(--grn)':finalPct>=50?'var(--gold)':'var(--red)';
+        document.getElementById('finalMarkVal').textContent = finalMark;
+        document.getElementById('finalMarkVal').style.color = clr;
+        document.getElementById('finalMarkPct').textContent = finalPct + '%';
+        document.getElementById('finalMarkPct').style.color = clr;
+        banner.style.display = 'flex';
+      }
 
       // Topic cards
       const grid = document.getElementById('topicGrid');
