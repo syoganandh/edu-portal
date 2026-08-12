@@ -902,7 +902,8 @@ tr:last-child td{border-bottom:none}
         <tr>
           <th style="position:sticky;left:0;z-index:2;background:var(--surf2);padding:8px 10px;border:1px solid var(--bdr);white-space:nowrap">Roll No</th>
           <th style="position:sticky;left:70px;z-index:2;background:var(--surf2);padding:8px 10px;border:1px solid var(--bdr);white-space:nowrap">Name</th>
-          <th style="background:var(--surf2);padding:8px 10px;border:1px solid var(--bdr)">Sec</th>`;
+          <th style="background:var(--surf2);padding:8px 10px;border:1px solid var(--bdr)">Sec</th>
+          <th style="background:var(--surf2);padding:8px 10px;border:1px solid var(--bdr);text-align:center;white-space:nowrap;color:var(--prp)">Avg&nbsp;%</th>`;
 
     topics.forEach(t => {
       const shortT = t.length > 18 ? t.substring(0,16)+'…' : t;
@@ -921,12 +922,28 @@ tr:last-child td{border-bottom:none}
       const sec = s.section || '—';
       if (sec !== lastSec) {
         lastSec = sec;
-        html += `<tr style="background:rgba(240,124,62,.07)"><td colspan="${3 + colSpan}" style="font-weight:700;font-size:.8em;color:var(--acc);padding:5px 12px;letter-spacing:.08em">▸ SECTION ${sec}</td></tr>`;
+        html += `<tr style="background:rgba(240,124,62,.07)"><td colspan="${4 + colSpan}" style="font-weight:700;font-size:.8em;color:var(--acc);padding:5px 12px;letter-spacing:.08em">▸ SECTION ${sec}</td></tr>`;
       }
+      // Compute per-student average across all topic×type done cells
+      let stuScoreSum = 0, stuTotalSum = 0;
+      topics.forEach(t => {
+        TYPES.forEach(ty => {
+          const r = doneMap.get(`${s._id}::${t}::${ty}`);
+          if (r) { stuScoreSum += r.score; stuTotalSum += r.total; }
+        });
+      });
+      const stuAvgPct = stuTotalSum > 0 ? Math.round(stuScoreSum / stuTotalSum * 100) : null;
+      const avgBg  = stuAvgPct === null ? 'transparent' : stuAvgPct>=80?'rgba(78,203,160,.18)':stuAvgPct>=50?'rgba(232,192,106,.18)':'rgba(240,92,92,.18)';
+      const avgClr = stuAvgPct === null ? 'var(--muted)' : stuAvgPct>=80?'var(--grn)':stuAvgPct>=50?'var(--gold)':'var(--red)';
+      const avgTxt = stuAvgPct === null ? '—' : `${stuAvgPct}%`;
+
       html += `<tr>
         <td style="position:sticky;left:0;z-index:1;background:var(--surf);font-family:monospace;padding:5px 8px;border:1px solid var(--bdr);white-space:nowrap;color:var(--blu)">${s.rollNo}</td>
         <td style="position:sticky;left:70px;z-index:1;background:var(--surf);padding:5px 10px;border:1px solid var(--bdr);white-space:nowrap;font-weight:600">${s.name}</td>
-        <td style="padding:5px 8px;border:1px solid var(--bdr);text-align:center;color:var(--acc);font-weight:600">${sec}</td>`;
+        <td style="padding:5px 8px;border:1px solid var(--bdr);text-align:center;color:var(--acc);font-weight:600">${sec}</td>
+        <td style="text-align:center;padding:5px 8px;border:1px solid var(--bdr);background:${avgBg}">
+          <span style="color:${avgClr};font-weight:700;font-size:.9em">${avgTxt}</span>
+        </td>`;
       topics.forEach(t => {
         TYPES.forEach(ty => {
           const key  = `${s._id}::${t}::${ty}`;
