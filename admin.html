@@ -221,6 +221,7 @@ tr:last-child td{border-bottom:none}
           <option value="">All Topics</option>
         </select>
         <span id="covCount" style="font-size:.8em;color:var(--muted);margin-left:4px"></span>
+        <button onclick="exportCoverageExcel()" style="margin-left:auto;padding:7px 16px;background:rgba(78,203,160,.12);border:1px solid rgba(78,203,160,.35);color:var(--grn);border-radius:8px;font-size:.8em;font-weight:700;cursor:pointer;white-space:nowrap">⬇️ Export Excel</button>
       </div>
       <div id="coverageTableWrap" style="overflow-x:auto">
         <div class="empty">Loading coverage...</div>
@@ -978,6 +979,68 @@ tr:last-child td{border-bottom:none}
     const pct = totalCells ? Math.round(doneCount/totalCells*100) : 0;
     document.getElementById('covCount').textContent =
       `${doneCount}/${totalCells} done (${pct}%) · ${students.length} students`;
+  }
+
+  // ── Coverage Excel Export ──
+  function exportCoverageExcel() {
+    const course  = document.getElementById('covCourse').value;
+    const secF    = document.getElementById('covSection').value;
+    const topicF  = document.getElementById('covTopic').value;
+
+    const courseResults = allQuizResults.filter(r => r.course === course);
+    const allTopics = [...new Set(courseResults.map(r => r.topic))].sort();
+    const topics = topicF ? [topicF] : allTopics;
+    const TYPES  = ['debug','trace','usecase'];
+
+    const doneMap = new Map();
+    courseResults.forEach(r => {
+      if (r.student?._id) {
+        const key = `${r.student._id}::${r.topic}::${r.quizType}`;
+        if (!doneMap.has(key))
+          doneMap.set(key, { score: r.score, total: r.total, pct: r.percentage });
+      }
+    });
+
+    let students = allStudents.filter(s => s.role !== 'admin');
+    if (secF) students = students.filter(s => (s.section||'') === secF);
+    students = students.sort((a,b) => {
+      const ss = (a.section||'').localeCompare(b.section||'');
+      return ss !== 0 ? ss : (a.rollNo||'').localeCompare(b.rollNo||'');
+    });
+
+    // Build header row
+    const topicHeaders = [];
+    topics.forEach(t => TYPES.forEach(ty => topicHeaders.push(`${t} (${ty})`)));
+    const header = ['Roll No', 'Name', 'Section', 'Avg %', 'Final /15', ...topicHeaders];
+
+    // Build data rows
+    const rows = students.map(s => {
+      let scoreSum = 0, totalSum = 0;
+      topics.forEach(t => TYPES.forEach(ty => {
+        const r = doneMap.get(`${s._id}::${t}::${ty}`);
+        if (r) { scoreSum += r.score; totalSum += r.total; }
+      }));
+      const avgPct   = totalSum > 0 ? Math.round(scoreSum / totalSum * 100) : '';
+      const finalMk  = totalSum > 0 ? parseFloat((scoreSum / totalSum * 15).toFixed(1)) : '';
+      const cells = topics.flatMap(t => TYPES.map(ty => {
+        const r = doneMap.get(`${s._id}::${t}::${ty}`);
+        return r ? `${r.score}/${r.total}` : '';
+      }));
+      return [s.rollNo, s.name, `CSM-${s.section||'?'}`, avgPct ? `${avgPct}%` : '', finalMk, ...cells];
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
+
+    // Column widths
+    ws['!cols'] = [
+      {wch:16},{wch:28},{wch:10},{wch:10},{wch:12},
+      ...topicHeaders.map(()=>({wch:18}))
+    ];
+
+    const wb = XLSX.utils.book_new();
+    const secLabel = secF ? `CSM-${secF}` : 'AllSections';
+    XLSX.utils.book_append_sheet(wb, ws, `${course} Coverage`);
+    XLSX.writeFile(wb, `${course}_QuizMarks_${secLabel}_${new Date().toISOString().slice(0,10)}.xlsx`);
   }
 
   // ── Assignments ──
