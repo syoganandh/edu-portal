@@ -502,6 +502,18 @@ tr:last-child td{border-bottom:none}
 
   if (!token || user.role !== 'admin') { window.location.href = 'login.html'; }
 
+  // Auto-logout if token expires (401 from any API call)
+  async function apiFetch(url, opts={}) {
+    const res = await apiFetch(url, opts);
+    if (res.status === 401) {
+      localStorage.removeItem('edu_token');
+      localStorage.removeItem('edu_user');
+      window.location.href = 'login.html';
+      throw new Error('Session expired');
+    }
+    return res;
+  }
+
   // Main admin (ADMIN001) gets full access; other admins see Students/Results/Assignments/Notices only
   const isMainAdmin = user.rollNo === 'ADMIN001';
   if (!isMainAdmin) {
@@ -565,7 +577,7 @@ tr:last-child td{border-bottom:none}
   async function promoteStudent(id, name, newRole) {
     const action = newRole === 'admin' ? `give admin access to "${name}"` : `remove admin access from "${name}"`;
     if (!confirm(`Are you sure you want to ${action}?`)) return;
-    const res = await fetch(`${API}/admin/student/${id}/role`, {
+    const res = await apiFetch(`${API}/admin/student/${id}/role`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ role: newRole })
@@ -600,7 +612,7 @@ tr:last-child td{border-bottom:none}
 
   async function deleteStudent(id, name) {
     if (!confirm(`Delete student "${name}"? This will also remove all their quiz results.`)) return;
-    const res = await fetch(`${API}/admin/student/${id}`, {
+    const res = await apiFetch(`${API}/admin/student/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -616,19 +628,19 @@ tr:last-child td{border-bottom:none}
       const headers = { Authorization: `Bearer ${token}` };
 
       // Stats
-      const statsRes = await fetch(`${API}/admin/stats`, { headers });
+      const statsRes = await apiFetch(`${API}/admin/stats`, { headers });
       const stats = await statsRes.json();
       document.getElementById('statStudents').textContent = stats.totalStudents;
       document.getElementById('statAttempts').textContent = stats.totalAttempts;
       document.getElementById('statAvg').textContent = (stats.avgPct || 0) + '%';
 
       // Students
-      const stuRes = await fetch(`${API}/admin/students`, { headers });
+      const stuRes = await apiFetch(`${API}/admin/students`, { headers });
       allStudents = await stuRes.json();
       renderStudents(allStudents);
 
       // Results
-      const resRes = await fetch(`${API}/admin/results`, { headers });
+      const resRes = await apiFetch(`${API}/admin/results`, { headers });
       allQuizResults = await resRes.json();
       renderResultsTable(allQuizResults);
       buildCharts(allQuizResults);
@@ -1053,7 +1065,7 @@ tr:last-child td{border-bottom:none}
     const msg   = document.getElementById('asgMsg');
     if (!title || !desc || !due) { msg.style.color='var(--red)'; msg.textContent='Fill all required fields.'; return; }
     try {
-      const res = await fetch(`${API}/assignments`, {
+      const res = await apiFetch(`${API}/assignments`, {
         method:'POST', headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
         body: JSON.stringify({ title, description:desc, course, dueDate:due, driveLink:drive })
       });
@@ -1073,7 +1085,7 @@ tr:last-child td{border-bottom:none}
     container.style.display='block';
     document.getElementById('subPanel').style.display='none';
     try {
-      const res = await fetch(`${API}/assignments/all`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const res = await apiFetch(`${API}/assignments/all`,{ headers:{ Authorization:`Bearer ${token}` }});
       const data = await res.json();
       if (!data.length){ container.innerHTML='<div class="empty">No assignments yet. Create one above.</div>'; return; }
       container.innerHTML = data.map(a => {
@@ -1108,7 +1120,7 @@ tr:last-child td{border-bottom:none}
     const tbody = document.getElementById('subBody');
     tbody.innerHTML='<tr><td colspan="7" class="loading">Loading...</td></tr>';
     try {
-      const res = await fetch(`${API}/assignments/${id}/submissions`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const res = await apiFetch(`${API}/assignments/${id}/submissions`,{ headers:{ Authorization:`Bearer ${token}` }});
       const data = await res.json();
       if (!data.length){ tbody.innerHTML='<tr><td colspan="7" class="empty">No submissions yet.</td></tr>'; return; }
       tbody.innerHTML = data.map(s => {
@@ -1131,7 +1143,7 @@ tr:last-child td{border-bottom:none}
 
   async function gradeSubmission(id) {
     const grade = document.getElementById(`grade-${id}`).value.trim();
-    await fetch(`${API}/assignments/submission/${id}/grade`,{
+    await apiFetch(`${API}/assignments/submission/${id}/grade`,{
       method:'PUT', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
       body: JSON.stringify({ grade })
     });
@@ -1139,7 +1151,7 @@ tr:last-child td{border-bottom:none}
 
   async function deleteAssignment(id) {
     if (!confirm('Delete this assignment and all its submissions?')) return;
-    await fetch(`${API}/assignments/${id}`,{ method:'DELETE', headers:{ Authorization:`Bearer ${token}` }});
+    await apiFetch(`${API}/assignments/${id}`,{ method:'DELETE', headers:{ Authorization:`Bearer ${token}` }});
     loadAssignments();
   }
 
@@ -1156,7 +1168,7 @@ tr:last-child td{border-bottom:none}
     const fb     = document.getElementById('notFeedback');
     if (!title || !msg) { fb.style.color='var(--red)'; fb.textContent='Fill title and message.'; return; }
     try {
-      const res = await fetch(`${API}/notices`,{
+      const res = await apiFetch(`${API}/notices`,{
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
         body: JSON.stringify({ title, message:msg, type, course })
       });
@@ -1172,7 +1184,7 @@ tr:last-child td{border-bottom:none}
   async function loadNotices() {
     const container = document.getElementById('noticeList');
     try {
-      const res = await fetch(`${API}/notices`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const res = await apiFetch(`${API}/notices`,{ headers:{ Authorization:`Bearer ${token}` }});
       const data = await res.json();
       if (!data.length){ container.innerHTML='<div class="empty">No notices posted yet.</div>'; return; }
       container.innerHTML = data.map(n => {
@@ -1254,13 +1266,13 @@ tr:last-child td{border-bottom:none}
     document.getElementById('attClassInfo').innerHTML =
       `<span style="background:rgba(91,168,245,.1);border:1px solid rgba(91,168,245,.2);padding:4px 12px;border-radius:6px;color:var(--blu)">📅 ${info.hint}</span>`;
     try {
-      const res = await fetch(`${API}/attendance/students/${info.course}?section=${info.section}`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const res = await apiFetch(`${API}/attendance/students/${info.course}?section=${info.section}`,{ headers:{ Authorization:`Bearer ${token}` }});
       attStudents = await res.json();
       // Fetch existing records for this date+class to pre-fill statuses
       let existingMap = {};
       if (date) {
         try {
-          const eRes = await fetch(`${API}/attendance/records?fromDate=${date}&toDate=${date}&section=${info.section}&classType=${info.classType}`,{ headers:{ Authorization:`Bearer ${token}` }});
+          const eRes = await apiFetch(`${API}/attendance/records?fromDate=${date}&toDate=${date}&section=${info.section}&classType=${info.classType}`,{ headers:{ Authorization:`Bearer ${token}` }});
           const eData = await eRes.json();
           eData.forEach(r => { existingMap[r.student?._id || r.student] = r.status; });
         } catch(e) {}
@@ -1313,7 +1325,7 @@ tr:last-child td{border-bottom:none}
       status: document.querySelector(`input[name="att-${s._id}"]:checked`)?.value || 'absent'
     }));
     try {
-      const res = await fetch(`${API}/attendance/mark`,{
+      const res = await apiFetch(`${API}/attendance/mark`,{
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
         body: JSON.stringify({ course: info.course, section: info.section, classType: info.classType, periods: info.periods, date, deliveryMethod, teachingStrategy, records })
       });
@@ -1336,7 +1348,7 @@ tr:last-child td{border-bottom:none}
       if (toDate)   url += `toDate=${toDate}&`;
       if (section)  url += `section=${section}&`;
       if (type)     url += `classType=${type}`;
-      const res  = await fetch(url,{ headers:{ Authorization:`Bearer ${token}` }});
+      const res  = await apiFetch(url,{ headers:{ Authorization:`Bearer ${token}` }});
       const data = await res.json();
       if (!data.length){ container.innerHTML='<div class="empty">No records for this date.</div>'; return; }
       container.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.85em;background:var(--surf2);border-radius:10px;overflow:hidden">
@@ -1374,7 +1386,7 @@ tr:last-child td{border-bottom:none}
       if (toDate)   url += `toDate=${toDate}&`;
       if (section)  url += `section=${section}&`;
       if (type)     url += `classType=${type}`;
-      const res     = await fetch(url, { headers:{ Authorization:`Bearer ${token}` }});
+      const res     = await apiFetch(url, { headers:{ Authorization:`Bearer ${token}` }});
       const records = await res.json();
       if (!records.length) { alert('No records found for selected filters.'); return; }
 
@@ -1454,7 +1466,7 @@ tr:last-child td{border-bottom:none}
 
   async function deleteNotice(id) {
     if (!confirm('Delete this notice?')) return;
-    await fetch(`${API}/notices/${id}`,{ method:'DELETE', headers:{ Authorization:`Bearer ${token}` }});
+    await apiFetch(`${API}/notices/${id}`,{ method:'DELETE', headers:{ Authorization:`Bearer ${token}` }});
     loadNotices();
   }
 
@@ -1517,7 +1529,7 @@ tr:last-child td{border-bottom:none}
 
   async function loadTimetableAdmin() {
     try {
-      const res = await fetch(`${API}/timetable?section=${ttSection}`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const res = await apiFetch(`${API}/timetable?section=${ttSection}`,{ headers:{ Authorization:`Bearer ${token}` }});
       const data = await res.json();
       ttSlots = data.slots || [];
       renderTtGrid();
@@ -1588,7 +1600,7 @@ tr:last-child td{border-bottom:none}
   async function saveTimetable() {
     const msg = document.getElementById('ttMsg');
     try {
-      const res = await fetch(`${API}/timetable`,{
+      const res = await apiFetch(`${API}/timetable`,{
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
         body: JSON.stringify({ section: ttSection, slots: ttSlots })
       });
