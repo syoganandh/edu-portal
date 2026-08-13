@@ -504,7 +504,7 @@ tr:last-child td{border-bottom:none}
 
   // Auto-logout if token expires (401 from any API call)
   async function apiFetch(url, opts={}) {
-    const res = await apiFetch(url, opts);
+    const res = await fetch(url, opts);
     if (res.status === 401) {
       localStorage.removeItem('edu_token');
       localStorage.removeItem('edu_user');
