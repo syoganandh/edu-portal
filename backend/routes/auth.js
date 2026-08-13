@@ -1,9 +1,20 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
 
 const router = express.Router();
+
+// Max 5 failed login attempts per IP per 15 minutes
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,   // 15 minutes
+  max: 5,
+  skipSuccessfulRequests: true, // only count failed attempts
+  message: { message: 'Too many login attempts. Please wait 15 minutes and try again.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -30,8 +41,8 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /api/auth/login
-router.post('/login', async (req, res) => {
+// POST /api/auth/login  (rate-limited: 5 failed attempts per IP per 15 min)
+router.post('/login', loginLimiter, async (req, res) => {
   try {
     const { rollNo, password } = req.body;
 

@@ -108,6 +108,7 @@ input::placeholder{color:var(--muted)}
       });
       const data = await res.json();
 
+      if (res.status === 429) throw new Error('🔒 Too many failed attempts. Please wait 15 minutes and try again.');
       if (!res.ok) throw new Error(data.message);
 
       localStorage.setItem('edu_token', data.token);
