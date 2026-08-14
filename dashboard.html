@@ -241,12 +241,13 @@ a{color:var(--acc);text-decoration:none}
   document.getElementById('heroName').textContent = user.name || 'Student';
   document.getElementById('heroRoll').textContent = user.rollNo || '';
 
+  const sec = user.section || 'A';
+
   // Set section-specific lab rubric PDF
   document.getElementById('rubricSection').textContent = `CSM-${sec}`;
   const rubricFile = `CSM-${sec}-lab-rubrics.pdf`;
   document.getElementById('rubricLink').href = '/' + rubricFile;
   document.getElementById('rubricLink').setAttribute('download', rubricFile);
-  const sec = user.section || 'A';
 
   // Hide Attendance & Timetable tabs for CSM-C and CSM-D (managed by separate faculty)
   if (['C','D'].includes(sec)) {
