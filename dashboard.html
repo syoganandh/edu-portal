@@ -268,9 +268,22 @@ a{color:var(--acc);text-decoration:none}
 
   async function loadDashboard() {
     try {
-      const res = await apiFetch(`${API}/quiz/my`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // 55-second timeout — Render free tier can take ~50s to wake up
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 55000);
+
+      let res;
+      try {
+        res = await apiFetch(`${API}/quiz/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal
+        });
+      } catch(e) {
+        if (e.name === 'AbortError' || e.message === 'Session expired') throw e;
+        // Network error — show retry
+        throw new Error('network');
+      } finally { clearTimeout(timer); }
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
@@ -350,7 +363,22 @@ a{color:var(--acc);text-decoration:none}
         }).join('');
       }
     } catch(err) {
+      if (err.message === 'Session expired') return; // apiFetch already redirected
       console.error(err);
+      const isTimeout = err.name === 'AbortError' || err.message === 'network';
+      document.getElementById('topicGrid').innerHTML = `
+        <div style="grid-column:1/-1;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:32px;text-align:center">
+          <div style="font-size:2em;margin-bottom:10px">${isTimeout ? '⏳' : '⚠️'}</div>
+          <div style="font-weight:700;margin-bottom:6px;color:var(--txt)">
+            ${isTimeout ? 'Server is starting up…' : 'Failed to load data'}
+          </div>
+          <div style="font-size:.85em;color:var(--muted);margin-bottom:18px">
+            ${isTimeout ? 'The server was sleeping. It usually takes 30–60 seconds to wake up on first visit.' : 'Check your internet connection and try again.'}
+          </div>
+          <button onclick="location.reload()" style="padding:10px 28px;background:var(--acc);border:none;border-radius:9px;color:#111;font-weight:700;font-size:.88em;cursor:pointer">🔄 Retry</button>
+        </div>`;
+      document.getElementById('resultsBody').innerHTML =
+        `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">—</td></tr>`;
     }
   }
 
